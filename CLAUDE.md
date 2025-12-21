@@ -87,6 +87,8 @@ Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
 ## Active Technologies
 - Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks) (001-monorepo-setup)
 - N/A (file-based taxonomy loading in future phases) (001-monorepo-setup)
+- Ruby 3.2+ + Nokogiri (XML parsing), YAML (semantic mappings) (002-taxonomy-loader)
+- File-based (taxonomy files in plugin gems) (002-taxonomy-loader)
 
 ## Recent Changes
 - 001-monorepo-setup: Added Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks)
