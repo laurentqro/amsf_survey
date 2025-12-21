@@ -1,0 +1,19 @@
+# Coverage reports
+coverage/
+
+# Gem build artifacts
+*.gem
+
+# Bundler artifacts
+.bundle/
+vendor/bundle/
+
+# RSpec artifacts
+spec/examples.txt
+
+# Editor artifacts
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

@@ -83,3 +83,10 @@ This project uses Speckit for specification-driven development. Available slash 
 - `/speckit.implement` - Execute implementation tasks
 
 Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
+
+## Active Technologies
+- Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks) (001-monorepo-setup)
+- N/A (file-based taxonomy loading in future phases) (001-monorepo-setup)
+
+## Recent Changes
+- 001-monorepo-setup: Added Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks)
