@@ -159,18 +159,24 @@ RSpec.describe AmsfSurvey::Field do
   end
 
   describe "#required?" do
-    it "returns false for computed fields without dependencies" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :computed), depends_on: {})
+    it "returns false for computed fields" do
+      field = described_class.new(**minimal_attrs.merge(source_type: :computed))
       expect(field.required?).to be false
     end
 
-    it "returns true for non-computed fields" do
+    it "returns true for entry_only fields" do
       field = described_class.new(**minimal_attrs.merge(source_type: :entry_only))
       expect(field.required?).to be true
     end
 
-    it "returns true for fields with dependencies" do
-      field = described_class.new(**minimal_attrs, depends_on: { tGATE: "Oui" })
+    it "returns true for prefillable fields" do
+      field = described_class.new(**minimal_attrs.merge(source_type: :prefillable))
+      expect(field.required?).to be true
+    end
+
+    it "returns true for fields with dependencies (when visible)" do
+      # Dependencies control visibility, not whether input is required
+      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only), depends_on: { tGATE: "Oui" })
       expect(field.required?).to be true
     end
   end

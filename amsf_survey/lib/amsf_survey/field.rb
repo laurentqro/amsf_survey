@@ -51,9 +51,10 @@ module AmsfSurvey
     # Gate predicates
     def gate? = gate
 
-    # True if field has dependencies or is not computed
+    # Returns true if this field requires user input when visible.
+    # Computed fields are never required (values derived automatically).
     def required?
-      !depends_on.empty? || !computed?
+      !computed?
     end
 
     # Evaluates gate dependencies against submission data.
