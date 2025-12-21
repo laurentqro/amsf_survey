@@ -95,5 +95,16 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
     ensure
       File.delete(invalid_path) if File.exist?(invalid_path)
     end
+
+    it "raises TaxonomyLoadError when field count exceeds maximum" do
+      # Temporarily lower the max for testing
+      original_max = described_class::MAX_FIELDS
+      stub_const("AmsfSurvey::Taxonomy::SchemaParser::MAX_FIELDS", 2)
+
+      expect { described_class.new(xsd_path).parse }.to raise_error(
+        AmsfSurvey::TaxonomyLoadError,
+        /exceeds maximum field count/
+      )
+    end
   end
 end

@@ -16,6 +16,8 @@ module AmsfSurvey
         "xbrli:booleanItemType" => :boolean
       }.freeze
 
+      MAX_FIELDS = 10_000
+
       def initialize(xsd_path)
         @xsd_path = xsd_path
       end
@@ -24,10 +26,13 @@ module AmsfSurvey
         validate_file!
         doc = parse_document
 
+        elements = doc.xpath("//xs:element[@abstract='false']", "xs" => "http://www.w3.org/2001/XMLSchema")
+        validate_field_count!(elements.size)
+
         result = {}
         result[:_roles] = extract_roles(doc)
 
-        doc.xpath("//xs:element[@abstract='false']", "xs" => "http://www.w3.org/2001/XMLSchema").each do |element|
+        elements.each do |element|
           field_data = extract_field(element)
           result[field_data[:id]] = field_data if field_data
         end
@@ -41,6 +46,12 @@ module AmsfSurvey
         return if File.exist?(@xsd_path)
 
         raise MissingTaxonomyFileError, @xsd_path
+      end
+
+      def validate_field_count!(count)
+        return if count <= MAX_FIELDS
+
+        raise TaxonomyLoadError, "Taxonomy exceeds maximum field count (#{count} > #{MAX_FIELDS})"
       end
 
       def parse_document
