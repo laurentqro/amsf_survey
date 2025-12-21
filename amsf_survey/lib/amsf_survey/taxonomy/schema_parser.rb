@@ -70,6 +70,7 @@ module AmsfSurvey
         name = element["name"]
         return nil unless name
 
+        # Symbols are appropriate: bounded set from official taxonomy, cached, fast lookup
         id = name.to_sym
         type_attr = element["type"]
         enumeration_values = extract_enumeration(element)
