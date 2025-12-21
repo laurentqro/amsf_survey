@@ -103,9 +103,14 @@ module AmsfSurvey
         enums.map(&:value)
       end
 
+      BOOLEAN_PATTERNS = [
+        %w[Non Oui],  # French
+        %w[No Yes]    # English
+      ].freeze
+
       def determine_type(type_attr, enumeration_values)
         if enumeration_values
-          if enumeration_values.sort == %w[Non Oui]
+          if BOOLEAN_PATTERNS.include?(enumeration_values.sort)
             [:boolean, type_attr || "xbrli:stringItemType"]
           else
             [:enum, type_attr || "xbrli:stringItemType"]

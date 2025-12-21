@@ -35,9 +35,35 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
         expect(result[:t003][:xbrl_type]).to eq("xbrli:monetaryItemType")
       end
 
-      it "maps Oui/Non enum to boolean" do
+      it "maps Oui/Non enum to boolean (French)" do
         expect(result[:tGATE][:type]).to eq(:boolean)
         expect(result[:tGATE][:valid_values]).to eq(%w[Oui Non])
+      end
+
+      it "maps Yes/No enum to boolean (English)" do
+        english_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_bool" name="bool_field"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="Yes"/>
+                  <enumeration value="No"/>
+                </restriction>
+              </simpleType>
+            </element>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_english_bool.xsd")
+        File.write(temp_path, english_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:bool_field][:type]).to eq(:boolean)
+        expect(result[:bool_field][:valid_values]).to eq(%w[Yes No])
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
       end
 
       it "maps multi-value enum correctly" do
