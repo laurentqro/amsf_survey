@@ -37,11 +37,27 @@ gem build amsf_survey.gemspec
 - `AmsfSurvey.to_xbrl(submission)` - Generate XBRL XML
 
 Key classes:
-- `Questionnaire` - Sections and fields for a survey
-- `Field` - Metadata (type, source_type, labels, visibility rules)
-- `Submission` - ActiveModel-based, holds entity data with type casting
-- `Validator` - Presence, sum checks, conditional logic, range validation
-- `Generator` - XBRL instance XML output
+- `Questionnaire` - Container for sections/fields, supports field lookup by ID or semantic name
+- `Section` - Logical grouping of fields with visibility rules
+- `Field` - Metadata (type, source_type, labels, visibility rules, gate dependencies)
+- `Submission` - ActiveModel-based, holds entity data with type casting (future)
+- `Validator` - Presence, sum checks, conditional logic, range validation (future)
+- `Generator` - XBRL instance XML output (future)
+
+### Taxonomy Parsers (`lib/amsf_survey/taxonomy/`)
+
+- `SchemaParser` - Parses `.xsd` files for field types and valid values
+- `LabelParser` - Parses `_lab.xml` files for French labels with HTML stripping
+- `PresentationParser` - Parses `_pre.xml` files for section structure and ordering
+- `XuleParser` - Parses `.xule` files for gate question dependencies
+- `Loader` - Orchestrates all parsers to build a `Questionnaire`
+
+### Registry
+
+- `AmsfSurvey.register_plugin(industry:, taxonomy_path:)` - Register an industry plugin
+- `AmsfSurvey.questionnaire(industry:, year:)` - Load questionnaire with lazy loading and caching
+- `AmsfSurvey.registered_industries` - List registered industries
+- `AmsfSurvey.supported_years(industry)` - List available years for an industry
 
 ### Industry Plugins (`amsf_survey-{industry}/`)
 
@@ -85,10 +101,10 @@ This project uses Speckit for specification-driven development. Available slash 
 Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
 
 ## Active Technologies
-- Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks) (001-monorepo-setup)
-- N/A (file-based taxonomy loading in future phases) (001-monorepo-setup)
-- Ruby 3.2+ + Nokogiri (XML parsing), YAML (semantic mappings) (002-taxonomy-loader)
-- File-based (taxonomy files in plugin gems) (002-taxonomy-loader)
+- Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks)
+- Nokogiri ~> 1.15 (XML parsing), YAML (semantic mappings)
+- File-based taxonomy loading from plugin gems
 
 ## Recent Changes
-- 001-monorepo-setup: Added Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks)
+- 002-taxonomy-loader: Added taxonomy loading infrastructure (Questionnaire, Section, Field, parsers, Registry.questionnaire())
+- 001-monorepo-setup: Initial monorepo structure with core and plugin gems

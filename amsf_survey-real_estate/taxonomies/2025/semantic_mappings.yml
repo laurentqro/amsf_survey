@@ -1,0 +1,95 @@
+# Semantic Mappings for AMSF Real Estate AML/CFT Survey 2025
+#
+# This file maps XBRL field codes to semantic Ruby names and source types.
+# Fields not listed here default to:
+#   - name: the XBRL code itself
+#   - source_type: entry_only
+#
+# Source types:
+#   - entry_only: Requires fresh input each submission
+#   - prefillable: Can be pre-populated from external data
+#   - computed: Derived from other fields via formula
+#
+# Note: This is a representative subset for MVP. Full mappings would require
+# complete analysis of the taxonomy and business requirements.
+
+fields:
+  # Gate questions - main activity indicators
+  aACTIVE:
+    name: has_activity
+    source_type: entry_only
+
+  aACTIVEPS:
+    name: has_purchase_sale_activity
+    source_type: entry_only
+
+  aACTIVERENTALS:
+    name: has_rental_activity
+    source_type: entry_only
+
+  # Section 1.1 - Client counts
+  a1101:
+    name: total_clients
+    source_type: entry_only
+
+  a1102:
+    name: pep_clients
+    source_type: entry_only
+
+  a1103:
+    name: high_risk_clients
+    source_type: entry_only
+
+  a1104:
+    name: trust_clients
+    source_type: entry_only
+
+  # Section 1.1 - Client counts by type
+  a1105B:
+    name: business_clients_purchase_sale
+    source_type: entry_only
+
+  a1105W:
+    name: private_clients_purchase_sale
+    source_type: entry_only
+
+  a1106B:
+    name: business_clients_sales_only
+    source_type: entry_only
+
+  a1106BRENTALS:
+    name: business_clients_rentals
+    source_type: entry_only
+
+  a1106W:
+    name: private_clients_sales_only
+    source_type: entry_only
+
+  # Section 1.2 - Transaction information
+  a1201:
+    name: total_transactions
+    source_type: entry_only
+
+  a1202O:
+    name: transactions_amount
+    source_type: entry_only
+
+  a1203:
+    name: cash_transactions
+    source_type: entry_only
+
+  a1204S:
+    name: has_sales_transactions
+    source_type: entry_only
+
+  a1204O:
+    name: has_other_transactions
+    source_type: entry_only
+
+  # Entity information (typically prefillable from registration data)
+  aLE:
+    name: legal_entity
+    source_type: prefillable
+
+  # Computed totals (if any)
+  # Note: Add computed fields here as they are identified in the taxonomy
