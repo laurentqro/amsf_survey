@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "amsf_survey/version"
+require_relative "amsf_survey/errors"
 require_relative "amsf_survey/registry"
 
 module AmsfSurvey
