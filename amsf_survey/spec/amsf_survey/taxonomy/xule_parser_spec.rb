@@ -47,4 +47,85 @@ RSpec.describe AmsfSurvey::Taxonomy::XuleParser do
       expect(result[:gate_fields]).to eq([])
     end
   end
+
+  describe "debug logging" do
+    around do |example|
+      original = ENV.fetch("AMSF_DEBUG", nil)
+      ENV["AMSF_DEBUG"] = "1"
+      example.run
+    ensure
+      ENV["AMSF_DEBUG"] = original
+    end
+
+    it "logs when skipping unrecognized output patterns" do
+      xule_content = <<~XULE
+        output invalid_no_hyphen
+        message { "Invalid" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_invalid.xule")
+      File.write(temp_path, xule_content)
+
+      expect { described_class.new(temp_path).parse }.to output(
+        /Skipped unrecognized output/
+      ).to_stderr
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+
+    it "logs when skipping non-existence rules" do
+      xule_content = <<~XULE
+        output tGATE-t001
+        $a1 + $a2 == $a3
+        message { "Some other rule type" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_non_existence.xule")
+      File.write(temp_path, xule_content)
+
+      expect { described_class.new(temp_path).parse }.to output(
+        /Skipped non-existence rule/
+      ).to_stderr
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+  end
+
+  describe "skipping non-gate rules" do
+    it "skips sum validation rules (ending in -Sum)" do
+      xule_content = <<~XULE
+        output a1101-a1102-a1103-Sum
+        $a1 >= $a2 + $a3
+        message { "Sum check" }
+
+        output tGATE-t001
+        $a1 == Yes and $a2>0
+        message { "Gate check" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_sum.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules].keys).not_to include(:a1102, :a1103)
+      expect(result[:gate_rules][:t001]).to eq({ tGATE: "Yes" })
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+
+    it "skips dimension rules (multiple hyphens)" do
+      xule_content = <<~XULE
+        output a120425O-a1210O-Dimension
+        message { "Dimension check" }
+
+        output tGATE-t001
+        $a1 == Yes and $a2>0
+        message { "Gate check" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_dimension.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules].keys).to eq([:t001])
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+  end
 end
