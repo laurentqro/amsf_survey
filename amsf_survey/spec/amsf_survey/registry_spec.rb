@@ -2,8 +2,7 @@
 
 RSpec.describe "AmsfSurvey Registry" do
   before do
-    # Reset registry before each test
-    AmsfSurvey.instance_variable_set(:@registry, {})
+    AmsfSurvey.reset_registry!
   end
 
   describe ".register_plugin" do

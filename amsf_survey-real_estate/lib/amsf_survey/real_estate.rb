@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "amsf_survey"
+require_relative "real_estate/version"
 
 module AmsfSurvey
   module RealEstate

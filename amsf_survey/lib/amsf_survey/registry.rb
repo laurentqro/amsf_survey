@@ -29,6 +29,12 @@ module AmsfSurvey
       detect_years(taxonomy_path)
     end
 
+    # Reset registry state (for testing only)
+    # @api private
+    def reset_registry! # :nodoc:
+      @registry = {}
+    end
+
     # Register an industry plugin
     # @param industry [Symbol] unique industry identifier
     # @param taxonomy_path [String] path to taxonomy directory
@@ -61,7 +67,7 @@ module AmsfSurvey
 
     def detect_years(taxonomy_path)
       Dir.children(taxonomy_path)
-         .select { |entry| entry.match?(/^\d{4}$/) }
+         .select { |entry| entry.match?(/^(19|20)\d{2}$/) }
          .select { |entry| File.directory?(File.join(taxonomy_path, entry)) }
          .map(&:to_i)
          .sort

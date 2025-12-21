@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "amsf_survey"
   spec.version = AmsfSurvey::VERSION
   spec.authors = ["AMSF Survey Team"]
-  spec.email = ["amsf-survey@example.com"]
+  spec.email = ["amsf-survey@lqro.slmail.me"]
 
   spec.summary = "Ruby gem for Monaco AMSF AML/CFT regulatory survey submissions"
   spec.description = "Industry-agnostic core gem for AMSF survey questionnaires, validation, and XBRL generation"

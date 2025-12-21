@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require_relative "lib/amsf_survey/real_estate/version"
+
 Gem::Specification.new do |spec|
   spec.name = "amsf_survey-real_estate"
-  spec.version = "0.1.0"
+  spec.version = AmsfSurvey::RealEstate::VERSION
   spec.authors = ["AMSF Survey Team"]
-  spec.email = ["amsf-survey@example.com"]
+  spec.email = ["amsf-survey@lqro.slmail.me"]
 
   spec.summary = "Real estate industry plugin for AMSF Survey"
   spec.description = "Provides real estate AML/CFT taxonomy for Monaco AMSF regulatory surveys"
