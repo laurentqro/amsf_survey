@@ -76,4 +76,49 @@ RSpec.describe "AmsfSurvey Registry" do
       expect(AmsfSurvey.supported_years(:unknown)).to eq([])
     end
   end
+
+  describe ".questionnaire" do
+    let(:fixtures_path) { File.expand_path("../fixtures/taxonomies", __dir__) }
+    let(:taxonomy_path) { File.join(fixtures_path, "test_industry") }
+
+    before do
+      AmsfSurvey.register_plugin(industry: :test_industry, taxonomy_path: taxonomy_path)
+    end
+
+    it "returns a Questionnaire object" do
+      questionnaire = AmsfSurvey.questionnaire(industry: :test_industry, year: 2025)
+      expect(questionnaire).to be_a(AmsfSurvey::Questionnaire)
+    end
+
+    it "caches the questionnaire on subsequent calls" do
+      q1 = AmsfSurvey.questionnaire(industry: :test_industry, year: 2025)
+      q2 = AmsfSurvey.questionnaire(industry: :test_industry, year: 2025)
+      expect(q1.object_id).to eq(q2.object_id)
+    end
+
+    it "returns different questionnaires for different industries" do
+      other_path = File.join(fixtures_path, "other_industry", "2025")
+      FileUtils.mkdir_p(other_path)
+      FileUtils.cp_r(Dir.glob(File.join(taxonomy_path, "2025", "*")), other_path)
+      AmsfSurvey.register_plugin(industry: :other_industry, taxonomy_path: File.join(fixtures_path, "other_industry"))
+
+      q1 = AmsfSurvey.questionnaire(industry: :test_industry, year: 2025)
+      q2 = AmsfSurvey.questionnaire(industry: :other_industry, year: 2025)
+      expect(q1.object_id).not_to eq(q2.object_id)
+    ensure
+      FileUtils.rm_rf(File.join(fixtures_path, "other_industry"))
+    end
+
+    it "raises error for unregistered industry" do
+      expect {
+        AmsfSurvey.questionnaire(industry: :unknown, year: 2025)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not registered/)
+    end
+
+    it "raises error for unsupported year" do
+      expect {
+        AmsfSurvey.questionnaire(industry: :test_industry, year: 1999)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported/)
+    end
+  end
 end

@@ -29,10 +29,25 @@ module AmsfSurvey
       detect_years(taxonomy_path)
     end
 
+    # Load questionnaire for an industry and year
+    # Results are cached for performance
+    # @param industry [Symbol] the industry identifier
+    # @param year [Integer] the taxonomy year
+    # @return [Questionnaire] loaded questionnaire
+    # @raise [TaxonomyLoadError] if industry not registered or year not supported
+    def questionnaire(industry:, year:)
+      validate_industry!(industry)
+      validate_year!(industry, year)
+
+      cache_key = [industry, year]
+      questionnaire_cache[cache_key] ||= load_questionnaire(industry, year)
+    end
+
     # Reset registry state (for testing only)
     # @api private
     def reset_registry! # :nodoc:
       @registry = {}
+      @questionnaire_cache = {}
     end
 
     # Register an industry plugin
@@ -71,6 +86,27 @@ module AmsfSurvey
          .select { |entry| File.directory?(File.join(taxonomy_path, entry)) }
          .map(&:to_i)
          .sort
+    end
+
+    def questionnaire_cache
+      @questionnaire_cache ||= {}
+    end
+
+    def validate_industry!(industry)
+      return if registered?(industry)
+
+      raise TaxonomyLoadError, "Industry not registered: #{industry}"
+    end
+
+    def validate_year!(industry, year)
+      return if supported_years(industry).include?(year)
+
+      raise TaxonomyLoadError, "Year not supported for #{industry}: #{year}"
+    end
+
+    def load_questionnaire(industry, year)
+      taxonomy_path = File.join(registry[industry][:taxonomy_path], year.to_s)
+      Taxonomy::Loader.new(taxonomy_path).load(industry, year)
     end
   end
 end
