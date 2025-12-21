@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "monitor"
-
 module AmsfSurvey
   class Error < StandardError; end
   class TaxonomyPathError < Error; end
@@ -32,7 +30,7 @@ module AmsfSurvey
     end
 
     # Load questionnaire for an industry and year
-    # Results are cached for performance (thread-safe)
+    # Results are cached for performance
     # @param industry [Symbol] the industry identifier
     # @param year [Integer] the taxonomy year
     # @return [Questionnaire] loaded questionnaire
@@ -42,9 +40,7 @@ module AmsfSurvey
       validate_year!(industry, year)
 
       cache_key = [industry, year]
-      cache_mutex.synchronize do
-        questionnaire_cache[cache_key] ||= load_questionnaire(industry, year)
-      end
+      questionnaire_cache[cache_key] ||= load_questionnaire(industry, year)
     end
 
     # Reset registry state (for testing only)
@@ -52,7 +48,6 @@ module AmsfSurvey
     def reset_registry! # :nodoc:
       @registry = {}
       @questionnaire_cache = {}
-      @cache_mutex = nil
     end
 
     # Register an industry plugin
@@ -95,10 +90,6 @@ module AmsfSurvey
 
     def questionnaire_cache
       @questionnaire_cache ||= {}
-    end
-
-    def cache_mutex
-      @cache_mutex ||= Monitor.new
     end
 
     def validate_industry!(industry)
