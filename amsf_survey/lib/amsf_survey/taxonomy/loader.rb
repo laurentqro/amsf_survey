@@ -32,7 +32,7 @@ module AmsfSurvey
         mappings_path = File.join(@taxonomy_path, "semantic_mappings.yml")
         raise MissingSemanticMappingError, @taxonomy_path unless File.exist?(mappings_path)
 
-        yaml = YAML.safe_load(File.read(mappings_path), symbolize_names: true)
+        yaml = YAML.safe_load(File.read(mappings_path), permitted_classes: [Symbol], symbolize_names: true)
         yaml[:fields] || {}
       end
 
