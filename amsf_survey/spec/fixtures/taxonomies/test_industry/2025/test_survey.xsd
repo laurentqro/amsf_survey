@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  attributeFormDefault="unqualified"
+  elementFormDefault="qualified"
+  targetNamespace="https://test.example.com/test_industry_2025"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:link="http://www.xbrl.org/2003/linkbase"
+  xmlns:nonnum="http://www.xbrl.org/dtr/type/non-numeric"
+  xmlns:test="https://test.example.com/test_industry_2025"
+  xmlns:xbrldt="http://xbrl.org/2005/xbrldt"
+  xmlns:xbrli="http://www.xbrl.org/2003/instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <annotation>
+        <appinfo>
+            <!-- Section 1: General -->
+            <link:roleType
+              id="roleType_Link_General"
+              roleURI="https://test.example.com/test_industry_2025/role/Link_General">
+                <link:definition>Link_General</link:definition>
+                <link:usedOn>link:presentationLink</link:usedOn>
+            </link:roleType>
+            <!-- Section 2: Details -->
+            <link:roleType
+              id="roleType_Link_Details"
+              roleURI="https://test.example.com/test_industry_2025/role/Link_Details">
+                <link:definition>Link_Details</link:definition>
+                <link:usedOn>link:presentationLink</link:usedOn>
+            </link:roleType>
+            <link:linkbaseRef
+              xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase"
+              xlink:href="test_survey_lab.xml"
+              xlink:role="http://www.xbrl.org/2003/role/labelLinkbaseRef"
+              xlink:type="simple"/>
+            <link:linkbaseRef
+              xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase"
+              xlink:href="test_survey_pre.xml"
+              xlink:role="http://www.xbrl.org/2003/role/presentationLinkbaseRef"
+              xlink:type="simple"/>
+        </appinfo>
+    </annotation>
+    <import
+      namespace="http://www.xbrl.org/2003/instance"
+      schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+    <import
+      namespace="http://www.xbrl.org/dtr/type/non-numeric"
+      schemaLocation="http://www.xbrl.org/dtr/type/nonNumeric-2009-12-16.xsd"/>
+    <!-- Abstract elements for sections -->
+    <element
+      abstract="true"
+      id="test_Abstract_General"
+      name="Abstract_General"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      type="nonnum:domainItemType"
+      xbrli:periodType="instant"/>
+    <element
+      abstract="true"
+      id="test_Abstract_Details"
+      name="Abstract_Details"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      type="nonnum:domainItemType"
+      xbrli:periodType="instant"/>
+    <!-- Field 1: Boolean (gate question) - Oui/Non enum -->
+    <element
+      abstract="false"
+      id="test_tGATE"
+      name="tGATE"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      xbrli:periodType="instant">
+        <complexType>
+            <simpleContent>
+                <restriction base="xbrli:stringItemType">
+                    <enumeration value="Oui"/>
+                    <enumeration value="Non"/>
+                </restriction>
+            </simpleContent>
+        </complexType>
+    </element>
+    <!-- Field 2: Integer -->
+    <element
+      abstract="false"
+      id="test_t001"
+      name="t001"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      type="xbrli:integerItemType"
+      xbrli:periodType="instant"/>
+    <!-- Field 3: String -->
+    <element
+      abstract="false"
+      id="test_t002"
+      name="t002"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      type="xbrli:stringItemType"
+      xbrli:periodType="instant"/>
+    <!-- Field 4: Monetary -->
+    <element
+      abstract="false"
+      id="test_t003"
+      name="t003"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      type="xbrli:monetaryItemType"
+      xbrli:periodType="instant"/>
+    <!-- Field 5: Enum (multi-value) -->
+    <element
+      abstract="false"
+      id="test_t004"
+      name="t004"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      xbrli:periodType="instant">
+        <complexType>
+            <simpleContent>
+                <restriction base="xbrli:stringItemType">
+                    <enumeration value="Option A"/>
+                    <enumeration value="Option B"/>
+                    <enumeration value="Option C"/>
+                </restriction>
+            </simpleContent>
+        </complexType>
+    </element>
+</schema>

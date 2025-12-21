@@ -1,0 +1,33 @@
+namespace test = test_survey.xsd
+
+output tGATE-t001
+
+$code1 = 'tGATE'
+$code2 = 't001'
+$a1 = {@concept.local-name = $code1}
+$a2 = list({covered @concept.local-name = $code2}).length
+$a1 == Yes and $a2>0
+message {
+if $a1 == Yes and $a2>0
+"Existence of " + $code2 + " is valid"
+else if $a1 == No and $a2>0
+"Invalid! If " + $code1 + " is Yes, only then " + $code2 + " should be present."
+else
+"Invalid! If " + $code1 + " is Yes, then " + $code2 + " should be present."
+}
+
+output tGATE-t003
+
+$code1 = 'tGATE'
+$code2 = 't003'
+$a1 = {@concept.local-name = $code1}
+$a2 = list({covered @concept.local-name = $code2}).length
+$a1 == Yes and $a2>0
+message {
+if $a1 == Yes and $a2>0
+"Existence of " + $code2 + " is valid"
+else if $a1 == No and $a2>0
+"Invalid! If " + $code1 + " is Yes, only then " + $code2 + " should be present."
+else
+"Invalid! If " + $code1 + " is Yes, then " + $code2 + " should be present."
+}

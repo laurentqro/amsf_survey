@@ -1,0 +1,16 @@
+version: 2025
+
+fields:
+  tGATE:
+    name: performed_activities
+    source_type: entry_only
+
+  t001:
+    name: total_clients
+    source_type: computed
+
+  t003:
+    name: total_amount
+    source_type: prefillable
+
+  # t002 and t004 intentionally not mapped to test fallback behavior
