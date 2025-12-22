@@ -2,6 +2,7 @@
 
 require "nokogiri"
 require "bigdecimal"
+require "uri"
 
 module AmsfSurvey
   # Generates XBRL instance XML documents from validated Submission objects.
@@ -123,15 +124,19 @@ module AmsfSurvey
     end
 
     # Extract schema filename from taxonomy namespace.
-    # Falls back to "taxonomy.xsd" if namespace is nil or empty.
+    # Handles edge cases like query parameters, trailing slashes, and fragments.
+    # Falls back to "taxonomy.xsd" if namespace is nil, empty, or malformed.
     #
     # @return [String] the XSD filename (e.g., "test_industry_2025.xsd")
     def extract_schema_filename
-      # Extract the survey identifier from namespace and add .xsd extension
-      # e.g., https://test.example.com/test_industry_2025 -> test_industry_2025.xsd
       return "taxonomy.xsd" if taxonomy_namespace.nil? || taxonomy_namespace.to_s.empty?
 
-      File.basename(taxonomy_namespace) + ".xsd"
+      uri = URI.parse(taxonomy_namespace.to_s)
+      basename = File.basename(uri.path)
+      # File.basename("/") returns "/" which we treat as empty
+      (basename.empty? || basename == "/") ? "taxonomy.xsd" : "#{basename}.xsd"
+    rescue URI::InvalidURIError
+      "taxonomy.xsd"
     end
 
     # Build the XBRL context element with entity and period
