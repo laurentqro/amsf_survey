@@ -88,6 +88,46 @@ module AmsfSurvey
         end.compact
       end
 
+      # Translates XULE "Yes"/"No" literals to actual valid values from the schema.
+      # XULE uses English boolean literals, but taxonomies may use French ("Oui"/"Non").
+      #
+      # @param xule_deps [Hash, nil] Dependencies from XuleParser (e.g., { tGATE: "Yes" })
+      # @param schema_data [Hash] Parsed schema with valid_values for each field
+      # @return [Hash] Dependencies with translated values (e.g., { tGATE: "Oui" })
+      def resolve_gate_dependencies(xule_deps, schema_data)
+        return {} if xule_deps.nil? || xule_deps.empty?
+
+        xule_deps.each_with_object({}) do |(gate_id, xule_value), result|
+          result[gate_id] = translate_gate_value(xule_value, schema_data[gate_id])
+        end
+      end
+
+      # Maps XULE boolean literal to actual schema value.
+      # Falls back to the original value if translation not possible.
+      def translate_gate_value(xule_value, gate_schema)
+        return xule_value unless gate_schema && gate_schema[:valid_values]
+
+        valid_values = gate_schema[:valid_values]
+        return xule_value unless valid_values.size == 2
+
+        # Find the positive value (Oui/Yes/etc.) based on XULE "Yes"
+        if xule_value == "Yes"
+          find_positive_value(valid_values)
+        else
+          find_negative_value(valid_values)
+        end
+      end
+
+      # Finds the "positive" value (Yes, Oui, etc.) from valid_values
+      def find_positive_value(valid_values)
+        valid_values.find { |v| v.downcase == "yes" || v.downcase == "oui" } || valid_values.first
+      end
+
+      # Finds the "negative" value (No, Non, etc.) from valid_values
+      def find_negative_value(valid_values)
+        valid_values.find { |v| v.downcase == "no" || v.downcase == "non" } || valid_values.last
+      end
+
       def build_field(field_id, section_data, schema_data, labels, mappings, xule_data)
         schema = schema_data[field_id]
         return nil unless schema
@@ -102,8 +142,11 @@ module AmsfSurvey
         # Determine if this is a gate field
         is_gate = xule_data[:gate_fields].include?(field_id)
 
-        # Get dependencies from xule rules
-        depends_on = xule_data[:gate_rules][field_id] || {}
+        # Get dependencies from xule rules, translating XULE "Yes" to actual valid values
+        depends_on = resolve_gate_dependencies(
+          xule_data[:gate_rules][field_id],
+          schema_data
+        )
 
         Field.new(
           id: field_id,

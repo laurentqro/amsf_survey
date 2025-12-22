@@ -86,14 +86,67 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         expect(gate.gate?).to be true
       end
 
-      it "sets depends_on for controlled fields" do
+      it "sets depends_on for controlled fields with translated values" do
         controlled = questionnaire.field(:t001)
-        expect(controlled.depends_on).to eq({ tGATE: "Yes" })
+        # XULE uses "Yes" but it gets translated to the schema's actual value ("Oui")
+        expect(controlled.depends_on).to eq({ tGATE: "Oui" })
       end
 
       it "leaves non-gated fields without dependencies" do
         independent = questionnaire.field(:t002)
         expect(independent.depends_on).to eq({})
+      end
+    end
+
+    describe "gate value translation" do
+      let(:loader) { described_class.new(fixtures_path) }
+      let(:schema_data) do
+        {
+          gate_field: { valid_values: %w[Oui Non] },
+          english_gate: { valid_values: %w[Yes No] },
+          no_values: {},
+          many_values: { valid_values: %w[A B C] }
+        }
+      end
+
+      it "translates XULE 'Yes' to French 'Oui'" do
+        result = loader.send(:resolve_gate_dependencies, { gate_field: "Yes" }, schema_data)
+        expect(result).to eq({ gate_field: "Oui" })
+      end
+
+      it "translates XULE 'No' to French 'Non'" do
+        result = loader.send(:resolve_gate_dependencies, { gate_field: "No" }, schema_data)
+        expect(result).to eq({ gate_field: "Non" })
+      end
+
+      it "preserves English 'Yes' when schema uses English" do
+        result = loader.send(:resolve_gate_dependencies, { english_gate: "Yes" }, schema_data)
+        expect(result).to eq({ english_gate: "Yes" })
+      end
+
+      it "preserves English 'No' when schema uses English" do
+        result = loader.send(:resolve_gate_dependencies, { english_gate: "No" }, schema_data)
+        expect(result).to eq({ english_gate: "No" })
+      end
+
+      it "returns original value when schema has no valid_values" do
+        result = loader.send(:resolve_gate_dependencies, { no_values: "Yes" }, schema_data)
+        expect(result).to eq({ no_values: "Yes" })
+      end
+
+      it "returns original value when valid_values has more than 2 options" do
+        result = loader.send(:resolve_gate_dependencies, { many_values: "Yes" }, schema_data)
+        expect(result).to eq({ many_values: "Yes" })
+      end
+
+      it "returns empty hash for nil dependencies" do
+        result = loader.send(:resolve_gate_dependencies, nil, schema_data)
+        expect(result).to eq({})
+      end
+
+      it "returns empty hash for empty dependencies" do
+        result = loader.send(:resolve_gate_dependencies, {}, schema_data)
+        expect(result).to eq({})
       end
     end
 

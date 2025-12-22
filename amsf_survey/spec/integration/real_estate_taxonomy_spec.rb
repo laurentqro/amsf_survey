@@ -106,16 +106,16 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
       dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
       skip("No field depends on aACTIVE") unless dependent_field
 
-      # When gate is "No", dependent fields should be hidden
-      expect(dependent_field.visible?({ aACTIVE: "No" })).to be false
+      # When gate is "Non" (French for No), dependent fields should be hidden
+      expect(dependent_field.visible?({ aACTIVE: "Non" })).to be false
     end
 
     it "shows dependent fields when gate is open" do
       dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
       skip("No field depends on aACTIVE") unless dependent_field
 
-      # Real taxonomy uses "Yes" not "Oui"
-      expect(dependent_field.visible?({ aACTIVE: "Yes" })).to be true
+      # Taxonomy uses French "Oui"/"Non" - XULE's "Yes" is translated to schema values
+      expect(dependent_field.visible?({ aACTIVE: "Oui" })).to be true
     end
   end
 end
