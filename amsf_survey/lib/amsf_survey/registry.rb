@@ -43,6 +43,33 @@ module AmsfSurvey
       questionnaire_cache[cache_key] ||= load_questionnaire(industry, year)
     end
 
+    # Create a new submission for an industry and year
+    # @param industry [Symbol] the industry identifier
+    # @param year [Integer] the taxonomy year
+    # @param entity_id [String] unique identifier for the reporting entity
+    # @param period [Date] reporting period end date
+    # @return [Submission] new submission object
+    # @raise [TaxonomyLoadError] if industry not registered or year not supported
+    def build_submission(industry:, year:, entity_id:, period:)
+      # Validate upfront to fail fast
+      validate_industry!(industry)
+      validate_year!(industry, year)
+
+      Submission.new(
+        industry: industry,
+        year: year,
+        entity_id: entity_id,
+        period: period
+      )
+    end
+
+    # Validate a submission and return structured results
+    # @param submission [Submission] the submission to validate
+    # @return [ValidationResult] validation outcome
+    def validate(submission)
+      Validator.validate(submission)
+    end
+
     # Reset registry state (for testing only)
     # @api private
     def reset_registry! # :nodoc:

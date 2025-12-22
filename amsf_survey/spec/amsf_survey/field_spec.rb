@@ -49,6 +49,37 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.verbose_label).to be_nil
       expect(field.valid_values).to be_nil
       expect(field.depends_on).to eq({})
+      expect(field.min).to be_nil
+      expect(field.max).to be_nil
+    end
+
+    it "accepts min and max range constraints" do
+      field = described_class.new(**minimal_attrs, min: 0, max: 100)
+
+      expect(field.min).to eq(0)
+      expect(field.max).to eq(100)
+    end
+  end
+
+  describe "#has_range?" do
+    it "returns false when neither min nor max is set" do
+      field = described_class.new(**minimal_attrs)
+      expect(field.has_range?).to be false
+    end
+
+    it "returns true when min is set" do
+      field = described_class.new(**minimal_attrs, min: 0)
+      expect(field.has_range?).to be true
+    end
+
+    it "returns true when max is set" do
+      field = described_class.new(**minimal_attrs, max: 100)
+      expect(field.has_range?).to be true
+    end
+
+    it "returns true when both min and max are set" do
+      field = described_class.new(**minimal_attrs, min: 0, max: 100)
+      expect(field.has_range?).to be true
     end
   end
 
@@ -78,6 +109,12 @@ RSpec.describe AmsfSurvey::Field do
     it "#enum? returns true for enum type" do
       field = described_class.new(**minimal_attrs.merge(type: :enum))
       expect(field.enum?).to be true
+    end
+
+    it "#percentage? returns true for percentage type" do
+      field = described_class.new(**minimal_attrs.merge(type: :percentage))
+      expect(field.percentage?).to be true
+      expect(field.integer?).to be false
     end
   end
 
@@ -194,6 +231,40 @@ RSpec.describe AmsfSurvey::Field do
       # Dependencies control visibility, not whether input is required
       field = described_class.new(**minimal_attrs.merge(source_type: :entry_only), depends_on: { tGATE: "Oui" })
       expect(field.required?).to be true
+    end
+  end
+
+  describe "#cast" do
+    it "delegates to TypeCaster with field type" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast("123")).to eq(123)
+    end
+
+    it "casts string to integer for integer field" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast("42")).to eq(42)
+    end
+
+    it "casts string to BigDecimal for monetary field" do
+      field = described_class.new(**minimal_attrs.merge(type: :monetary))
+      result = field.cast("1234.56")
+      expect(result).to be_a(BigDecimal)
+      expect(result).to eq(BigDecimal("1234.56"))
+    end
+
+    it "preserves string for boolean field" do
+      field = described_class.new(**minimal_attrs.merge(type: :boolean))
+      expect(field.cast("Oui")).to eq("Oui")
+    end
+
+    it "preserves string for enum field" do
+      field = described_class.new(**minimal_attrs.merge(type: :enum))
+      expect(field.cast("Option A")).to eq("Option A")
+    end
+
+    it "returns nil for nil input" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast(nil)).to be_nil
     end
   end
 end
