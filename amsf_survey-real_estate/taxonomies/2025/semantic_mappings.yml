@@ -1,95 +1,1586 @@
 # Semantic Mappings for AMSF Real Estate AML/CFT Survey 2025
 #
-# This file maps XBRL field codes to semantic Ruby names and source types.
-# Fields not listed here default to:
-#   - name: the XBRL code itself
-#   - source_type: entry_only
-#
 # Source types:
-#   - entry_only: Requires fresh input each submission
+#   - entry_only: Requires fresh input each submission (default)
 #   - prefillable: Can be pre-populated from external data
 #   - computed: Derived from other fields via formula
 #
-# Note: This is a representative subset for MVP. Full mappings would require
-# complete analysis of the taxonomy and business requirements.
+# Total fields: 323
+# Generated: 2025-12-22
 
 fields:
-  # Gate questions - main activity indicators
-  aACTIVE:
-    name: has_activity
+  # Votre entité dispose-t-elle d'informations sur le nombre et la valeur de leurs opérations ?
+  a11001BTOLA:
     source_type: entry_only
 
-  aACTIVEPS:
-    name: has_purchase_sale_activity
+  # Veuillez préciser le type d'autres constructions juridiques non mentionnées dans les questions
+  #   précédentes que votre entité a comme clients.
+  a11006:
     source_type: entry_only
 
-  aACTIVERENTALS:
-    name: has_rental_activity
-    source_type: entry_only
-
-  # Section 1.1 - Client counts
+  # Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné pendant la
+  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
   a1101:
     name: total_clients
     source_type: entry_only
 
+  # Veuillez fournir le nombre total de clients uniques qui sont des personnes physiques qui sont des
+  #   nationaux , pour les achats, ventes et locations de propriétés.
   a1102:
-    name: pep_clients
     source_type: entry_only
 
+  # Veuillez fournir le nombre total de clients uniques qui sont des personnes physiques qui sont des
+  #   résidents étrangers , pour les achats, ventes et locations de propriétés.
   a1103:
-    name: high_risk_clients
     source_type: entry_only
 
+  # Veuillez fournir le nombre total de clients uniques qui sont des personnes physiques qui ne sont pas
+  #   des résidents , pour les achats, ventes et locations de propriétés.
   a1104:
-    name: trust_clients
     source_type: entry_only
 
-  # Section 1.1 - Client counts by type
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients au cours de la période de
+  #   déclaration, pour l'achat, la vente et la location de biens immobiliers .
   a1105B:
-    name: business_clients_purchase_sale
     source_type: entry_only
 
+  # Veuillez indiquer le nombre total d'opérations effectuées avec les clients au cours de la période de
+  #   déclaration, pour l'achat, la vente et la location de biens immobiliers .
   a1105W:
-    name: private_clients_purchase_sale
     source_type: entry_only
 
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
+  #   déclaration, pour l’achat et la vente de biens immobiliers . (iso4217:EUR)
   a1106B:
-    name: business_clients_sales_only
     source_type: entry_only
 
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
+  #   déclaration, pour la location de biens immobiliers . (iso4217:EUR)
   a1106BRENTALS:
-    name: business_clients_rentals
     source_type: entry_only
 
+  # Veuillez indiquer la valeur totale des fonds transférés avec les clients pendant la période de
+  #   déclaration, pour l'achat, la vente et la location de biens immobiliers . (iso4217:EUR)
   a1106W:
-    name: private_clients_sales_only
     source_type: entry_only
 
-  # Section 1.2 - Transaction information
-  a1201:
-    name: total_transactions
+  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales et
+  #   qui sont des particuliers très fortunés ( UHNWI ), ventilés par nationalité primaire de l'UHNWI.
+  a112012B:
     source_type: entry_only
 
+  # Que vous ayez ou non de tels clients, votre entité identifie-t-elle et enregistre-t-elle le type de
+  #   clients lorsqu'il s'agit de : HNWIs ?
+  a11201BCD:
+    source_type: entry_only
+
+  # UHNWIs ?
+  a11201BCDU:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales
+  #   qui sont des particuliers fortunés ( HNWI ), ventilés par nationalité principale du HNWI.
+  a11206B:
+    source_type: entry_only
+
+  # Votre entité compte-t-elle parmi ses clients des personnes politiquement exposées (PPE) ?
+  a11301:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon la nationalité
+  #   primaire de la PPE (y compris les clients nationaux), pour l’achat, la vente et la location de biens
+  #   immobiliers .
+  a11302:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon le lieu de
+  #   résidence des PPE (y compris les clients nationaux), pour l’achat, la vente et la location de biens
+  #   immobiliers .
+  a11302RES:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des PPE pour
+  #   l’achat et la vente de biens immobiliers .
+  a11304B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale en euros des fonds transférés par des clients qui sont des PPE,
+  #   pour l’achat et la vente de biens immobiliers . (iso4217:EUR)
+  a11305B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients qui sont les bénéficiaires effectifs uniques de
+  #   personnes morales/trusts et autres constructions juridiques et qui sont des PPE. Veuillez les
+  #   classer selon la nationalité principale de la PPE.
+  a11307:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d’opérations (entrantes et sortantes) effectuées par des
+  #   bénéficiaires effectifs de personnes morales/trusts et autres constructions juridiques qui sont des
+  #   PPE.
+  a11309B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des avocats ou qui
+  #   exercent d'autres professions juridiques.
+  a11502B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des auditeurs/comptables.
+  a11602B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des
+  #   actionnaires/administrateurs agissant pour le compte d’une autre personne.
+  a11702B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont émetteurs, utilisateurs ou
+  #   fournisseurs d'actions au porteur ou d'autres instruments au porteur.
+  a11802B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des agents immobiliers.
+  a12002B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs exerçant un contrôle direct ou indirect
+  #   sur une personne morale, ventilé par nationalité principale.
   a1202O:
-    name: transactions_amount
     source_type: entry_only
 
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs représentant une personne morale ,
+  #   ventilé par nationalité principale.
+  a1202OB:
+    source_type: entry_only
+
+  # Pour les clients ayant deux ou plusieurs nationalités, votre entité enregistre-t-elle toutes les
+  #   nationalités du client ?
   a1203:
-    name: cash_transactions
     source_type: entry_only
 
-  a1204S:
-    name: has_sales_transactions
+  # Votre entité enregistre-t-elle la résidence pour les bénéficiaires effectifs détenant une
+  #   participation de 25 % ou plus ?
+  a1203D:
     source_type: entry_only
 
+  # Veuillez fournir le nombre total de bénéficiaires effectifs détenant au moins 25% , ventilé par
+  #   nationalité principale du BE.
+  a120425O:
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer les bénéficiaires effectifs qui détiennent 25 % ou plus ?
   a1204O:
-    name: has_other_transactions
     source_type: entry_only
 
-  # Entity information (typically prefillable from registration data)
-  aLE:
-    name: legal_entity
-    source_type: prefillable
+  # Votre entité peut-elle distinguer la nationalité du bénéficiaire effectif des clients ?
+  a1204S:
+    source_type: entry_only
 
-  # Computed totals (if any)
-  # Note: Add computed fields here as they are identified in the taxonomy
+  # Fournir la répartition en pourcentage des principales nationalités des bénéficiaires effectifs.
+  a1204S1:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs des résidents étrangers , par
+  #   nationalité principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
+  a1207O:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des NMPPP.
+  a12102B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs des non-résidents , par nationalité
+  #   principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
+  a1210O:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des prestataires de
+  #   services aux trusts et aux sociétés.
+  a12202B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des Multi-Family Offices.
+  a12302B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des Single-Family Offices.
+  a12302C:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des structures de
+  #   propriété plus complexes.
+  a12402B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans des sociétés
+  #   caractérisées par une forte utilisation d’espèces.
+  a12502B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients monégasques qui fournissent ou qui acceptent des
+  #   paiements à partir de cartes prépayées anonymes / cartes avec un seuil élevé de mesures de vigilance
+  #   à l’égard de la clientèle.
+  a12602B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans le marché de l’art
+  #   et des antiquités.
+  a12702B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans l’import-export.
+  a12802B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans le commerce des
+  #   biens de grande valeur.
+  a12902B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des OBNL.
+  a13002B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans un casino ou des
+  #   jeux d’argent.
+  a13202B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans le bâtiment ou le
+  #   développement immobilier.
+  a13302B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans les industries
+  #   extractives.
+  a13402B:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients qui sont des PSAV ?
+  a13501B:
+    source_type: entry_only
+
+  # PSAV (prestataires de services d’actifs virtuels) qui fournissent d'autres services ?
+  a13601:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de conservation (Custodian
+  #   Wallet Providers) ?
+  a13601A:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des fournisseurs d'échange de monnaie
+  #   virtuelle ?
+  a13601B:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de services liés aux ICO
+  #   (offre au public de jetons) ?
+  a13601C:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV fournissent d'autres services non mentionnés
+  #   ci-dessus ?
+  a13601C2:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des prestataires de conservation ( Custodian Wallet
+  #   Providers ) ?
+  a13601CW:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des fournisseurs d'échange de monnaie virtuelle ?
+  a13601EP:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des services liés aux ICO (offre au public de
+  #   jetons) ?
+  a13601ICO:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui fournissent d'autres services ?
+  a13601OTHER:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des fournisseurs d'échange de
+  #   monnaie virtuelle , ventilé par pays d'établissement, pour l’achat, la vente et la location de biens
+  #   immobiliers.
+  a13602A:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des prestataires de conservation
+  #   ( Custodian Wallet Providers ), ventilé par pays d'établissement pour l’achat, la vente et la
+  #   location de biens immobiliers.
+  a13602B:
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total de clients uniques PSAV qui sont des services liés aux ICO (offre
+  #   au public de jetons) , ventilé par pays d'établissement, pour l’achat, la vente et la location de
+  #   biens immobiliers.
+  a13602C:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui fournissent d'autres services ,
+  #   ventilé par pays d'établissement, pour l’achat, la vente et la location de biens immobiliers.
+  a13602D:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées avec et par les clients PSAV qui sont des
+  #   fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
+  #   immobiliers.
+  a13603AB:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui qui sont des
+  #   prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la location de
+  #   biens immobiliers.
+  a13603BB:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui sont des
+  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et la
+  #   location de biens immobiliers.
+  a13603CACB:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui fournissent
+  #   d'autres services non mentionnés ci-dessus, pour l’achat, la vente et la location de biens
+  #   immobiliers.
+  a13603DB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont des
+  #   fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
+  #   immobiliers. (iso4217:EUR)
+  a13604AB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont des
+  #   prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la location de
+  #   biens immobiliers. (iso4217:EUR)
+  a13604BB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui sont des
+  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et la
+  #   location de biens immobiliers. (iso4217:EUR)
+  a13604CB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui fournissent
+  #   d'autres services , pour l’achat, la vente et la location de biens immobiliers. (iso4217:EUR)
+  a13604DB:
+    source_type: entry_only
+
+  # Veuillez préciser quels sont les autres services fournis par les clients PSAV qui ne sont pas
+  #   mentionnés ci-dessus.
+  a13604E:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques monégasques impliqués dans le secteur de la
+  #   défense / des armes.
+  a13702B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui exercent une activité liée à la
+  #   navigation de plaisance.
+  a13802B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques monégasques qui sont des agents ou des
+  #   intermédiaires sportifs.
+  a13902B:
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a14001:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques (individus),
+  #   classés selon la nationalité principale de l'individu pour l’achat et la vente de biens immobiliers.
+  a1401:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques (individus)
+  #   pour la location de biens immobiliers .
+  a1401R:
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total de nationalités secondaires des clients uniques qui sont des
+  #   personnes physiques (individus), classés selon la(les) nationalité(s) secondaire(s) du client, le
+  #   cas échéant (y compris les nationaux).
+  a1402:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes
+  #   physiques pour l’achat et la vente de biens immobiliers.
+  a1403B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes
+  #   physiques pour la location de biens immobiliers .
+  a1403R:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients qui sont des personnes
+  #   physiques, pour l’achat et la vente de biens immobiliers, en euros. (iso4217:EUR)
+  a1404B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans la gestion de fonds.
+  a14102B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des sociétés holding.
+  a14202B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont commissaires-priseurs.
+  a14302B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des concessionnaires de
+  #   véhicules automobiles.
+  a14402B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui relèvent du gouvernement et du
+  #   secteur public.
+  a14502B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont impliqués dans la vente
+  #   d'avions ou l'affrètement de jets privés.
+  a14602B:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont impliqués dans le
+  #   transport.
+  a14702B:
+    source_type: entry_only
+
+  # Avez-vous des commentaires sur l'une des questions de cette section ?
+  a14801:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes morales , ventilé selon
+  #   le pays du siège ou de l’immatriculation, pour l’achat, la vente et la location de biens immobiliers
+  #   .
+  a1501:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes
+  #   morales pour l'achat et la vente de biens immobiliers .
+  a1502B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des personnes
+  #   morales pour l’achat et la vente de biens immobiliers. (iso4217:EUR)
+  a1503B:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si les clients sont des personnes morales monégasques et le type de
+  #   personne morale ?
+  a155:
+    source_type: entry_only
+
+  # Trusts et d'autres constructions juridiques ?
+  a1801:
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si les clients sont des trusts ou d'autres constructions juridiques ?
+  a1802BTOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des trusts et d'autres constructions
+  #   juridiques pour l’achat, la vente et la location de biens immobiliers.
+  a1802TOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des trusts et
+  #   d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers .
+  a1806TOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des trusts et autres
+  #   constructions juridiques pour l’achat, la vente et la location de biens immobiliers.
+  a1807ATOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des trusts et
+  #   d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers . (iso4217:EUR)
+  a1807TOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de personnes physiques qui sont des trustees à titre
+  #   professionnel, ventilé par nationalité primaire , pour l’achat, la vente et la location de biens
+  #   immobiliers.
+  a1808:
+    source_type: entry_only
+
+  # Veuillez indiquer le n ombre total de personnes physiques qui sont des trustees à titre
+  #   professionnel, ventilé par pays dans lequel le trust a été créé , pour l’achat, la vente et la
+  #   location de biens immobiliers.
+  a1809:
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des opérations par chèque au cours de la période de déclaration ?
+  a2101B:
+    source_type: entry_only
+
+  # Votre entité accepte-t-elle ou effectue-t-elle des opérations par chèque avec les clients ?
+  a2101W:
+    source_type: entry_only
+
+  # Votre entité a-t-elle accepté ou effectué des opérations par chèque avec les clients au cours de la
+  #   période de déclaration ?
+  a2101WRP:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées par chèque (tant entrantes que sortantes)
+  #   par des clients ?
+  a2102B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des opérations par chèques effectuées par des clients (entrantes
+  #   et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2102BB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des opérations par chèques effectuées avec des clients (entrantes
+  #   et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2102BW:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées par chèque (tant entrantes que sortantes)
+  #   avec des clients ?
+  a2102W:
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des transferts électroniques au cours de la période de déclaration ?
+  a2104B:
+    source_type: entry_only
+
+  # Votre entité accepte-t-elle ou effectue-t-elle des transferts électroniques d'argent avec les
+  #   clients ?
+  a2104W:
+    source_type: entry_only
+
+  # Votre entité a-t-elle accepté ou effectué des transferts électroniques avec les clients au cours de
+  #   la période de déclaration ?
+  a2104WRP:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations (tant entrantes que sortantes) effectuées sous forme
+  #   d’ordre de paiement électronique par/ à l’intention du client.
+  a2105B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des transferts électroniques effectués par des clients (entrants
+  #   et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2105BB:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des transferts électroniques effectués avec des clients (entrants
+  #   et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2105BW:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations (tant entrantes que sortantes) effectuées sous forme
+  #   d’ordre de paiement électronique avec des clients.
+  a2105W:
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des opérations en espèces au cours de la période de déclaration ?
+  a2107B:
+    source_type: entry_only
+
+  # Votre entité accepte-t-elle ou effectue-t-elle des opérations en espèces avec les clients ?
+  a2107W:
+    source_type: entry_only
+
+  # Votre entité a-t-elle accepté ou effectué des opérations en espèces avec les clients au cours de la
+  #   période de déclaration ?
+  a2107WRP:
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total d'opérations en espèces par des clients, au cours de la période de
+  #   déclaration.
+  a2108B:
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total d'opérations en espèces avec les clients, au cours de la période de
+  #   déclaration.
+  a2108W:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés , par paiements en espèces, pendant la
+  #   période de déclaration. (iso4217:EUR)
+  a2109B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés , par paiements en espèces, pendant la
+  #   période de déclaration. (iso4217:EUR)
+  a2109W:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées en espèces (tant entrantes que sortantes)
+  #   pour un montant supérieur ou égal à 10 000 euros par des clients, pendant la période de déclaration.
+  a2110B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées en espèces (tant entrantes que sortantes)
+  #   pour un montant supérieur ou égal à 10 000 euros avec des clients, pendant la période de
+  #   déclaration.
+  a2110W:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées par des personnes physiques pour un montant
+  #   supérieur à 100 000 euros, pendant la période de déclaration.
+  a2113AB:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées avec des personnes physiques pour un montant
+  #   supérieur à 100 000 euros, pendant la période de déclaration.
+  a2113AW:
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer les opérations en espèces supérieures à 100 000 euros dans votre
+  #   comptabilité ?
+  a2113B:
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer les opérations en espèces supérieures à 100 000 euros dans votre
+  #   comptabilité ?
+  a2113W:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales monégasques pour un
+  #   montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2114A:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées par des personnes morales monégasques pour un
+  #   montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2114AB:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées par des personnes morales étrangères pour un
+  #   montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2115AB:
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales étrangères pour un
+  #   montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2115AW:
+    source_type: entry_only
+
+  # Acceptez-vous ou effectuez-vous des opérations utilisant des crypto-monnaies avec des clients ?
+  a2201A:
+    source_type: entry_only
+
+  # Prévoyez-vous d'accepter des paiements, ou de proposer des produits et services immobiliers, en
+  #   utilisant des monnaies virtuelles au cours de l'année prochaine ?
+  a2201D:
+    source_type: entry_only
+
+  # Votre entité entretient-elle des relations d’affaires avec des plateformes ou des intermédiaires en
+  #   matière d’actifs virtuels ?
+  a2202:
+    source_type: entry_only
+
+  # Prière de nommer les plateformes ou intermédiaires en matière d’actifs virtuels avec lesquels votre
+  #   entité entretient des relations d’affaires.
+  a2203:
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a2501:
+    source_type: entry_only
+
+  # Avez-vous des commentaires sur l'une des questions de cette section ?
+  a2501A:
+    source_type: entry_only
+
+  # Votre entité a-elle recours à des tiers locaux pour appliquer certaines/ toutes les mesures de
+  #   vigilance relatives à la clientèle ?
+  a3101:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients où des tiers locaux ont été utilisés pour appliquer
+  #   certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et de les ventiler
+  #   selon la nationalité principale du client.
+  a3102:
+    source_type: entry_only
+
+  # Votre entité a-elle recours à des tiers étrangers pour appliquer certaines/ toutes les mesures de
+  #   vigilance relatives à la clientèle ?
+  a3103:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour appliquer
+  #   certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et de les ventiler
+  #   selon la nationalité principale du client.
+  a3104:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour appliquer
+  #   certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et de les ventiler
+  #   selon le lieu de résidence du tiers étranger .
+  a3105:
+    source_type: entry_only
+
+  # Votre entité accepte-t-elle des clients à travers des apporteurs d’affaires ?
+  a3201:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, en les ventilant selon
+  #   la nationalité principale du client (dans le cas d’une personne physique) ou selon le pays
+  #   d’établissement (dans le cas d’une personne morale ou d’une construction juridique).
+  a3202:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, en les ventilant selon
+  #   le lieu de résidence du tiers .
+  a3203:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, au cours de la période
+  #   de déclaration, en les ventilant selon la nationalité principale du client (dans le cas d’une
+  #   personne physique) ou selon le pays d’établissement (dans le cas d’une personne morale ou d’une
+  #   construction juridique).
+  a3204:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, au cours de la période
+  #   de déclaration, en les ventilant selon le lieu de résidence du tiers .
+  a3205:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des trusts et d'autres
+  #   constructions juridiques , dont l'entrée en relation est intervenue au cours de la période de
+  #   déclaration.
+  a3208TOLA:
+    source_type: entry_only
+
+  # Votre entité entre-t-elle en relation avec des clients sans qu’il y ait de rencontre face à face,
+  #   soit sur une base non présentielle ?
+  a3209:
+    source_type: entry_only
+
+  # Votre entité est-elle membre d'une association ou d'une société professionnelle ?
+  a3210:
+    source_type: entry_only
+
+  # Votre entité fait-elle partie d'un réseau ou d'un groupe international d'entreprises ?
+  a3210B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes physiques , dont
+  #   l'entrée en relation s'est effectuée sans rencontre face à face aux fins du devoir de vigilance
+  #   relatif à la clientèle.
+  a3210C:
+    source_type: entry_only
+
+  # Si oui, veuillez préciser lequel.
+  a3211:
+    source_type: entry_only
+
+  # Si oui, veuillez préciser lequel.
+  a3211B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes morales , dont
+  #   l'entrée en relation s'est effectuée sans rencontre face à face aux fins du devoir de vigilance
+  #   relatif à la clientèle.
+  a3211C:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des trusts et d'autres
+  #   constructions juridiques , dont l'entrée en relation s'est effectuée sans rencontre face à face aux
+  #   fins du devoir de vigilance relatif à la clientèle.
+  a3212CTOLA:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et
+  #   propriétaires non salariés, à la fin de la période de déclaration.
+  a3301:
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle des succursales, des filiales ou des agences ?
+  a3302:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de succursales, filiales et agences de l’entité locale autorisée,
+  #   en les ventilant par pays.
+  a3303:
+    source_type: entry_only
+
+  # Votre entité est-elle une succursale ou une filiale d’une entité étrangère ?
+  a3304:
+    source_type: entry_only
+
+  # Votre entité est-elle une succursale ou une filiale d’une autre entité ?
+  a3304C:
+    source_type: entry_only
+
+  # Si oui, dans quel pays opère la société mère ?
+  a3305:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de succursales et de filiales étrangères (à l’extérieur de
+  #   Monaco).
+  a3306:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre d'actionnaires détenant une participation de 25 % ou plus, ventilé par
+  #   nationalité primaire (personne physique) ou par pays d'établissement (personnes morales et
+  #   constructions juridiques).
+  a3306A:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre de bénéficiaires effectifs détenant, soit une participation de 25 % ou
+  #   plus, soit contrôlant directement ou indirectement la société, soit étant un représentant légal,
+  #   ventilé par nationalité primaire.
+  a3306B:
+    source_type: entry_only
+
+  # Au cours de la période de déclaration, votre entité a-t-elle rencontré l'un des événements suivants
+  #   :
+  a3307:
+    source_type: entry_only
+
+  # Veuillez renseigner l’évolution ou la modification.
+  a3308:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de prospects (clients potentiels) qui ont été rejetés en raison de
+  #   considérations de blanchiment de capitaux, de financement du terrorisme, ou contre le financement de
+  #   la prolifération des armes de destruction massive au cours de la période de déclaration.
+  a3401:
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer si un prospect (client potentiel) a été rejeté en raison d’un
+  #   attribut / activité / déficience du client ou principalement en raison de la pratique
+  #   discrétionnaire de LBC/FT-P de l'entité ?
+  a3402:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de prospects (clients potentiels) qui ont été rejetés en raison de
+  #   considérations de blanchiment de capitaux, de financement du terrorisme, ou contre le financement de
+  #   la prolifération des armes de destruction massive au cours de la période de déclaration pour des
+  #   raisons liées aux attributs, activités ou déficiences du client .
+  a3403:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de relations clients résiliées en raison de considérations liées
+  #   au blanchiment de capitaux, au financement du terrorisme, ou contre le financement de la
+  #   prolifération des armes de destruction massive au cours de la période de déclaration.
+  a3414:
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer si une relation d’affaires a été résiliée en raison d’un attribut
+  #   / activité / déficience du client ou principalement en raison de la pratique discrétionnaire de
+  #   LBC/FT-P de l'entité ?
+  a3415:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de relations d’affaires avec des clients qui ont été résiliées en
+  #   raison de considérations de blanchiment de capitaux, de financement du terrorisme, ou contre le
+  #   financement de la prolifération des armes de destruction massive au cours de la période de
+  #   déclaration, du fait des attributs / activités / déficiences du client .
+  a3416:
+    source_type: entry_only
+
+  # L'entité peut-elle fournir des informations sur la nationalité des clients démarchés par l’apporteur
+  #   d’affaire ?
+  a3501B:
+    source_type: entry_only
+
+  # L'entité peut-elle fournir des informations sur la résidence des apporteurs d’affaire ?
+  a3501C:
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a3701:
+    source_type: entry_only
+
+  # Avez-vous des commentaires sur l'une des questions de cette section ?
+  a3701A:
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration réalisé dans la Principauté de Monaco.
+  #   (iso4217:EUR)
+  a3802:
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration réalisé en dehors de la Principauté de Monaco.
+  #   (iso4217:EUR)
+  a3803:
+    source_type: entry_only
+
+  # Veuillez indiquer le montant de votre dernière déclaration annuelle de TVA. (iso4217:EUR)
+  a3804:
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration. (iso4217:EUR)
+  a381:
+    source_type: entry_only
+
+  # Avez-vous agi en tant que mandataire professionnel au sens de la loi n° 1.362 pour des achats ou des
+  #   ventes de biens immobiliers ou de locations immobilières au cours de la période de déclaration ? (
+  #   cf. lien )
+  aACTIVE:
+    name: has_activity
+    source_type: entry_only
+
+  # Spécifiquement en ce qui concerne les achats ou ventes de biens immobiliers réalisés au cours de la
+  #   période de référence ?
+  aACTIVEPS:
+    name: has_purchase_sale_activity
+    source_type: entry_only
+
+  # Spécifiquement en ce qui concerne les locations de biens immobiliers pour lesquelles des opérations
+  #   ont été réalisées au cours de la période de référence ?
+  aACTIVERENTALS:
+    name: has_rental_activity
+    source_type: entry_only
+
+  # Votre entité applique-t-elle à ses clients des notations de risque en matière de LBC/FT ?
+  aB1801B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes physiques , dont
+  #   l'entrée en relation est intervenue au cours de la période de déclaration.
+  aB3206:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes morales , dont
+  #   l'entrée en relation est intervenue au cours de la période de déclaration.
+  aB3207:
+    source_type: entry_only
+
+  # Approximativement, combien d'heures les employés ont-ils consacré à la conformité LCB/FT-P-C par
+  #   mois ?
+  aC1101Z:
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total d'employés équivalents temps plein, plus les partenaires et
+  #   propriétaires non salariés , dans votre entité, à la fin de la période de déclaration.
+  aC1102:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et
+  #   propriétaires non salariés, à la fin de la période de déclaration.
+  aC1102A:
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle d'un service de conformité ?
+  aC1106:
+    source_type: entry_only
+
+  # Votre entité conserve-t-elle les informations relatives aux opérations pendant au moins 5 ans ?
+  aC11101:
+    source_type: entry_only
+
+  # Votre entité conserve-t-elle toutes les correspondances relatives aux CDD et les correspondances
+  #   commerciales pendant au moins 5 ans après la fin d’une relation client ?
+  aC11102:
+    source_type: entry_only
+
+  # Votre entité conserve-t-elle ces informations et documents dans un endroit sûr et sécurisé ?
+  aC11103:
+    source_type: entry_only
+
+  # Ces informations et documents sont-ils rapidement mis à la disposition des autorités compétentes sur
+  #   demande ?
+  aC11104:
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle de sauvegardes des informations relatives aux CDD et aux correspondances
+  #   commerciales avec un plan de récupération des données ?
+  aC11105:
+    source_type: entry_only
+
+  # Les politiques et procédures de l’entité couvrent-elles de manière adéquate le filtrage et les
+  #   alertes des sanctions financières ciblées pour le financement du terrorisme et de la prolifération ?
+  aC11201:
+    source_type: entry_only
+
+  # Votre entité consulte-t-elle la Liste Nationale des gel d'Avoirs lors de l'intégration de nouveaux
+  #   clients ou lors de la mise à jour de la liste ?
+  aC1125A:
+    source_type: entry_only
+
+  # Votre entité prend-elle des mesures pour déterminer si les clients et les bénéficiaires effectifs
+  #   sont des personnes politiquement exposées (PPE) ?
+  aC11301:
+    source_type: entry_only
+
+  # Quelles mesures votre entité applique-t-elle pour déterminer si les clients et les bénéficiaires
+  #   effectifs sont des PPE ?
+  aC11302:
+    source_type: entry_only
+
+  # Quelles procédures supplémentaires de LBC/FT sont appliquées pour les PPE (par rapport à un client à
+  #   risque standard) ?
+  aC11303:
+    source_type: entry_only
+
+  # Un filtrage des PPE est-t-il effectué dans le cadre du processus de CDD pour les nouveaux clients ?
+  aC11304:
+    source_type: entry_only
+
+  # Le filtrage des PPE a-t-il lieu de façon continue ?
+  aC11305:
+    source_type: entry_only
+
+  # Les PPE font-elles l’objet d’une surveillance accrue ?
+  aC11306:
+    source_type: entry_only
+
+  # Votre entité considère-t-elle toutes les relations PPE comme à haut risque de LBC/FT ?
+  aC11307:
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle d'un conseil d'administration et/ou une haute direction ?
+  aC114:
+    source_type: entry_only
+
+  # Votre entité effectue-t-elle des opérations en espèces avec des clients ?
+  aC11401:
+    source_type: entry_only
+
+  # Votre entité applique-t-elle des contrôles et des procédures spécifiques de LBC/FT pour les
+  #   opérations en espèces ?
+  aC11402:
+    source_type: entry_only
+
+  # Prière de décrire les contrôles et procédures spécifiques aux opérations en espèces que votre entité
+  #   applique.
+  aC11403:
+    source_type: entry_only
+
+  # Votre entité a-t-elle déposé des DOS/DAS auprès de la CRF au cours de la période de déclaration ?
+  aC11501B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de DOS/DAS liées au financement du terrorisme que votre entité a
+  #   déclaré à la CRF au cours de la période de déclaration.
+  aC11502:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de DOS/DAS liées au blanchiment de capitaux que votre entité a
+  #   déclaré à la CRF au cours de la période de déclaration.
+  aC11504:
+    source_type: entry_only
+
+  # Votre entité a-t-elle pris des mesures pour renforcer les contrôles internes en matière de LBC/FT,
+  #   amender les politiques et procédures ou entreprendre d’autres procédures pour améliorer la
+  #   déclaration des opérations suspectes au cours de la période de déclaration ?
+  aC11508:
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  aC11601:
+    source_type: entry_only
+
+  # Avez-vous des commentaires sur l'une des questions de cette section ?
+  aC116A:
+    source_type: entry_only
+
+  # Votre entité a-t-elle préparé un ensemble de politiques et procédures de LBC/FT documenté ?
+  aC1201:
+    source_type: entry_only
+
+  # Ces politiques et procédures ont-elles été approuvées par le conseil d’administration et/ou la haute
+  #   direction de votre entité ?
+  aC1202:
+    source_type: entry_only
+
+  # Votre entité a-t-elle diffusé ces politiques et procédures à tous ses employés ?
+  aC1203:
+    source_type: entry_only
+
+  # Votre entité a-t-elle veillé à faire connaître ces politiques et procédures à tous ses employés ?
+  aC1204:
+    source_type: entry_only
+
+  # Votre entité a-t-elle mis à jour ses politiques et procédures écrites de LBC/FT au cours de l’année
+  #   écoulée ?
+  aC1205:
+    source_type: entry_only
+
+  # Prière d’indiquer la date de la dernière mise à jour des politiques et procédures écrites de LBC/FT
+  #   de votre entité.
+  aC1206:
+    source_type: entry_only
+
+  # Votre entité a-t-elle une pratique systématique de suivi et de gestion des modifications apportées
+  #   aux politiques et procédures de LBC/FT ?
+  aC1207:
+    source_type: entry_only
+
+  # Qui a préparé les politiques et procédures de votre entité ?
+  aC1208:
+    source_type: entry_only
+
+  # Votre entité a-t-elle procédé à une auto-évaluation de l’adéquation des procédures de LBC/FT ?
+  aC1209:
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle d'un programme de LBC/FT-P à l'échelle du groupe ?
+  aC1209B:
+    source_type: entry_only
+
+  # Votre entité a-t-elle effectué une analyse pour déterminer si le programme LBC/FT-P du groupe est
+  #   conforme à la législation et au cadre réglementaire de Monaco pour chaque succursale/filiale ?
+  aC1209C:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de déclarations faites à la Direction du Budget et du Trésor (DBT)
+  #   concernant le financement du terrorisme .
+  aC12236:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de déclarations faites à la DBT concernant le financement de la
+  #   prolifération des armes de destruction massive .
+  aC12237:
+    source_type: entry_only
+
+  # Votre entité a-t-elle identifié une personne/des opérations liées au financement du terrorisme ou à
+  #   la prolifération des armes de destruction massive au cours de la période de référence ?
+  aC12333:
+    source_type: entry_only
+
+  # Le conseil d’administration et/ou la haute direction de votre entité démontrent-ils une
+  #   responsabilité globale en matière de LBC/FT ?
+  aC1301:
+    source_type: entry_only
+
+  # Le conseil d’administration et/ou la haute direction de votre entité reçoivent-ils régulièrement des
+  #   rapports de LBC/FT ?
+  aC1302:
+    source_type: entry_only
+
+  # Le conseil d’administration et/ou la haute direction de votre entité s’assurent-ils que les lacunes
+  #   en matière de LBC/FT sont corrigées ?
+  aC1303:
+    source_type: entry_only
+
+  # La haute direction de votre entité valide-t-elle (donne-t-elle son approbation pour) l’acceptation
+  #   des clients à haut risque ?
+  aC1304:
+    source_type: entry_only
+
+  # Votre entité a-t-elle fait face à des violations liées à la LBC/FT au cours des 5 dernières années ?
+  aC1401:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de violations liées à la LBC/FT au cours des 5 dernières années.
+  aC1402:
+    source_type: entry_only
+
+  # Prière d'indiquer le nombre et le type de violations en matière de LBC/FT.
+  aC1403:
+    source_type: entry_only
+
+  # Votre entité a-t-elle dispensé une formation en LBC/FT à ses directeurs/sa direction au cours de la
+  #   période de déclaration ?
+  aC1501:
+    source_type: entry_only
+
+  # Votre entité a-t-elle organisé une formation en LBC/FT pour ses employés du office au cours de la
+  #   période de déclaration ?
+  aC1503B:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’employés formés sur les questions de LBC/FT au cours du cycle de
+  #   déclaration.
+  aC1506:
+    source_type: entry_only
+
+  # Votre entité fait-elle partie d'un groupe ?
+  aC1518A:
+    source_type: entry_only
+
+  # Est-ce que tous les éléments suivants sont conservé dans le dossier du client : prénom nom date de
+  #   naissance lieu de naissance nationalité pays de résidence niveau de risque activité du client
+  #   patrimoine
+  aC1601:
+    source_type: entry_only
+
+  # Prière de préciser quels éléments ne sont pas recueillis ?
+  aC1602:
+    source_type: entry_only
+
+  # Les données concernant les anciennes relations clients sont-elles accessibles sur demande par l’AMSF
+  #   ?
+  aC1608:
+    source_type: entry_only
+
+  # Votre entité applique-t-elle une approche fondée sur le risque pour les mesures de vigilance
+  #   relatives à la clientèle ?
+  aC1609:
+    source_type: entry_only
+
+  # Votre entité a-t-elle des politiques et des procédures qui précisent la différence dans la
+  #   documentation et les exigences pour différents niveaux de CDD ?
+  aC1610:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné pendant la
+  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
+  aC1611:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques qui font l’objet de mesures de vigilance
+  #   simplifiées.
+  aC1612:
+    source_type: entry_only
+
+  # Votre entité a-t-elle mis en œuvre des mesures de vigilance simplifiée pour des clients au cours de
+  #   la période de déclaration ?
+  aC1612A:
+    source_type: entry_only
+
+  # Votre entité identifie-t-elle et vérifie-t-elle ses clients à l’aide d’informations fiables et
+  #   indépendantes dans tous les cas de CDD ?
+  aC1614:
+    source_type: entry_only
+
+  # Les politiques CDD de votre entité incluent-elles des procédures d’acceptation du client et des
+  #   procédures d’identification et de vérification de l’identité du client et du bénéficiaire effectif ?
+  aC1615:
+    source_type: entry_only
+
+  # À quelle fréquence les clients de location et classés comme présentant un risque élevé de
+  #   blanchiment d'argent ou de financement du terrorisme font-ils l'objet de mesures de vigilance ?
+  aC1616A:
+    source_type: entry_only
+
+  # À quelle fréquence les clients d'achats et de ventes de biens immobiliers et classés comme
+  #   présentant un risque élevé de blanchiment d'argent ou de financement du terrorisme font-ils l'objet
+  #   de mesures de vigilance ?
+  aC1616B:
+    source_type: entry_only
+
+  # Vos clients effectuent-ils des opérations d’achat, de vente ou de location de biens immobiliers avec
+  #   les cryptomonnaies ?
+  aC1616C:
+    source_type: entry_only
+
+  # Votre entité examine-t-elle la source du patrimoine avant l’entrée en relation ?
+  aC1617:
+    source_type: entry_only
+
+  # Votre entité prend-elle d’autres mesures pour les clients à haut risque avant leur prise en charge ?
+  aC1618:
+    source_type: entry_only
+
+  # Prière de préciser les autres mesures prises pour les clients à haut risque avant leur prise en
+  #   charge.
+  aC1619:
+    source_type: entry_only
+
+  # Votre entité applique-t-elle une identification et une vérification renforcées de tous les clients à
+  #   haut risque avant leur prise en charge ?
+  aC1620:
+    source_type: entry_only
+
+  # Comment l’entité vérifie-t-elle les bénéficiaires effectifs des avoirs virtuels ?
+  aC1621:
+    source_type: entry_only
+
+  # Votre entité a-t-elle rencontré des difficultés pour recevoir des informations CDD de tiers en cas
+  #   de besoin ?
+  aC1622A:
+    source_type: entry_only
+
+  # Veuillez indiquer la raison principale des difficultés (par exemple, raison juridique, raison
+  #   commerciale, indisponibilité des informations, autre) et le type de tiers (par exemple, institution
+  #   financière, EPNFD).
+  aC1622B:
+    source_type: entry_only
+
+  # Votre entité fait-elle appel à des tiers pour les procédures de mesures de vigilance à l’égard de la
+  #   clientèle ?
+  aC1622F:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
+  #   renseignements de sa carte d’identité ?
+  aC1625:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
+  #   renseignements de son passeport ?
+  aC1626:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
+  #   renseignements de sa carte de séjour ?
+  aC1627:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle d’autres
+  #   renseignements liés à l’individu ?
+  aC1629:
+    source_type: entry_only
+
+  # Prière de préciser quelles autres informations sont incluses dans votre base de données clients.
+  aC1630:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par une personne morale / construction juridique, votre
+  #   entité enregistre-t-elle l'extrait du registre du commerce du client ?
+  aC1631:
+    source_type: entry_only
+
+  # Lorsque l'opération avec le client est effectuée par une personne morale ou une construction
+  #   juridique, votre entité enregistre-t-elle les statuts du client ?
+  aC1633:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par une personne morale ou une construction juridique,
+  #   votre entité enregistre-t-elle le procès-verbal d’assemblée ?
+  aC1634:
+    source_type: entry_only
+
+  # Lorsque l'opération est effectuée par une personne morale ou une construction juridique, votre
+  #   entité enregistre-t-elle les documents d'identité de tous les bénéficiaires effectifs (détenant au
+  #   moins 25 % de l'entité) ?
+  aC1635:
+    source_type: entry_only
+
+  # Tous ces documents sont-ils conservés systématiquement ?
+  aC1635A:
+    source_type: entry_only
+
+  # Lorsque l'opération avec le client est effectuée par une personne morale ou une construction
+  #   juridique, votre entité enregistre-t-elle d'autres données ?
+  aC1636:
+    source_type: entry_only
+
+  # Veuillez préciser les autres données des personnes morales/constructions juridiques enregistrées.
+  aC1637:
+    source_type: entry_only
+
+  # Votre entité conserve-t-elle des documents récapitulatifs de tous les renseignements ci-dessus ?
+  aC1638A:
+    source_type: entry_only
+
+  # Ces informations sont-elles dans une base de données ?
+  aC1639A:
+    source_type: entry_only
+
+  # Quels outils ?
+  aC1640A:
+    source_type: entry_only
+
+  # Votre entité utilise-t-elle des outils pour établir la connaissance du client (CDD) ?
+  aC1641A:
+    source_type: entry_only
+
+  # Les résultats de l’outil CDD (connaissance du client) sont-ils systématiquement stockés ?
+  aC1642A:
+    source_type: entry_only
+
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
+  #   renseignements de son justificatif de domicile ?
+  aC168:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques pour lesquels une vigilance renforcée a été
+  #   appliquée lors de leur intégration .
+  aC1701:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques pour lesquels une vigilance renforcée a été
+  #   appliquée dans le cadre des relations d’affaires .
+  aC1702:
+    source_type: entry_only
+
+  # Prière d’indiquer le pourcentage de clients uniques qui ont fait l’objet d’une vigilance renforcée.
+  aC1703:
+    source_type: entry_only
+
+  # Avez-vous eu des clients monégasques (achats et ventes) au cours de la période de déclaration ?
+  aC171:
+    source_type: entry_only
+
+  # Combien de niveaux de risque LBC/FT votre entité a-t-elle pour ses clients ?
+  aC1801:
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre de clients uniques classés comme présentant un risque élevé de LBC/FT.
+  aC1802:
+    source_type: entry_only
+
+  # Les considérations relatives à l’affectation de haut risque de votre entité incluent-elles TOUTES
+  #   les informations suivantes : pays de résidence activité statut PPE type de client produits et
+  #   services types d’opérations canaux de distribution comptes à intitulé conventionnel avoirs sous
+  #   gestion volume d’opérations nature des opérations un élément déclencheur
+  aC1806:
+    source_type: entry_only
+
+  # Prière de préciser quels éléments ne sont pas pris en compte ?
+  aC1807:
+    source_type: entry_only
+
+  # Votre entité utilise-t-elle une liste de pays sensibles pour l’évaluation des risques de LBC/FT ?
+  aC1811:
+    source_type: entry_only
+
+  # Votre entité utilise-t-elle une liste d’activités sensibles pour l’évaluation des risques de LBC/FT
+  #   ?
+  aC1812:
+    source_type: entry_only
+
+  # Quelles activités client votre entité associe-t-elle aux clients à haut risque ?
+  aC1813:
+    source_type: entry_only
+
+  # Votre entité examine-t-elle séparément les risques de BC et de FT ?
+  aC1814W:
+    source_type: entry_only
+
+  # Quand a eu lieu le dernier audit effectué par le SICCFIN/AMSF pour votre entité ?
+  aC1904:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients, par paiements en espèces
+  #   dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
+  aG24010B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec des clients, par paiements en espèces
+  #   dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
+  aG24010W:
+    source_type: entry_only
+
+  # Avez-vous besoin de rendre ce questionnaire sous forme incomplète ?
+  aINCOMPLETE:
+    source_type: entry_only
+
+  # Combien d'achats et de ventes de biens immobiliers ont-ils été effectués au cours de la période de
+  #   déclaration à des fins d'investissement , à l'exclusion des biens utilisés comme résidence
+  #   principale par l'acheteur ou par des personnes qui lui sont liées ?
+  aIR117:
+    source_type: entry_only
+
+  # Combien d'achats ont-ils été effectués dans le but d’établir une résidence à Monaco au cours de la
+  #   période de déclaration ?
+  aIR1210:
+    source_type: entry_only
+
+  # Certains des achats immobiliers effectués pendant la période de déclaration avaient-ils pour but
+  #   d'établir une résidence à Monaco ?
+  aIR129:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens locatifs uniques , &gt;= 10.000 € par mois, qui ont été
+  #   loués à un moment donné au cours de la période de déclaration.
+  aIR2313:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens locatifs uniques , &lt; 10.000 € par mois, qui ont été
+  #   loués à un moment donné au cours de la période de déclaration.
+  aIR2316:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques , ventilé par nationalité primaire de
+  #   l'individu, ou par le pays du siège ou de l’immatriculation, pour l’achat et la vente de biens
+  #   immobiliers au cours de la période de déclaration.
+  aIR233:
+    source_type: entry_only
+
+  # Combien de clients uniques étaient des acheteurs ?
+  aIR233B:
+    source_type: entry_only
+
+  # Combien de clients uniques étaient des vendeurs ?
+  aIR233S:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens uniques loués au cours de la période de déclaration.
+  aIR234:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients, ventilé par nationalité
+  #   primaire du client, ou par le pays du siège ou de l’immatriculation, pour l’achat et la vente de
+  #   biens immobiliers au cours de la période de déclaration.
+  aIR235B_1:
+    source_type: entry_only
+
+  # Pour combien d’achats/ventes avez-vous représenté l’acheteur ?
+  aIR235B_2:
+    source_type: entry_only
+
+  # Pour combien d’achats/ventes avez-vous représenté le vendeur ?
+  aIR235S:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations de location au cours de la période de déclaration.
+  aIR236:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients, ventilé par nationalité
+  #   primaire du client, ou par le pays du siège ou de l’immatriculation, pour l’achat et la vente de
+  #   biens immobiliers au cours de la période de déclaration et des 4 années précédentes.
+  aIR237B:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients pour l’achat et la vente de
+  #   biens immobiliers (en euros) au cours de la période de déclaration, ventilée par nationalité
+  #   primaire du client ou par le pays du siège ou de l’immatriculation. (iso4217:EUR)
+  aIR238B:
+    source_type: entry_only
+
+  # L'Etat de Monaco a t-il préempté des biens à la vente ?
+  aIR2391:
+    source_type: entry_only
+
+  # Combien de biens ont été acquis par l'Etat de Monaco via l'exercice de son droit de préemption ?
+  aIR2392:
+    source_type: entry_only
+
+  # Quelle était la valeur totale des biens préemptés ? (iso4217:EUR)
+  aIR2393:
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients pour l’achat et la vente de
+  #   biens immobiliers (en euros) au cours de la période de déclaration et des 4 années précédentes,
+  #   ventilée par nationalité primaire du client ou par le pays du siège ou de l’immatriculation.
+  #   (iso4217:EUR)
+  aIR239B:
+    source_type: entry_only
+
+  # Le titulaire de la carte professionnelle exerçant des activités d'agent immobilier est-il une
+  #   personne morale ?
+  aIR328:
+    source_type: entry_only
+
+  # Quelle est la forme juridique de votre entité ?
+  aIR33LF:
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre de clients qui sont des personnes morales monégasques, ventilé par type.
+  aMLES:
+    source_type: entry_only
+
+  # La ou les personnes dont le nom et le titre sont ajoutés ici attestent qu'elles ont fourni des
+  #   réponses exactes aux questions, au mieux de leurs capacités.
+  aS1:
+    source_type: entry_only
+
+  # Le nom et le titre de la personne ajoutée ici attestent qu'elle est dûment autorisée à représenter
+  #   l'entité déclarante et qu'elle s'est assurée que les données soumises ont été correctement examinées
+  #   et constituent une représentation exacte, au mieux de ses capacités.
+  aS2:
+    source_type: entry_only
+
