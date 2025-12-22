@@ -15,6 +15,10 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       expect(questionnaire.year).to eq(2025)
     end
 
+    it "extracts taxonomy_namespace from XSD" do
+      expect(questionnaire.taxonomy_namespace).to eq("https://test.example.com/test_industry_2025")
+    end
+
     describe "sections" do
       it "creates sections from presentation file" do
         expect(questionnaire.sections.length).to eq(2)

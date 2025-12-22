@@ -110,6 +110,20 @@ RSpec.describe AmsfSurvey::Questionnaire do
       expect(questionnaire.year).to eq(2025)
       expect(questionnaire.sections).to eq([section1, section2])
     end
+
+    it "accepts optional taxonomy_namespace" do
+      q = described_class.new(
+        industry: :test_industry,
+        year: 2025,
+        sections: [section1],
+        taxonomy_namespace: "https://example.com/taxonomy/2025"
+      )
+      expect(q.taxonomy_namespace).to eq("https://example.com/taxonomy/2025")
+    end
+
+    it "defaults taxonomy_namespace to nil when not provided" do
+      expect(questionnaire.taxonomy_namespace).to be_nil
+    end
   end
 
   describe "#fields" do

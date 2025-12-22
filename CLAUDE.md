@@ -37,16 +37,16 @@ gem build amsf_survey.gemspec
 - `AmsfSurvey.to_xbrl(submission)` - Generate XBRL XML
 
 Key classes:
-- `Questionnaire` - Container for sections/fields, supports field lookup by ID or semantic name
+- `Questionnaire` - Container for sections/fields, supports field lookup by ID or semantic name, exposes `taxonomy_namespace`
 - `Section` - Logical grouping of fields with visibility rules
 - `Field` - Metadata (type, source_type, labels, visibility rules, gate dependencies)
-- `Submission` - ActiveModel-based, holds entity data with type casting (future)
-- `Validator` - Presence, sum checks, conditional logic, range validation (future)
-- `Generator` - XBRL instance XML output (future)
+- `Submission` - Holds entity data with type casting, tracks completeness
+- `Validator` - Presence, sum checks, conditional logic, range validation
+- `Generator` - XBRL instance XML output with proper namespaces, context, and facts
 
 ### Taxonomy Parsers (`lib/amsf_survey/taxonomy/`)
 
-- `SchemaParser` - Parses `.xsd` files for field types and valid values
+- `SchemaParser` - Parses `.xsd` files for field types, valid values, and `targetNamespace`
 - `LabelParser` - Parses `_lab.xml` files for French labels with HTML stripping
 - `PresentationParser` - Parses `_pre.xml` files for section structure and ordering
 - `XuleParser` - Parses `.xule` files for gate question dependencies
@@ -84,6 +84,20 @@ Taxonomy files per year: `.xsd`, `_lab.xml`, `_def.xml`, `_pre.xml`, `_cal.xml`,
 1. Ruby-native validation (fast, no dependencies) - default
 2. Arelle validation (optional) - authoritative XULE compliance check
 
+### XBRL Generation
+
+```ruby
+# Basic generation
+xml = AmsfSurvey.to_xbrl(submission)
+
+# With options
+xml = AmsfSurvey.to_xbrl(submission, pretty: true, include_empty: false)
+```
+
+Options:
+- `pretty: true` - Output indented XML (default: false)
+- `include_empty: false` - Omit nil fields (default: true - includes empty elements)
+
 ## Domain Context
 
 XBRL taxonomy files in `docs/real_estate_taxonomy/` are the source of truth for field definitions. The `semantic_mappings.yml` maps XBRL codes (e.g., `a1101`) to semantic Ruby field names.
@@ -106,5 +120,7 @@ Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
 - File-based taxonomy loading from plugin gems
 
 ## Recent Changes
+- 004-xbrl-generator: Added XBRL instance XML generation (Generator class, AmsfSurvey.to_xbrl method)
+- 003-submission-validation: Added Submission and Validator classes with type casting
 - 002-taxonomy-loader: Added taxonomy loading infrastructure (Questionnaire, Section, Field, parsers, Registry.questionnaire())
 - 001-monorepo-setup: Initial monorepo structure with core and plugin gems

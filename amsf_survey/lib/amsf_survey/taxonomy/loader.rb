@@ -12,7 +12,8 @@ module AmsfSurvey
 
       def load(industry, year)
         mappings = load_semantic_mappings
-        schema_data = parse_schema
+        schema_parser = build_schema_parser
+        schema_data = schema_parser.parse
         labels = parse_labels
         sections_data = parse_presentation
         xule_data = parse_xule
@@ -22,7 +23,8 @@ module AmsfSurvey
         Questionnaire.new(
           industry: industry,
           year: year,
-          sections: sections
+          sections: sections,
+          taxonomy_namespace: schema_parser.target_namespace
         )
       end
 
@@ -36,7 +38,7 @@ module AmsfSurvey
         yaml[:fields] || {}
       end
 
-      def parse_schema
+      def build_schema_parser
         xsd_files = Dir.glob(File.join(@taxonomy_path, "*.xsd"))
         raise MissingTaxonomyFileError, File.join(@taxonomy_path, "*.xsd") if xsd_files.empty?
 
@@ -45,7 +47,7 @@ module AmsfSurvey
                "Ignored: #{xsd_files[1..].map { |f| File.basename(f) }.join(', ')}"
         end
 
-        SchemaParser.new(xsd_files.first).parse
+        SchemaParser.new(xsd_files.first)
       end
 
       def parse_labels

@@ -49,4 +49,7 @@ module AmsfSurvey
       super("Unknown field: #{field_id}")
     end
   end
+
+  # Raised when XBRL generation fails due to invalid submission data
+  class GeneratorError < Error; end
 end

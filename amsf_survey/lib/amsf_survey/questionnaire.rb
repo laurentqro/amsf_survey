@@ -4,12 +4,13 @@ module AmsfSurvey
   # Container for an industry/year survey structure.
   # Immutable value object built by the taxonomy loader.
   class Questionnaire
-    attr_reader :industry, :year, :sections
+    attr_reader :industry, :year, :sections, :taxonomy_namespace
 
-    def initialize(industry:, year:, sections:)
+    def initialize(industry:, year:, sections:, taxonomy_namespace: nil)
       @industry = industry
       @year = year
       @sections = sections
+      @taxonomy_namespace = taxonomy_namespace
       @field_index = build_field_index
     end
 
