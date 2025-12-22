@@ -99,6 +99,10 @@ module AmsfSurvey
     end
 
     def validate_year!(industry, year)
+      unless year.is_a?(Integer) && year.positive?
+        raise TaxonomyLoadError, "Invalid year: #{year}. Must be a positive integer."
+      end
+
       return if supported_years(industry).include?(year)
 
       raise TaxonomyLoadError, "Year not supported for #{industry}: #{year}"

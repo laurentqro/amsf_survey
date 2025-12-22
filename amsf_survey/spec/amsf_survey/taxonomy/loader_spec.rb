@@ -128,4 +128,22 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       FileUtils.rm_rf(temp_path)
     end
   end
+
+  describe "multiple file handling" do
+    it "warns when multiple XSD files are found" do
+      temp_path = File.join(fixtures_path, "..", "multi_xsd")
+      FileUtils.mkdir_p(temp_path)
+      FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), temp_path)
+      FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), File.join(temp_path, "extra.xsd"))
+      FileUtils.cp(File.join(fixtures_path, "semantic_mappings.yml"), temp_path)
+      FileUtils.cp(File.join(fixtures_path, "test_survey_pre.xml"), temp_path)
+
+      loader = described_class.new(temp_path)
+      expect { loader.load(:test, 2025) }.to output(
+        /Multiple XSD files found.*Ignored:/
+      ).to_stderr
+    ensure
+      FileUtils.rm_rf(temp_path)
+    end
+  end
 end

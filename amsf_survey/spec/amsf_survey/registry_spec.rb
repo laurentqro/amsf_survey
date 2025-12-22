@@ -120,5 +120,17 @@ RSpec.describe "AmsfSurvey Registry" do
         AmsfSurvey.questionnaire(industry: :test_industry, year: 1999)
       }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported/)
     end
+
+    it "raises error for negative year" do
+      expect {
+        AmsfSurvey.questionnaire(industry: :test_industry, year: -2025)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /Invalid year.*positive integer/)
+    end
+
+    it "raises error for non-integer year" do
+      expect {
+        AmsfSurvey.questionnaire(industry: :test_industry, year: "2025")
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /Invalid year.*positive integer/)
+    end
   end
 end

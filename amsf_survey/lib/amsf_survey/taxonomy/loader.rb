@@ -40,6 +40,11 @@ module AmsfSurvey
         xsd_files = Dir.glob(File.join(@taxonomy_path, "*.xsd"))
         raise MissingTaxonomyFileError, File.join(@taxonomy_path, "*.xsd") if xsd_files.empty?
 
+        if xsd_files.size > 1
+          warn "[TaxonomyLoader] Multiple XSD files found. Using: #{File.basename(xsd_files.first)}. " \
+               "Ignored: #{xsd_files[1..].map { |f| File.basename(f) }.join(', ')}"
+        end
+
         SchemaParser.new(xsd_files.first).parse
       end
 
