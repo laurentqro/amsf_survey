@@ -6,27 +6,108 @@
 #   - computed: Derived from other fields via formula
 #
 # Total fields: 323
-# Generated: 2025-12-22
+# Generated: 2025-12-23
 #
+# Fields are organized by section as they appear in the survey presentation.
 # All fields have semantic English names translated from French labels.
-# Names follow Ruby snake_case convention.
 
 fields:
-  # Votre entité dispose-t-elle d'informations sur le nombre et la valeur de leurs opérations ?
-  a11001BTOLA:
-    name: has_trust_transaction_info
+
+  # ═══════════════════════════════════════════════════════════════════════════════
+  # SECTION: General Information (No Country Breakdown)
+  # Fields: 286
+  # ═══════════════════════════════════════════════════════════════════════════════
+
+  # Avez-vous agi en tant que mandataire professionnel au sens de la loi n° 1.362 pour des achats
+  #   ou des ventes de biens immobiliers ou de locations immobilières au cours de la période de
+  #   déclaration ? ( cf. lien )
+  aACTIVE:
+    name: has_activity
     source_type: entry_only
 
-  # Veuillez préciser le type d'autres constructions juridiques non mentionnées dans les questions
-  #   précédentes que votre entité a comme clients.
-  a11006:
-    name: other_arrangements_desc
+  # Spécifiquement en ce qui concerne les achats ou ventes de biens immobiliers réalisés au cours
+  #   de la période de référence ?
+  aACTIVEPS:
+    name: has_activity_purchase_sale
+    source_type: entry_only
+
+  # Spécifiquement en ce qui concerne les locations de biens immobiliers pour lesquelles des
+  #   opérations ont été réalisées au cours de la période de référence ?
+  aACTIVERENTALS:
+    name: has_activity_rentals
     source_type: entry_only
 
   # Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné
   #   pendant la période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
   a1101:
     name: total_clients
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients au cours de la
+  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
+  a1105B:
+    name: transactions_by_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
+  #   déclaration, pour l’achat et la vente de biens immobiliers . (iso4217:EUR)
+  a1106B:
+    name: funds_transferred_by_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
+  #   déclaration, pour la location de biens immobiliers . (iso4217:EUR)
+  a1106BRENTALS:
+    name: funds_transferred_rentals
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées avec les clients au cours de la
+  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
+  a1105W:
+    name: transactions_with_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec les clients pendant la période de
+  #   déclaration, pour l'achat, la vente et la location de biens immobiliers . (iso4217:EUR)
+  a1106W:
+    name: funds_transferred_with_clients
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer la nationalité du bénéficiaire effectif des clients ?
+  a1204S:
+    name: can_identify_bo_nationality
+    source_type: entry_only
+
+  # Votre entité peut-elle distinguer les bénéficiaires effectifs qui détiennent 25 % ou plus ?
+  a1204O:
+    name: can_identify_25pct_bo
+    source_type: entry_only
+
+  # Votre entité enregistre-t-elle la résidence pour les bénéficiaires effectifs détenant une
+  #   participation de 25 % ou plus ?
+  a1203D:
+    name: records_bo_residence
+    source_type: entry_only
+
+  # Que vous ayez ou non de tels clients, votre entité identifie-t-elle et enregistre-t-elle le
+  #   type de clients lorsqu'il s'agit de : HNWIs ?
+  a11201BCD:
+    name: tracks_hnwi
+    source_type: entry_only
+
+  # UHNWIs ?
+  a11201BCDU:
+    name: tracks_uhnwi
+    source_type: entry_only
+
+  # Trusts et d'autres constructions juridiques ?
+  a1801:
+    name: has_trust_clients
+    source_type: entry_only
+
+  # PSAV (prestataires de services d’actifs virtuels) qui fournissent d'autres services ?
+  a13601:
+    name: vasp_other_services
     source_type: entry_only
 
   # Veuillez fournir le nombre total de clients uniques qui sont des personnes physiques qui sont
@@ -47,78 +128,105 @@ fields:
     name: clients_non_residents
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total d'opérations effectuées par les clients au cours de la
-  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
-  a1105B:
-    name: transactions_by_clients
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
+  #   personnes physiques pour l’achat et la vente de biens immobiliers.
+  a1403B:
+    name: individual_transactions_purchase_sale
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total d'opérations effectuées avec les clients au cours de la
-  #   période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
-  a1105W:
-    name: transactions_with_clients
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients qui sont des personnes
+  #   physiques, pour l’achat et la vente de biens immobiliers, en euros. (iso4217:EUR)
+  a1404B:
+    name: individual_funds_transferred
     source_type: entry_only
 
-  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
-  #   déclaration, pour l’achat et la vente de biens immobiliers . (iso4217:EUR)
-  a1106B:
-    name: funds_transferred_by_clients
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques
+  #   (individus) pour la location de biens immobiliers .
+  a1401R:
+    name: individuals_rentals
     source_type: entry_only
 
-  # Veuillez indiquer la valeur totale des fonds transférés par des clients pendant la période de
-  #   déclaration, pour la location de biens immobiliers . (iso4217:EUR)
-  a1106BRENTALS:
-    name: funds_transferred_rentals
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
+  #   personnes physiques pour la location de biens immobiliers .
+  a1403R:
+    name: individual_transactions_rentals
     source_type: entry_only
 
-  # Veuillez indiquer la valeur totale des fonds transférés avec les clients pendant la période de
-  #   déclaration, pour l'achat, la vente et la location de biens immobiliers . (iso4217:EUR)
-  a1106W:
-    name: funds_transferred_with_clients
+  # Certains des achats immobiliers effectués pendant la période de déclaration avaient-ils pour
+  #   but d'établir une résidence à Monaco ?
+  aIR129:
+    name: ir_129
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes
-  #   morales et qui sont des particuliers très fortunés ( UHNWI ), ventilés par nationalité primaire
-  #   de l'UHNWI.
-  a112012B:
-    name: uhnwi_bo_by_nationality
+  # Combien d'achats ont-ils été effectués dans le but d’établir une résidence à Monaco au cours de
+  #   la période de déclaration ?
+  aIR1210:
+    name: combien_d_achats_ont_ils_ete_effectues_dans_le_but
     source_type: entry_only
 
-  # Que vous ayez ou non de tels clients, votre entité identifie-t-elle et enregistre-t-elle le
-  #   type de clients lorsqu'il s'agit de : HNWIs ?
-  a11201BCD:
-    name: tracks_hnwi
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
+  #   personnes morales pour l'achat et la vente de biens immobiliers .
+  a1502B:
+    name: legal_entity_transactions
     source_type: entry_only
 
-  # UHNWIs ?
-  a11201BCDU:
-    name: tracks_uhnwi
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des personnes
+  #   morales pour l’achat et la vente de biens immobiliers. (iso4217:EUR)
+  a1503B:
+    name: legal_entity_funds
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes
-  #   morales qui sont des particuliers fortunés ( HNWI ), ventilés par nationalité principale du
-  #   HNWI.
-  a11206B:
-    name: hnwi_bo_by_nationality
+  # Votre entité distingue-t-elle si les clients sont des personnes morales monégasques et le type
+  #   de personne morale ?
+  a155:
+    name: identifies_monaco_legal_entity_types
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si les clients sont des trusts ou d'autres constructions
+  #   juridiques ?
+  a1802BTOLA:
+    name: identifies_trusts
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des trusts et d'autres
+  #   constructions juridiques pour l’achat, la vente et la location de biens immobiliers.
+  a1802TOLA:
+    name: trusts_count
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des trusts et autres
+  #   constructions juridiques pour l’achat, la vente et la location de biens immobiliers.
+  a1807ATOLA:
+    name: monaco_trusts
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle d'informations sur le nombre et la valeur de leurs opérations ?
+  a11001BTOLA:
+    name: has_trust_transaction_info
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des trusts
+  #   et d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers .
+  a1806TOLA:
+    name: trust_transactions
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des trusts et
+  #   d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers .
+  #   (iso4217:EUR)
+  a1807TOLA:
+    name: trust_funds
+    source_type: entry_only
+
+  # Veuillez préciser le type d'autres constructions juridiques non mentionnées dans les questions
+  #   précédentes que votre entité a comme clients.
+  a11006:
+    name: other_arrangements_desc
     source_type: entry_only
 
   # Votre entité compte-t-elle parmi ses clients des personnes politiquement exposées (PPE) ?
   a11301:
     name: has_pep_clients
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon la
-  #   nationalité primaire de la PPE (y compris les clients nationaux), pour l’achat, la vente et la
-  #   location de biens immobiliers .
-  a11302:
-    name: pep_clients_by_nationality
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon le lieu de
-  #   résidence des PPE (y compris les clients nationaux), pour l’achat, la vente et la location de
-  #   biens immobiliers .
-  a11302RES:
-    name: pep_clients_by_residence
     source_type: entry_only
 
   # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des PPE pour
@@ -133,18 +241,135 @@ fields:
     name: pep_funds_transferred
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de clients qui sont les bénéficiaires effectifs uniques de
-  #   personnes morales/trusts et autres constructions juridiques et qui sont des PPE. Veuillez les
-  #   classer selon la nationalité principale de la PPE.
-  a11307:
-    name: pep_beneficial_owners
-    source_type: entry_only
-
   # Veuillez indiquer le nombre total d’opérations (entrantes et sortantes) effectuées par des
   #   bénéficiaires effectifs de personnes morales/trusts et autres constructions juridiques qui sont
   #   des PPE.
   a11309B:
     name: pep_bo_transactions
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients qui sont des PSAV ?
+  a13501B:
+    name: has_vasp_clients
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de conservation
+  #   (Custodian Wallet Providers) ?
+  a13601A:
+    name: identifies_vasp_custodians
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des prestataires de conservation ( Custodian
+  #   Wallet Providers ) ?
+  a13601CW:
+    name: has_vasp_custodian_clients
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui qui sont des
+  #   prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la location
+  #   de biens immobiliers.
+  a13603BB:
+    name: vasp_custodian_transactions
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont
+  #   des prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la
+  #   location de biens immobiliers. (iso4217:EUR)
+  a13604BB:
+    name: vasp_custodian_funds
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des fournisseurs d'échange de monnaie
+  #   virtuelle ?
+  a13601B:
+    name: identifies_vasp_exchanges
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des fournisseurs d'échange de monnaie virtuelle
+  #   ?
+  a13601EP:
+    name: has_vasp_exchange_clients
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées avec et par les clients PSAV qui sont
+  #   des fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
+  #   immobiliers.
+  a13603AB:
+    name: vasp_exchange_transactions
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont
+  #   des fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
+  #   immobiliers. (iso4217:EUR)
+  a13604AB:
+    name: vasp_exchange_funds
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de services liés aux
+  #   ICO (offre au public de jetons) ?
+  a13601C:
+    name: identifies_vasp_ico
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui sont des services liés aux ICO (offre au public de
+  #   jetons) ?
+  a13601ICO:
+    name: has_vasp_ico_clients
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui sont des
+  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et
+  #   la location de biens immobiliers.
+  a13603CACB:
+    name: vasp_ico_transactions
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui sont des
+  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et
+  #   la location de biens immobiliers. (iso4217:EUR)
+  a13604CB:
+    name: vasp_ico_funds
+    source_type: entry_only
+
+  # Votre entité distingue-t-elle si des clients PSAV fournissent d'autres services non mentionnés
+  #   ci-dessus ?
+  a13601C2:
+    name: identifies_vasp_other
+    source_type: entry_only
+
+  # Votre entité a-t-elle des clients PSAV qui fournissent d'autres services ?
+  a13601OTHER:
+    name: has_vasp_other_clients
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui fournissent
+  #   d'autres services non mentionnés ci-dessus, pour l’achat, la vente et la location de biens
+  #   immobiliers.
+  a13603DB:
+    name: vasp_other_transactions
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui fournissent
+  #   d'autres services , pour l’achat, la vente et la location de biens immobiliers. (iso4217:EUR)
+  a13604DB:
+    name: vasp_other_funds
+    source_type: entry_only
+
+  # Veuillez préciser quels sont les autres services fournis par les clients PSAV qui ne sont pas
+  #   mentionnés ci-dessus.
+  a13604E:
+    name: vasp_other_services_desc
+    source_type: entry_only
+
+  # Pour les clients ayant deux ou plusieurs nationalités, votre entité enregistre-t-elle toutes
+  #   les nationalités du client ?
+  a1203:
+    name: records_dual_nationality
+    source_type: entry_only
+
+  # Avez-vous eu des clients monégasques (achats et ventes) au cours de la période de déclaration ?
+  aC171:
+    name: ownership_structure
     source_type: entry_only
 
   # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des avocats ou qui
@@ -177,66 +402,9 @@ fields:
     name: monaco_real_estate_agents
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de bénéficiaires effectifs exerçant un contrôle direct ou
-  #   indirect sur une personne morale, ventilé par nationalité principale.
-  a1202O:
-    name: bo_direct_indirect_by_nationality
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de bénéficiaires effectifs représentant une personne morale ,
-  #   ventilé par nationalité principale.
-  a1202OB:
-    name: bo_representing_legal_entity
-    source_type: entry_only
-
-  # Pour les clients ayant deux ou plusieurs nationalités, votre entité enregistre-t-elle toutes
-  #   les nationalités du client ?
-  a1203:
-    name: records_dual_nationality
-    source_type: entry_only
-
-  # Votre entité enregistre-t-elle la résidence pour les bénéficiaires effectifs détenant une
-  #   participation de 25 % ou plus ?
-  a1203D:
-    name: records_bo_residence
-    source_type: entry_only
-
-  # Veuillez fournir le nombre total de bénéficiaires effectifs détenant au moins 25% , ventilé par
-  #   nationalité principale du BE.
-  a120425O:
-    name: bo_25pct_by_nationality
-    source_type: entry_only
-
-  # Votre entité peut-elle distinguer les bénéficiaires effectifs qui détiennent 25 % ou plus ?
-  a1204O:
-    name: can_identify_25pct_bo
-    source_type: entry_only
-
-  # Votre entité peut-elle distinguer la nationalité du bénéficiaire effectif des clients ?
-  a1204S:
-    name: can_identify_bo_nationality
-    source_type: entry_only
-
-  # Fournir la répartition en pourcentage des principales nationalités des bénéficiaires effectifs.
-  a1204S1:
-    name: bo_nationality_breakdown
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de bénéficiaires effectifs des résidents étrangers , par
-  #   nationalité principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
-  a1207O:
-    name: bo_foreign_residents_by_nationality
-    source_type: entry_only
-
   # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des NMPPP.
   a12102B:
     name: monaco_nmppp
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de bénéficiaires effectifs des non-résidents , par
-  #   nationalité principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
-  a1210O:
-    name: bo_non_residents_by_nationality
     source_type: entry_only
 
   # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des prestataires de
@@ -317,151 +485,6 @@ fields:
     name: monaco_extractive
     source_type: entry_only
 
-  # Votre entité a-t-elle des clients qui sont des PSAV ?
-  a13501B:
-    name: has_vasp_clients
-    source_type: entry_only
-
-  # PSAV (prestataires de services d’actifs virtuels) qui fournissent d'autres services ?
-  a13601:
-    name: vasp_other_services
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de conservation
-  #   (Custodian Wallet Providers) ?
-  a13601A:
-    name: identifies_vasp_custodians
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si des clients PSAV sont des fournisseurs d'échange de monnaie
-  #   virtuelle ?
-  a13601B:
-    name: identifies_vasp_exchanges
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si des clients PSAV sont des prestataires de services liés aux
-  #   ICO (offre au public de jetons) ?
-  a13601C:
-    name: identifies_vasp_ico
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si des clients PSAV fournissent d'autres services non mentionnés
-  #   ci-dessus ?
-  a13601C2:
-    name: identifies_vasp_other
-    source_type: entry_only
-
-  # Votre entité a-t-elle des clients PSAV qui sont des prestataires de conservation ( Custodian
-  #   Wallet Providers ) ?
-  a13601CW:
-    name: has_vasp_custodian_clients
-    source_type: entry_only
-
-  # Votre entité a-t-elle des clients PSAV qui sont des fournisseurs d'échange de monnaie virtuelle
-  #   ?
-  a13601EP:
-    name: has_vasp_exchange_clients
-    source_type: entry_only
-
-  # Votre entité a-t-elle des clients PSAV qui sont des services liés aux ICO (offre au public de
-  #   jetons) ?
-  a13601ICO:
-    name: has_vasp_ico_clients
-    source_type: entry_only
-
-  # Votre entité a-t-elle des clients PSAV qui fournissent d'autres services ?
-  a13601OTHER:
-    name: has_vasp_other_clients
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des fournisseurs d'échange
-  #   de monnaie virtuelle , ventilé par pays d'établissement, pour l’achat, la vente et la location
-  #   de biens immobiliers.
-  a13602A:
-    name: vasp_exchange_by_country
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des prestataires de
-  #   conservation ( Custodian Wallet Providers ), ventilé par pays d'établissement pour l’achat, la
-  #   vente et la location de biens immobiliers.
-  a13602B:
-    name: vasp_custodian_by_country
-    source_type: entry_only
-
-  # Veuillez fournir le nombre total de clients uniques PSAV qui sont des services liés aux ICO
-  #   (offre au public de jetons) , ventilé par pays d'établissement, pour l’achat, la vente et la
-  #   location de biens immobiliers.
-  a13602C:
-    name: vasp_ico_by_country
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques PSAV qui fournissent d'autres services ,
-  #   ventilé par pays d'établissement, pour l’achat, la vente et la location de biens immobiliers.
-  a13602D:
-    name: vasp_other_by_country
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées avec et par les clients PSAV qui sont
-  #   des fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
-  #   immobiliers.
-  a13603AB:
-    name: vasp_exchange_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui qui sont des
-  #   prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la location
-  #   de biens immobiliers.
-  a13603BB:
-    name: vasp_custodian_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui sont des
-  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et
-  #   la location de biens immobiliers.
-  a13603CACB:
-    name: vasp_ico_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui fournissent
-  #   d'autres services non mentionnés ci-dessus, pour l’achat, la vente et la location de biens
-  #   immobiliers.
-  a13603DB:
-    name: vasp_other_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont
-  #   des fournisseurs d'échange de monnaie virtuelle pour l'achat, la vente et la location de biens
-  #   immobiliers. (iso4217:EUR)
-  a13604AB:
-    name: vasp_exchange_funds
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont
-  #   des prestataires de conservation (Custodian Wallet Providers) pour l’achat, la vente et la
-  #   location de biens immobiliers. (iso4217:EUR)
-  a13604BB:
-    name: vasp_custodian_funds
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui sont des
-  #   prestataires de services liés aux ICO (offre au public de jetons) , pour l’achat, la vente et
-  #   la location de biens immobiliers. (iso4217:EUR)
-  a13604CB:
-    name: vasp_ico_funds
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés par les clients PSAV qui fournissent
-  #   d'autres services , pour l’achat, la vente et la location de biens immobiliers. (iso4217:EUR)
-  a13604DB:
-    name: vasp_other_funds
-    source_type: entry_only
-
-  # Veuillez préciser quels sont les autres services fournis par les clients PSAV qui ne sont pas
-  #   mentionnés ci-dessus.
-  a13604E:
-    name: vasp_other_services_desc
-    source_type: entry_only
-
   # Prière d’indiquer le nombre total de clients uniques monégasques impliqués dans le secteur de
   #   la défense / des armes.
   a13702B:
@@ -478,49 +501,6 @@ fields:
   #   intermédiaires sportifs.
   a13902B:
     name: monaco_sports_agents
-    source_type: entry_only
-
-  # Prière de partager vos retours et vos commentaires au sujet de cette section.
-  a14001:
-    name: section_comments_clients
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques
-  #   (individus), classés selon la nationalité principale de l'individu pour l’achat et la vente de
-  #   biens immobiliers.
-  a1401:
-    name: individuals_by_nationality
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques
-  #   (individus) pour la location de biens immobiliers .
-  a1401R:
-    name: individuals_rentals
-    source_type: entry_only
-
-  # Veuillez fournir le nombre total de nationalités secondaires des clients uniques qui sont des
-  #   personnes physiques (individus), classés selon la(les) nationalité(s) secondaire(s) du client,
-  #   le cas échéant (y compris les nationaux).
-  a1402:
-    name: individuals_secondary_nationalities
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
-  #   personnes physiques pour l’achat et la vente de biens immobiliers.
-  a1403B:
-    name: individual_transactions_purchase_sale
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
-  #   personnes physiques pour la location de biens immobiliers .
-  a1403R:
-    name: individual_transactions_rentals
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés par des clients qui sont des personnes
-  #   physiques, pour l’achat et la vente de biens immobiliers, en euros. (iso4217:EUR)
-  a1404B:
-    name: individual_funds_transferred
     source_type: entry_only
 
   # Veuillez indiquer le nombre total de clients uniques monégasques impliqués dans la gestion de
@@ -569,85 +549,9 @@ fields:
     name: section_comments_risks
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes morales , ventilé
-  #   selon le pays du siège ou de l’immatriculation, pour l’achat, la vente et la location de biens
-  #   immobiliers .
-  a1501:
-    name: legal_entities_by_country
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des
-  #   personnes morales pour l'achat et la vente de biens immobiliers .
-  a1502B:
-    name: legal_entity_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des personnes
-  #   morales pour l’achat et la vente de biens immobiliers. (iso4217:EUR)
-  a1503B:
-    name: legal_entity_funds
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si les clients sont des personnes morales monégasques et le type
-  #   de personne morale ?
-  a155:
-    name: identifies_monaco_legal_entity_types
-    source_type: entry_only
-
-  # Trusts et d'autres constructions juridiques ?
-  a1801:
-    name: has_trust_clients
-    source_type: entry_only
-
-  # Votre entité distingue-t-elle si les clients sont des trusts ou d'autres constructions
-  #   juridiques ?
-  a1802BTOLA:
-    name: identifies_trusts
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui sont des trusts et d'autres
-  #   constructions juridiques pour l’achat, la vente et la location de biens immobiliers.
-  a1802TOLA:
-    name: trusts_count
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des trusts
-  #   et d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers .
-  a1806TOLA:
-    name: trust_transactions
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques monégasques qui sont des trusts et autres
-  #   constructions juridiques pour l’achat, la vente et la location de biens immobiliers.
-  a1807ATOLA:
-    name: monaco_trusts
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des trusts et
-  #   d'autres constructions juridiques, pour l’achat et la vente de biens immobiliers .
-  #   (iso4217:EUR)
-  a1807TOLA:
-    name: trust_funds
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de personnes physiques qui sont des trustees à titre
-  #   professionnel, ventilé par nationalité primaire , pour l’achat, la vente et la location de
-  #   biens immobiliers.
-  a1808:
-    name: professional_trustees_by_nationality
-    source_type: entry_only
-
-  # Veuillez indiquer le n ombre total de personnes physiques qui sont des trustees à titre
-  #   professionnel, ventilé par pays dans lequel le trust a été créé , pour l’achat, la vente et la
-  #   location de biens immobiliers.
-  a1809:
-    name: professional_trustees_by_trust_country
-    source_type: entry_only
-
-  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
-  #   ont-ils accepté ou effectué des opérations par chèque au cours de la période de déclaration ?
-  a2101B:
-    name: clients_used_checks
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a14001:
+    name: section_comments_clients
     source_type: entry_only
 
   # Votre entité accepte-t-elle ou effectue-t-elle des opérations par chèque avec les clients ?
@@ -662,6 +566,24 @@ fields:
     source_type: entry_only
 
   # Prière d’indiquer le nombre total d’opérations effectuées par chèque (tant entrantes que
+  #   sortantes) avec des clients ?
+  a2102W:
+    name: check_transactions_with_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des opérations par chèques effectuées avec des clients
+  #   (entrantes et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2102BW:
+    name: check_value_with_clients
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des opérations par chèque au cours de la période de déclaration ?
+  a2101B:
+    name: clients_used_checks
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées par chèque (tant entrantes que
   #   sortantes) par des clients ?
   a2102B:
     name: check_transactions_by_clients
@@ -671,25 +593,6 @@ fields:
   #   (entrantes et sortants) au cours de la période de déclaration. (iso4217:EUR)
   a2102BB:
     name: check_value_by_clients
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des opérations par chèques effectuées avec des clients
-  #   (entrantes et sortants) au cours de la période de déclaration. (iso4217:EUR)
-  a2102BW:
-    name: check_value_with_clients
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total d’opérations effectuées par chèque (tant entrantes que
-  #   sortantes) avec des clients ?
-  a2102W:
-    name: check_transactions_with_clients
-    source_type: entry_only
-
-  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
-  #   ont-ils accepté ou effectué des transferts électroniques au cours de la période de déclaration
-  #   ?
-  a2104B:
-    name: clients_used_transfers
     source_type: entry_only
 
   # Votre entité accepte-t-elle ou effectue-t-elle des transferts électroniques d'argent avec les
@@ -705,6 +608,25 @@ fields:
     source_type: entry_only
 
   # Prière d’indiquer le nombre total d’opérations (tant entrantes que sortantes) effectuées sous
+  #   forme d’ordre de paiement électronique avec des clients.
+  a2105W:
+    name: transfer_transactions_with_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des transferts électroniques effectués avec des clients
+  #   (entrants et sortants) au cours de la période de déclaration. (iso4217:EUR)
+  a2105BW:
+    name: transfer_value_with_clients
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des transferts électroniques au cours de la période de déclaration
+  #   ?
+  a2104B:
+    name: clients_used_transfers
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations (tant entrantes que sortantes) effectuées sous
   #   forme d’ordre de paiement électronique par/ à l’intention du client.
   a2105B:
     name: transfer_transactions_by_clients
@@ -714,24 +636,6 @@ fields:
   #   (entrants et sortants) au cours de la période de déclaration. (iso4217:EUR)
   a2105BB:
     name: transfer_value_by_clients
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des transferts électroniques effectués avec des clients
-  #   (entrants et sortants) au cours de la période de déclaration. (iso4217:EUR)
-  a2105BW:
-    name: transfer_value_with_clients
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total d’opérations (tant entrantes que sortantes) effectuées sous
-  #   forme d’ordre de paiement électronique avec des clients.
-  a2105W:
-    name: transfer_transactions_with_clients
-    source_type: entry_only
-
-  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
-  #   ont-ils accepté ou effectué des opérations en espèces au cours de la période de déclaration ?
-  a2107B:
-    name: clients_used_cash
     source_type: entry_only
 
   # Votre entité accepte-t-elle ou effectue-t-elle des opérations en espèces avec les clients ?
@@ -745,12 +649,6 @@ fields:
     name: accepted_cash_period
     source_type: entry_only
 
-  # Veuillez fournir le nombre total d'opérations en espèces par des clients, au cours de la
-  #   période de déclaration.
-  a2108B:
-    name: cash_transactions_by_clients
-    source_type: entry_only
-
   # Veuillez fournir le nombre total d'opérations en espèces avec les clients, au cours de la
   #   période de déclaration.
   a2108W:
@@ -759,21 +657,14 @@ fields:
 
   # Veuillez indiquer la valeur totale des fonds transférés , par paiements en espèces, pendant la
   #   période de déclaration. (iso4217:EUR)
-  a2109B:
-    name: cash_value_by_clients
-    source_type: entry_only
-
-  # Veuillez indiquer la valeur totale des fonds transférés , par paiements en espèces, pendant la
-  #   période de déclaration. (iso4217:EUR)
   a2109W:
     name: cash_value_with_clients
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total d’opérations effectuées en espèces (tant entrantes que
-  #   sortantes) pour un montant supérieur ou égal à 10 000 euros par des clients, pendant la période
-  #   de déclaration.
-  a2110B:
-    name: cash_over_10k_by_clients
+  # Veuillez indiquer la valeur totale des fonds transférés avec des clients, par paiements en
+  #   espèces dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
+  aG24010W:
+    name: transactions_by_property_location
     source_type: entry_only
 
   # Prière d’indiquer le nombre total d’opérations effectuées en espèces (tant entrantes que
@@ -783,10 +674,10 @@ fields:
     name: cash_over_10k_with_clients
     source_type: entry_only
 
-  # Nombre d'opérations physiques en espèces effectuées par des personnes physiques pour un montant
-  #   supérieur à 100 000 euros, pendant la période de déclaration.
-  a2113AB:
-    name: cash_over_100k_individuals_by
+  # Votre entité peut-elle distinguer les opérations en espèces supérieures à 100 000 euros dans
+  #   votre comptabilité ?
+  a2113W:
+    name: can_identify_cash_over_100k_with
     source_type: entry_only
 
   # Nombre d'opérations physiques en espèces effectuées avec des personnes physiques pour un
@@ -795,22 +686,59 @@ fields:
     name: cash_over_100k_individuals_with
     source_type: entry_only
 
+  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales monégasques pour
+  #   un montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2114A:
+    name: cash_over_100k_monaco_entities_with
+    source_type: entry_only
+
+  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales étrangères pour
+  #   un montant supérieur à 100 000 euros, pendant la période de déclaration.
+  a2115AW:
+    name: cash_over_100k_foreign_entities_with
+    source_type: entry_only
+
+  # D'après votre connaissance des contrats émis pour l'achat, la vente et la location, vos clients
+  #   ont-ils accepté ou effectué des opérations en espèces au cours de la période de déclaration ?
+  a2107B:
+    name: clients_used_cash
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total d'opérations en espèces par des clients, au cours de la
+  #   période de déclaration.
+  a2108B:
+    name: cash_transactions_by_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés , par paiements en espèces, pendant la
+  #   période de déclaration. (iso4217:EUR)
+  a2109B:
+    name: cash_value_by_clients
+    source_type: entry_only
+
+  # Veuillez indiquer la valeur totale des fonds transférés par des clients, par paiements en
+  #   espèces dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
+  aG24010B:
+    name: clients_by_property_location
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d’opérations effectuées en espèces (tant entrantes que
+  #   sortantes) pour un montant supérieur ou égal à 10 000 euros par des clients, pendant la période
+  #   de déclaration.
+  a2110B:
+    name: cash_over_10k_by_clients
+    source_type: entry_only
+
   # Votre entité peut-elle distinguer les opérations en espèces supérieures à 100 000 euros dans
   #   votre comptabilité ?
   a2113B:
     name: can_identify_cash_over_100k_by
     source_type: entry_only
 
-  # Votre entité peut-elle distinguer les opérations en espèces supérieures à 100 000 euros dans
-  #   votre comptabilité ?
-  a2113W:
-    name: can_identify_cash_over_100k_with
-    source_type: entry_only
-
-  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales monégasques pour
-  #   un montant supérieur à 100 000 euros, pendant la période de déclaration.
-  a2114A:
-    name: cash_over_100k_monaco_entities_with
+  # Nombre d'opérations physiques en espèces effectuées par des personnes physiques pour un montant
+  #   supérieur à 100 000 euros, pendant la période de déclaration.
+  a2113AB:
+    name: cash_over_100k_individuals_by
     source_type: entry_only
 
   # Nombre d'opérations physiques en espèces effectuées par des personnes morales monégasques pour
@@ -823,12 +751,6 @@ fields:
   #   un montant supérieur à 100 000 euros, pendant la période de déclaration.
   a2115AB:
     name: cash_over_100k_foreign_entities_by
-    source_type: entry_only
-
-  # Nombre d'opérations physiques en espèces effectuées avec des personnes morales étrangères pour
-  #   un montant supérieur à 100 000 euros, pendant la période de déclaration.
-  a2115AW:
-    name: cash_over_100k_foreign_entities_with
     source_type: entry_only
 
   # Acceptez-vous ou effectuez-vous des opérations utilisant des crypto-monnaies avec des clients ?
@@ -854,14 +776,80 @@ fields:
     name: virtual_asset_platforms
     source_type: entry_only
 
-  # Prière de partager vos retours et vos commentaires au sujet de cette section.
-  a2501:
-    name: section_comments_payments
+  # Combien de clients uniques étaient des acheteurs ?
+  aIR233B:
+    name: ir_233b
+    source_type: entry_only
+
+  # Combien de clients uniques étaient des vendeurs ?
+  aIR233S:
+    name: ir_233s
+    source_type: entry_only
+
+  # Pour combien d’achats/ventes avez-vous représenté l’acheteur ?
+  aIR235B_2:
+    name: pour_combien_d_achats_ventes_avez_vous_represente
+    source_type: entry_only
+
+  # Pour combien d’achats/ventes avez-vous représenté le vendeur ?
+  aIR235S:
+    name: ir_235s
+    source_type: entry_only
+
+  # Combien d'achats et de ventes de biens immobiliers ont-ils été effectués au cours de la période
+  #   de déclaration à des fins d'investissement , à l'exclusion des biens utilisés comme résidence
+  #   principale par l'acheteur ou par des personnes qui lui sont liées ?
+  aIR117:
+    name: ir_117
+    source_type: entry_only
+
+  # L'Etat de Monaco a t-il préempté des biens à la vente ?
+  aIR2391:
+    name: ir_2391
+    source_type: entry_only
+
+  # Combien de biens ont été acquis par l'Etat de Monaco via l'exercice de son droit de préemption
+  #   ?
+  aIR2392:
+    name: ir_2392
+    source_type: entry_only
+
+  # Quelle était la valeur totale des biens préemptés ? (iso4217:EUR)
+  aIR2393:
+    name: quelle_etait_value_biens_preemptes_iso4217_eur
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens uniques loués au cours de la période de déclaration.
+  aIR234:
+    name: ir_234
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total d'opérations de location au cours de la période de
+  #   déclaration.
+  aIR236:
+    name: ir_236
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens locatifs uniques , &gt;= 10.000 € par mois, qui ont
+  #   été loués à un moment donné au cours de la période de déclaration.
+  aIR2313:
+    name: count_biens_locatifs_uniques_gt_10_000_par_mois_qu
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de biens locatifs uniques , &lt; 10.000 € par mois, qui ont
+  #   été loués à un moment donné au cours de la période de déclaration.
+  aIR2316:
+    name: count_biens_locatifs_uniques_lt_10_000_par_mois_qu
     source_type: entry_only
 
   # Avez-vous des commentaires sur l'une des questions de cette section ?
   a2501A:
     name: section_comments_payments_alt
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a2501:
+    name: section_comments_payments
     source_type: entry_only
 
   # Votre entité a-elle recours à des tiers locaux pour appliquer certaines/ toutes les mesures de
@@ -870,63 +858,22 @@ fields:
     name: uses_local_third_party_cdd
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de clients où des tiers locaux ont été utilisés pour
-  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
-  #   de les ventiler selon la nationalité principale du client.
-  a3102:
-    name: local_third_party_clients_by_nationality
-    source_type: entry_only
-
   # Votre entité a-elle recours à des tiers étrangers pour appliquer certaines/ toutes les mesures
   #   de vigilance relatives à la clientèle ?
   a3103:
     name: uses_foreign_third_party_cdd
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour
-  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
-  #   de les ventiler selon la nationalité principale du client.
-  a3104:
-    name: foreign_third_party_clients_by_nationality
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes physiques ,
+  #   dont l'entrée en relation est intervenue au cours de la période de déclaration.
+  aB3206:
+    name: staff_trained
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour
-  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
-  #   de les ventiler selon le lieu de résidence du tiers étranger .
-  a3105:
-    name: foreign_third_party_by_residence
-    source_type: entry_only
-
-  # Votre entité accepte-t-elle des clients à travers des apporteurs d’affaires ?
-  a3201:
-    name: accepts_clients_via_introducers
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, en les ventilant
-  #   selon la nationalité principale du client (dans le cas d’une personne physique) ou selon le
-  #   pays d’établissement (dans le cas d’une personne morale ou d’une construction juridique).
-  a3202:
-    name: introduced_clients_by_nationality
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, en les ventilant
-  #   selon le lieu de résidence du tiers .
-  a3203:
-    name: introduced_clients_by_introducer_residence
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, au cours de la
-  #   période de déclaration, en les ventilant selon la nationalité principale du client (dans le cas
-  #   d’une personne physique) ou selon le pays d’établissement (dans le cas d’une personne morale ou
-  #   d’une construction juridique).
-  a3204:
-    name: introduced_clients_period_by_nationality
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, au cours de la
-  #   période de déclaration, en les ventilant selon le lieu de résidence du tiers .
-  a3205:
-    name: introduced_clients_period_by_introducer
+  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes morales , dont
+  #   l'entrée en relation est intervenue au cours de la période de déclaration.
+  aB3207:
+    name: training_frequency
     source_type: entry_only
 
   # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des trusts et d'autres
@@ -942,31 +889,11 @@ fields:
     name: accepts_non_face_to_face
     source_type: entry_only
 
-  # Votre entité est-elle membre d'une association ou d'une société professionnelle ?
-  a3210:
-    name: non_face_to_face_by_nationality
-    source_type: entry_only
-
-  # Votre entité fait-elle partie d'un réseau ou d'un groupe international d'entreprises ?
-  a3210B:
-    name: non_face_to_face_legal_entities
-    source_type: entry_only
-
   # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes physiques ,
   #   dont l'entrée en relation s'est effectuée sans rencontre face à face aux fins du devoir de
   #   vigilance relatif à la clientèle.
   a3210C:
     name: non_face_to_face_trusts_by_country
-    source_type: entry_only
-
-  # Si oui, veuillez préciser lequel.
-  a3211:
-    name: non_face_to_face_period
-    source_type: entry_only
-
-  # Si oui, veuillez préciser lequel.
-  a3211B:
-    name: non_face_to_face_legal_entities_period
     source_type: entry_only
 
   # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes morales , dont
@@ -983,10 +910,37 @@ fields:
     name: non_face_to_face_trusts_by_trust_country
     source_type: entry_only
 
+  # Votre entité accepte-t-elle des clients à travers des apporteurs d’affaires ?
+  a3201:
+    name: accepts_clients_via_introducers
+    source_type: entry_only
+
+  # L'entité peut-elle fournir des informations sur la nationalité des clients démarchés par
+  #   l’apporteur d’affaire ?
+  a3501B:
+    name: has_country_risk_assessment
+    source_type: entry_only
+
+  # L'entité peut-elle fournir des informations sur la résidence des apporteurs d’affaire ?
+  a3501C:
+    name: risk_assessment_methodology
+    source_type: entry_only
+
+  # Quelle est la forme juridique de votre entité ?
+  aIR33LF:
+    name: quelle_est_la_forme_juridique_de_entity
+    source_type: entry_only
+
   # Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et
   #   propriétaires non salariés, à la fin de la période de déclaration.
   a3301:
     name: uses_simplified_dd
+    source_type: entry_only
+
+  # Le titulaire de la carte professionnelle exerçant des activités d'agent immobilier est-il une
+  #   personne morale ?
+  aIR328:
+    name: ir_328
     source_type: entry_only
 
   # Votre entité dispose-t-elle des succursales, des filiales ou des agences ?
@@ -994,10 +948,9 @@ fields:
     name: simplified_dd_clients
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de succursales, filiales et agences de l’entité locale
-  #   autorisée, en les ventilant par pays.
-  a3303:
-    name: simplified_dd_new_clients
+  # Votre entité est-elle une succursale ou une filiale d’une autre entité ?
+  a3304C:
+    name: enhanced_dd_clients
     source_type: entry_only
 
   # Votre entité est-elle une succursale ou une filiale d’une entité étrangère ?
@@ -1005,34 +958,9 @@ fields:
     name: uses_enhanced_dd
     source_type: entry_only
 
-  # Votre entité est-elle une succursale ou une filiale d’une autre entité ?
-  a3304C:
-    name: enhanced_dd_clients
-    source_type: entry_only
-
   # Si oui, dans quel pays opère la société mère ?
   a3305:
     name: enhanced_dd_new_clients
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de succursales et de filiales étrangères (à l’extérieur de
-  #   Monaco).
-  a3306:
-    name: enhanced_dd_individuals_by_nationality
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre d'actionnaires détenant une participation de 25 % ou plus, ventilé
-  #   par nationalité primaire (personne physique) ou par pays d'établissement (personnes morales et
-  #   constructions juridiques).
-  a3306A:
-    name: enhanced_dd_individuals_by_residence
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre de bénéficiaires effectifs détenant, soit une participation de 25 %
-  #   ou plus, soit contrôlant directement ou indirectement la société, soit étant un représentant
-  #   légal, ventilé par nationalité primaire.
-  a3306B:
-    name: enhanced_dd_by_country_residence
     source_type: entry_only
 
   # Au cours de la période de déclaration, votre entité a-t-elle rencontré l'un des événements
@@ -1044,6 +972,48 @@ fields:
   # Veuillez renseigner l’évolution ou la modification.
   a3308:
     name: enhanced_dd_trusts
+    source_type: entry_only
+
+  # Votre entité fait-elle partie d'un réseau ou d'un groupe international d'entreprises ?
+  a3210B:
+    name: non_face_to_face_legal_entities
+    source_type: entry_only
+
+  # Si oui, veuillez préciser lequel.
+  a3211B:
+    name: non_face_to_face_legal_entities_period
+    source_type: entry_only
+
+  # Votre entité est-elle membre d'une association ou d'une société professionnelle ?
+  a3210:
+    name: non_face_to_face_by_nationality
+    source_type: entry_only
+
+  # Si oui, veuillez préciser lequel.
+  a3211:
+    name: non_face_to_face_period
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration. (iso4217:EUR)
+  a381:
+    name: compliance_fte
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration réalisé dans la Principauté de Monaco.
+  #   (iso4217:EUR)
+  a3802:
+    name: has_compliance_officer
+    source_type: entry_only
+
+  # Chiffre d'affaires pour la période de déclaration réalisé en dehors de la Principauté de
+  #   Monaco. (iso4217:EUR)
+  a3803:
+    name: compliance_officer_role
+    source_type: entry_only
+
+  # Veuillez indiquer le montant de votre dernière déclaration annuelle de TVA. (iso4217:EUR)
+  a3804:
+    name: compliance_officer_reporting
     source_type: entry_only
 
   # Prière d’indiquer le nombre total de prospects (clients potentiels) qui ont été rejetés en
@@ -1091,95 +1061,14 @@ fields:
     name: cdd_gaps_percentage
     source_type: entry_only
 
-  # L'entité peut-elle fournir des informations sur la nationalité des clients démarchés par
-  #   l’apporteur d’affaire ?
-  a3501B:
-    name: has_country_risk_assessment
-    source_type: entry_only
-
-  # L'entité peut-elle fournir des informations sur la résidence des apporteurs d’affaire ?
-  a3501C:
-    name: risk_assessment_methodology
-    source_type: entry_only
-
-  # Prière de partager vos retours et vos commentaires au sujet de cette section.
-  a3701:
-    name: has_client_risk_scoring
-    source_type: entry_only
-
   # Avez-vous des commentaires sur l'une des questions de cette section ?
   a3701A:
     name: risk_scoring_methodology
     source_type: entry_only
 
-  # Chiffre d'affaires pour la période de déclaration réalisé dans la Principauté de Monaco.
-  #   (iso4217:EUR)
-  a3802:
-    name: has_compliance_officer
-    source_type: entry_only
-
-  # Chiffre d'affaires pour la période de déclaration réalisé en dehors de la Principauté de
-  #   Monaco. (iso4217:EUR)
-  a3803:
-    name: compliance_officer_role
-    source_type: entry_only
-
-  # Veuillez indiquer le montant de votre dernière déclaration annuelle de TVA. (iso4217:EUR)
-  a3804:
-    name: compliance_officer_reporting
-    source_type: entry_only
-
-  # Chiffre d'affaires pour la période de déclaration. (iso4217:EUR)
-  a381:
-    name: compliance_fte
-    source_type: entry_only
-
-  # Avez-vous agi en tant que mandataire professionnel au sens de la loi n° 1.362 pour des achats
-  #   ou des ventes de biens immobiliers ou de locations immobilières au cours de la période de
-  #   déclaration ? ( cf. lien )
-  aACTIVE:
-    name: has_activity
-    source_type: entry_only
-
-  # Spécifiquement en ce qui concerne les achats ou ventes de biens immobiliers réalisés au cours
-  #   de la période de référence ?
-  aACTIVEPS:
-    name: has_activity_purchase_sale
-    source_type: entry_only
-
-  # Spécifiquement en ce qui concerne les locations de biens immobiliers pour lesquelles des
-  #   opérations ont été réalisées au cours de la période de référence ?
-  aACTIVERENTALS:
-    name: has_activity_rentals
-    source_type: entry_only
-
-  # Votre entité applique-t-elle à ses clients des notations de risque en matière de LBC/FT ?
-  aB1801B:
-    name: provides_aml_training
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes physiques ,
-  #   dont l'entrée en relation est intervenue au cours de la période de déclaration.
-  aB3206:
-    name: staff_trained
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre de clients uniques nouveaux , qui sont des personnes morales , dont
-  #   l'entrée en relation est intervenue au cours de la période de déclaration.
-  aB3207:
-    name: training_frequency
-    source_type: entry_only
-
-  # Approximativement, combien d'heures les employés ont-ils consacré à la conformité LCB/FT-P-C
-  #   par mois ?
-  aC1101Z:
-    name: detected_suspicious_activity
-    source_type: entry_only
-
-  # Veuillez fournir le nombre total d'employés équivalents temps plein, plus les partenaires et
-  #   propriétaires non salariés , dans votre entité, à la fin de la période de déclaration.
-  aC1102:
-    name: sar_filed
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  a3701:
+    name: has_client_risk_scoring
     source_type: entry_only
 
   # Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et
@@ -1188,89 +1077,16 @@ fields:
     name: sar_filed_period
     source_type: entry_only
 
-  # Votre entité dispose-t-elle d'un service de conformité ?
-  aC1106:
-    name: siccfin_requests
+  # Veuillez fournir le nombre total d'employés équivalents temps plein, plus les partenaires et
+  #   propriétaires non salariés , dans votre entité, à la fin de la période de déclaration.
+  aC1102:
+    name: sar_filed
     source_type: entry_only
 
-  # Votre entité conserve-t-elle les informations relatives aux opérations pendant au moins 5 ans ?
-  aC11101:
-    name: sar_individuals_by_nationality
-    source_type: entry_only
-
-  # Votre entité conserve-t-elle toutes les correspondances relatives aux CDD et les
-  #   correspondances commerciales pendant au moins 5 ans après la fin d’une relation client ?
-  aC11102:
-    name: sar_legal_entities
-    source_type: entry_only
-
-  # Votre entité conserve-t-elle ces informations et documents dans un endroit sûr et sécurisé ?
-  aC11103:
-    name: sar_trusts
-    source_type: entry_only
-
-  # Ces informations et documents sont-ils rapidement mis à la disposition des autorités
-  #   compétentes sur demande ?
-  aC11104:
-    name: sar_predicate_offenses
-    source_type: entry_only
-
-  # Votre entité dispose-t-elle de sauvegardes des informations relatives aux CDD et aux
-  #   correspondances commerciales avec un plan de récupération des données ?
-  aC11105:
-    name: sar_red_flags
-    source_type: entry_only
-
-  # Les politiques et procédures de l’entité couvrent-elles de manière adéquate le filtrage et les
-  #   alertes des sanctions financières ciblées pour le financement du terrorisme et de la
-  #   prolifération ?
-  aC11201:
-    name: has_internal_audit
-    source_type: entry_only
-
-  # Votre entité consulte-t-elle la Liste Nationale des gel d'Avoirs lors de l'intégration de
-  #   nouveaux clients ou lors de la mise à jour de la liste ?
-  aC1125A:
-    name: audit_frequency
-    source_type: entry_only
-
-  # Votre entité prend-elle des mesures pour déterminer si les clients et les bénéficiaires
-  #   effectifs sont des personnes politiquement exposées (PPE) ?
-  aC11301:
-    name: external_audit_performed
-    source_type: entry_only
-
-  # Quelles mesures votre entité applique-t-elle pour déterminer si les clients et les
-  #   bénéficiaires effectifs sont des PPE ?
-  aC11302:
-    name: audit_findings
-    source_type: entry_only
-
-  # Quelles procédures supplémentaires de LBC/FT sont appliquées pour les PPE (par rapport à un
-  #   client à risque standard) ?
-  aC11303:
-    name: findings_remediated
-    source_type: entry_only
-
-  # Un filtrage des PPE est-t-il effectué dans le cadre du processus de CDD pour les nouveaux
-  #   clients ?
-  aC11304:
-    name: audit_methodology
-    source_type: entry_only
-
-  # Le filtrage des PPE a-t-il lieu de façon continue ?
-  aC11305:
-    name: audit_scope
-    source_type: entry_only
-
-  # Les PPE font-elles l’objet d’une surveillance accrue ?
-  aC11306:
-    name: audit_independence
-    source_type: entry_only
-
-  # Votre entité considère-t-elle toutes les relations PPE comme à haut risque de LBC/FT ?
-  aC11307:
-    name: audit_reporting
+  # Approximativement, combien d'heures les employés ont-ils consacré à la conformité LCB/FT-P-C
+  #   par mois ?
+  aC1101Z:
+    name: detected_suspicious_activity
     source_type: entry_only
 
   # Votre entité dispose-t-elle d'un conseil d'administration et/ou une haute direction ?
@@ -1278,56 +1094,14 @@ fields:
     name: performs_sanctions_screening
     source_type: entry_only
 
-  # Votre entité effectue-t-elle des opérations en espèces avec des clients ?
-  aC11401:
-    name: sanctions_screening_frequency
+  # Votre entité dispose-t-elle d'un service de conformité ?
+  aC1106:
+    name: siccfin_requests
     source_type: entry_only
 
-  # Votre entité applique-t-elle des contrôles et des procédures spécifiques de LBC/FT pour les
-  #   opérations en espèces ?
-  aC11402:
-    name: sanctions_coverage
-    source_type: entry_only
-
-  # Prière de décrire les contrôles et procédures spécifiques aux opérations en espèces que votre
-  #   entité applique.
-  aC11403:
-    name: sanctions_hits
-    source_type: entry_only
-
-  # Votre entité a-t-elle déposé des DOS/DAS auprès de la CRF au cours de la période de déclaration
-  #   ?
-  aC11501B:
-    name: uses_transaction_monitoring
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de DOS/DAS liées au financement du terrorisme que votre
-  #   entité a déclaré à la CRF au cours de la période de déclaration.
-  aC11502:
-    name: monitoring_system
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de DOS/DAS liées au blanchiment de capitaux que votre entité
-  #   a déclaré à la CRF au cours de la période de déclaration.
-  aC11504:
-    name: monitoring_alerts
-    source_type: entry_only
-
-  # Votre entité a-t-elle pris des mesures pour renforcer les contrôles internes en matière de
-  #   LBC/FT, amender les politiques et procédures ou entreprendre d’autres procédures pour améliorer
-  #   la déclaration des opérations suspectes au cours de la période de déclaration ?
-  aC11508:
-    name: alerts_escalated
-    source_type: entry_only
-
-  # Prière de partager vos retours et vos commentaires au sujet de cette section.
-  aC11601:
-    name: record_retention_policy
-    source_type: entry_only
-
-  # Avez-vous des commentaires sur l'une des questions de cette section ?
-  aC116A:
-    name: retention_years
+  # Votre entité fait-elle partie d'un groupe ?
+  aC1518A:
+    name: system_last_upgraded
     source_type: entry_only
 
   # Votre entité a-t-elle préparé un ensemble de politiques et procédures de LBC/FT documenté ?
@@ -1370,16 +1144,6 @@ fields:
     name: policy_covers_sanctions
     source_type: entry_only
 
-  # Qui a préparé les politiques et procédures de votre entité ?
-  aC1208:
-    name: policy_covers_records
-    source_type: entry_only
-
-  # Votre entité a-t-elle procédé à une auto-évaluation de l’adéquation des procédures de LBC/FT ?
-  aC1209:
-    name: policy_covers_training
-    source_type: entry_only
-
   # Votre entité dispose-t-elle d'un programme de LBC/FT-P à l'échelle du groupe ?
   aC1209B:
     name: policy_covers_risk
@@ -1392,22 +1156,14 @@ fields:
     name: policy_covers_third_parties
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de déclarations faites à la Direction du Budget et du Trésor
-  #   (DBT) concernant le financement du terrorisme .
-  aC12236:
-    name: part_of_group
+  # Qui a préparé les politiques et procédures de votre entité ?
+  aC1208:
+    name: policy_covers_records
     source_type: entry_only
 
-  # Prière d’indiquer le nombre total de déclarations faites à la DBT concernant le financement de
-  #   la prolifération des armes de destruction massive .
-  aC12237:
-    name: group_policy_applies
-    source_type: entry_only
-
-  # Votre entité a-t-elle identifié une personne/des opérations liées au financement du terrorisme
-  #   ou à la prolifération des armes de destruction massive au cours de la période de référence ?
-  aC12333:
-    name: group_info_sharing
+  # Votre entité a-t-elle procédé à une auto-évaluation de l’adéquation des procédures de LBC/FT ?
+  aC1209:
+    name: policy_covers_training
     source_type: entry_only
 
   # Le conseil d’administration et/ou la haute direction de votre entité démontrent-ils une
@@ -1469,138 +1225,6 @@ fields:
     name: system_capabilities
     source_type: entry_only
 
-  # Votre entité fait-elle partie d'un groupe ?
-  aC1518A:
-    name: system_last_upgraded
-    source_type: entry_only
-
-  # Est-ce que tous les éléments suivants sont conservé dans le dossier du client : prénom nom date
-  #   de naissance lieu de naissance nationalité pays de résidence niveau de risque activité du
-  #   client patrimoine
-  aC1601:
-    name: primary_activity
-    source_type: entry_only
-
-  # Prière de préciser quels éléments ne sont pas recueillis ?
-  aC1602:
-    name: geographic_scope
-    source_type: entry_only
-
-  # Les données concernant les anciennes relations clients sont-elles accessibles sur demande par
-  #   l’AMSF ?
-  aC1608:
-    name: acquisition_channels
-    source_type: entry_only
-
-  # Votre entité applique-t-elle une approche fondée sur le risque pour les mesures de vigilance
-  #   relatives à la clientèle ?
-  aC1609:
-    name: avg_transaction_size
-    source_type: entry_only
-
-  # Votre entité a-t-elle des politiques et des procédures qui précisent la différence dans la
-  #   documentation et les exigences pour différents niveaux de CDD ?
-  aC1610:
-    name: annual_transaction_volume
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné
-  #   pendant la période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
-  aC1611:
-    name: real_estate_revenue
-    source_type: entry_only
-
-  # Prière d’indiquer le nombre total de clients uniques qui font l’objet de mesures de vigilance
-  #   simplifiées.
-  aC1612:
-    name: market_segments
-    source_type: entry_only
-
-  # Votre entité a-t-elle mis en œuvre des mesures de vigilance simplifiée pour des clients au
-  #   cours de la période de déclaration ?
-  aC1612A:
-    name: residential_vs_commercial
-    source_type: entry_only
-
-  # Votre entité identifie-t-elle et vérifie-t-elle ses clients à l’aide d’informations fiables et
-  #   indépendantes dans tous les cas de CDD ?
-  aC1614:
-    name: luxury_percentage
-    source_type: entry_only
-
-  # Les politiques CDD de votre entité incluent-elles des procédures d’acceptation du client et des
-  #   procédures d’identification et de vérification de l’identité du client et du bénéficiaire
-  #   effectif ?
-  aC1615:
-    name: new_vs_existing_property
-    source_type: entry_only
-
-  # À quelle fréquence les clients de location et classés comme présentant un risque élevé de
-  #   blanchiment d'argent ou de financement du terrorisme font-ils l'objet de mesures de vigilance ?
-  aC1616A:
-    name: high_risk_rental_cdd_frequency
-    source_type: entry_only
-
-  # À quelle fréquence les clients d'achats et de ventes de biens immobiliers et classés comme
-  #   présentant un risque élevé de blanchiment d'argent ou de financement du terrorisme font-ils
-  #   l'objet de mesures de vigilance ?
-  aC1616B:
-    name: high_risk_sales_cdd_frequency
-    source_type: entry_only
-
-  # Vos clients effectuent-ils des opérations d’achat, de vente ou de location de biens immobiliers
-  #   avec les cryptomonnaies ?
-  aC1616C:
-    name: crypto_transactions
-    source_type: entry_only
-
-  # Votre entité examine-t-elle la source du patrimoine avant l’entrée en relation ?
-  aC1617:
-    name: examines_source_of_wealth
-    source_type: entry_only
-
-  # Votre entité prend-elle d’autres mesures pour les clients à haut risque avant leur prise en
-  #   charge ?
-  aC1618:
-    name: high_risk_additional_measures
-    source_type: entry_only
-
-  # Prière de préciser les autres mesures prises pour les clients à haut risque avant leur prise en
-  #   charge.
-  aC1619:
-    name: high_risk_measures_details
-    source_type: entry_only
-
-  # Votre entité applique-t-elle une identification et une vérification renforcées de tous les
-  #   clients à haut risque avant leur prise en charge ?
-  aC1620:
-    name: enhanced_id_verification
-    source_type: entry_only
-
-  # Comment l’entité vérifie-t-elle les bénéficiaires effectifs des avoirs virtuels ?
-  aC1621:
-    name: verifies_virtual_asset_bo
-    source_type: entry_only
-
-  # Votre entité a-t-elle rencontré des difficultés pour recevoir des informations CDD de tiers en
-  #   cas de besoin ?
-  aC1622A:
-    name: third_party_cdd_difficulties
-    source_type: entry_only
-
-  # Veuillez indiquer la raison principale des difficultés (par exemple, raison juridique, raison
-  #   commerciale, indisponibilité des informations, autre) et le type de tiers (par exemple,
-  #   institution financière, EPNFD).
-  aC1622B:
-    name: third_party_difficulty_reasons
-    source_type: entry_only
-
-  # Votre entité fait-elle appel à des tiers pour les procédures de mesures de vigilance à l’égard
-  #   de la clientèle ?
-  aC1622F:
-    name: uses_third_party_cdd
-    source_type: entry_only
-
   # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
   #   renseignements de sa carte d’identité ?
   aC1625:
@@ -1619,6 +1243,12 @@ fields:
     name: records_residence_permit
     source_type: entry_only
 
+  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
+  #   renseignements de son justificatif de domicile ?
+  aC168:
+    name: other_services
+    source_type: entry_only
+
   # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle
   #   d’autres renseignements liés à l’individu ?
   aC1629:
@@ -1629,6 +1259,18 @@ fields:
   #   clients.
   aC1630:
     name: referral_arrangements
+    source_type: entry_only
+
+  # Est-ce que tous les éléments suivants sont conservé dans le dossier du client : prénom nom date
+  #   de naissance lieu de naissance nationalité pays de résidence niveau de risque activité du
+  #   client patrimoine
+  aC1601:
+    name: primary_activity
+    source_type: entry_only
+
+  # Prière de préciser quels éléments ne sont pas recueillis ?
+  aC1602:
+    name: geographic_scope
     source_type: entry_only
 
   # Lorsque l'opération du client est effectuée par une personne morale / construction juridique,
@@ -1656,11 +1298,6 @@ fields:
     name: escrow_services
     source_type: entry_only
 
-  # Tous ces documents sont-ils conservés systématiquement ?
-  aC1635A:
-    name: escrow_volume
-    source_type: entry_only
-
   # Lorsque l'opération avec le client est effectuée par une personne morale ou une construction
   #   juridique, votre entité enregistre-t-elle d'autres données ?
   aC1636:
@@ -1671,6 +1308,17 @@ fields:
   #   enregistrées.
   aC1637:
     name: ancillary_services
+    source_type: entry_only
+
+  # Les données concernant les anciennes relations clients sont-elles accessibles sur demande par
+  #   l’AMSF ?
+  aC1608:
+    name: acquisition_channels
+    source_type: entry_only
+
+  # Tous ces documents sont-ils conservés systématiquement ?
+  aC1635A:
+    name: escrow_volume
     source_type: entry_only
 
   # Votre entité conserve-t-elle des documents récapitulatifs de tous les renseignements ci-dessus
@@ -1684,14 +1332,14 @@ fields:
     name: mortgage_services
     source_type: entry_only
 
-  # Quels outils ?
-  aC1640A:
-    name: legal_services
-    source_type: entry_only
-
   # Votre entité utilise-t-elle des outils pour établir la connaissance du client (CDD) ?
   aC1641A:
     name: valuation_services
+    source_type: entry_only
+
+  # Quels outils ?
+  aC1640A:
+    name: legal_services
     source_type: entry_only
 
   # Les résultats de l’outil CDD (connaissance du client) sont-ils systématiquement stockés ?
@@ -1699,10 +1347,113 @@ fields:
     name: renovation_services
     source_type: entry_only
 
-  # Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les
-  #   renseignements de son justificatif de domicile ?
-  aC168:
-    name: other_services
+  # Votre entité applique-t-elle une approche fondée sur le risque pour les mesures de vigilance
+  #   relatives à la clientèle ?
+  aC1609:
+    name: avg_transaction_size
+    source_type: entry_only
+
+  # Votre entité a-t-elle des politiques et des procédures qui précisent la différence dans la
+  #   documentation et les exigences pour différents niveaux de CDD ?
+  aC1610:
+    name: annual_transaction_volume
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné
+  #   pendant la période de déclaration, pour l'achat, la vente et la location de biens immobiliers .
+  aC1611:
+    name: real_estate_revenue
+    source_type: entry_only
+
+  # Votre entité a-t-elle mis en œuvre des mesures de vigilance simplifiée pour des clients au
+  #   cours de la période de déclaration ?
+  aC1612A:
+    name: residential_vs_commercial
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients uniques qui font l’objet de mesures de vigilance
+  #   simplifiées.
+  aC1612:
+    name: market_segments
+    source_type: entry_only
+
+  # Votre entité identifie-t-elle et vérifie-t-elle ses clients à l’aide d’informations fiables et
+  #   indépendantes dans tous les cas de CDD ?
+  aC1614:
+    name: luxury_percentage
+    source_type: entry_only
+
+  # Les politiques CDD de votre entité incluent-elles des procédures d’acceptation du client et des
+  #   procédures d’identification et de vérification de l’identité du client et du bénéficiaire
+  #   effectif ?
+  aC1615:
+    name: new_vs_existing_property
+    source_type: entry_only
+
+  # Votre entité fait-elle appel à des tiers pour les procédures de mesures de vigilance à l’égard
+  #   de la clientèle ?
+  aC1622F:
+    name: uses_third_party_cdd
+    source_type: entry_only
+
+  # Votre entité a-t-elle rencontré des difficultés pour recevoir des informations CDD de tiers en
+  #   cas de besoin ?
+  aC1622A:
+    name: third_party_cdd_difficulties
+    source_type: entry_only
+
+  # Veuillez indiquer la raison principale des difficultés (par exemple, raison juridique, raison
+  #   commerciale, indisponibilité des informations, autre) et le type de tiers (par exemple,
+  #   institution financière, EPNFD).
+  aC1622B:
+    name: third_party_difficulty_reasons
+    source_type: entry_only
+
+  # Votre entité applique-t-elle une identification et une vérification renforcées de tous les
+  #   clients à haut risque avant leur prise en charge ?
+  aC1620:
+    name: enhanced_id_verification
+    source_type: entry_only
+
+  # Votre entité examine-t-elle la source du patrimoine avant l’entrée en relation ?
+  aC1617:
+    name: examines_source_of_wealth
+    source_type: entry_only
+
+  # À quelle fréquence les clients d'achats et de ventes de biens immobiliers et classés comme
+  #   présentant un risque élevé de blanchiment d'argent ou de financement du terrorisme font-ils
+  #   l'objet de mesures de vigilance ?
+  aC1616B:
+    name: high_risk_sales_cdd_frequency
+    source_type: entry_only
+
+  # À quelle fréquence les clients de location et classés comme présentant un risque élevé de
+  #   blanchiment d'argent ou de financement du terrorisme font-ils l'objet de mesures de vigilance ?
+  aC1616A:
+    name: high_risk_rental_cdd_frequency
+    source_type: entry_only
+
+  # Votre entité prend-elle d’autres mesures pour les clients à haut risque avant leur prise en
+  #   charge ?
+  aC1618:
+    name: high_risk_additional_measures
+    source_type: entry_only
+
+  # Prière de préciser les autres mesures prises pour les clients à haut risque avant leur prise en
+  #   charge.
+  aC1619:
+    name: high_risk_measures_details
+    source_type: entry_only
+
+  # Vos clients effectuent-ils des opérations d’achat, de vente ou de location de biens immobiliers
+  #   avec les cryptomonnaies ?
+  aC1616C:
+    name: crypto_transactions
+    source_type: entry_only
+
+  # Comment l’entité vérifie-t-elle les bénéficiaires effectifs des avoirs virtuels ?
+  aC1621:
+    name: verifies_virtual_asset_bo
     source_type: entry_only
 
   # Prière d’indiquer le nombre total de clients uniques pour lesquels une vigilance renforcée a
@@ -1723,9 +1474,9 @@ fields:
     name: registration_date
     source_type: entry_only
 
-  # Avez-vous eu des clients monégasques (achats et ventes) au cours de la période de déclaration ?
-  aC171:
-    name: ownership_structure
+  # Votre entité applique-t-elle à ses clients des notations de risque en matière de LBC/FT ?
+  aB1801B:
+    name: provides_aml_training
     source_type: entry_only
 
   # Combien de niveaux de risque LBC/FT votre entité a-t-elle pour ses clients ?
@@ -1779,16 +1530,167 @@ fields:
     name: fiscal_year_end
     source_type: entry_only
 
-  # Veuillez indiquer la valeur totale des fonds transférés par des clients, par paiements en
-  #   espèces dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
-  aG24010B:
-    name: clients_by_property_location
+  # Votre entité conserve-t-elle les informations relatives aux opérations pendant au moins 5 ans ?
+  aC11101:
+    name: sar_individuals_by_nationality
     source_type: entry_only
 
-  # Veuillez indiquer la valeur totale des fonds transférés avec des clients, par paiements en
-  #   espèces dans des devises autres que l'euro , pendant la période de déclaration. (iso4217:EUR)
-  aG24010W:
-    name: transactions_by_property_location
+  # Votre entité conserve-t-elle toutes les correspondances relatives aux CDD et les
+  #   correspondances commerciales pendant au moins 5 ans après la fin d’une relation client ?
+  aC11102:
+    name: sar_legal_entities
+    source_type: entry_only
+
+  # Votre entité conserve-t-elle ces informations et documents dans un endroit sûr et sécurisé ?
+  aC11103:
+    name: sar_trusts
+    source_type: entry_only
+
+  # Ces informations et documents sont-ils rapidement mis à la disposition des autorités
+  #   compétentes sur demande ?
+  aC11104:
+    name: sar_predicate_offenses
+    source_type: entry_only
+
+  # Votre entité dispose-t-elle de sauvegardes des informations relatives aux CDD et aux
+  #   correspondances commerciales avec un plan de récupération des données ?
+  aC11105:
+    name: sar_red_flags
+    source_type: entry_only
+
+  # Les politiques et procédures de l’entité couvrent-elles de manière adéquate le filtrage et les
+  #   alertes des sanctions financières ciblées pour le financement du terrorisme et de la
+  #   prolifération ?
+  aC11201:
+    name: has_internal_audit
+    source_type: entry_only
+
+  # Votre entité consulte-t-elle la Liste Nationale des gel d'Avoirs lors de l'intégration de
+  #   nouveaux clients ou lors de la mise à jour de la liste ?
+  aC1125A:
+    name: audit_frequency
+    source_type: entry_only
+
+  # Votre entité a-t-elle identifié une personne/des opérations liées au financement du terrorisme
+  #   ou à la prolifération des armes de destruction massive au cours de la période de référence ?
+  aC12333:
+    name: group_info_sharing
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de déclarations faites à la Direction du Budget et du Trésor
+  #   (DBT) concernant le financement du terrorisme .
+  aC12236:
+    name: part_of_group
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de déclarations faites à la DBT concernant le financement de
+  #   la prolifération des armes de destruction massive .
+  aC12237:
+    name: group_policy_applies
+    source_type: entry_only
+
+  # Votre entité prend-elle des mesures pour déterminer si les clients et les bénéficiaires
+  #   effectifs sont des personnes politiquement exposées (PPE) ?
+  aC11301:
+    name: external_audit_performed
+    source_type: entry_only
+
+  # Quelles mesures votre entité applique-t-elle pour déterminer si les clients et les
+  #   bénéficiaires effectifs sont des PPE ?
+  aC11302:
+    name: audit_findings
+    source_type: entry_only
+
+  # Quelles procédures supplémentaires de LBC/FT sont appliquées pour les PPE (par rapport à un
+  #   client à risque standard) ?
+  aC11303:
+    name: findings_remediated
+    source_type: entry_only
+
+  # Un filtrage des PPE est-t-il effectué dans le cadre du processus de CDD pour les nouveaux
+  #   clients ?
+  aC11304:
+    name: audit_methodology
+    source_type: entry_only
+
+  # Le filtrage des PPE a-t-il lieu de façon continue ?
+  aC11305:
+    name: audit_scope
+    source_type: entry_only
+
+  # Les PPE font-elles l’objet d’une surveillance accrue ?
+  aC11306:
+    name: audit_independence
+    source_type: entry_only
+
+  # Votre entité considère-t-elle toutes les relations PPE comme à haut risque de LBC/FT ?
+  aC11307:
+    name: audit_reporting
+    source_type: entry_only
+
+  # Votre entité effectue-t-elle des opérations en espèces avec des clients ?
+  aC11401:
+    name: sanctions_screening_frequency
+    source_type: entry_only
+
+  # Votre entité applique-t-elle des contrôles et des procédures spécifiques de LBC/FT pour les
+  #   opérations en espèces ?
+  aC11402:
+    name: sanctions_coverage
+    source_type: entry_only
+
+  # Prière de décrire les contrôles et procédures spécifiques aux opérations en espèces que votre
+  #   entité applique.
+  aC11403:
+    name: sanctions_hits
+    source_type: entry_only
+
+  # Votre entité a-t-elle déposé des DOS/DAS auprès de la CRF au cours de la période de déclaration
+  #   ?
+  aC11501B:
+    name: uses_transaction_monitoring
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de DOS/DAS liées au financement du terrorisme que votre
+  #   entité a déclaré à la CRF au cours de la période de déclaration.
+  aC11502:
+    name: monitoring_system
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de DOS/DAS liées au blanchiment de capitaux que votre entité
+  #   a déclaré à la CRF au cours de la période de déclaration.
+  aC11504:
+    name: monitoring_alerts
+    source_type: entry_only
+
+  # Votre entité a-t-elle pris des mesures pour renforcer les contrôles internes en matière de
+  #   LBC/FT, amender les politiques et procédures ou entreprendre d’autres procédures pour améliorer
+  #   la déclaration des opérations suspectes au cours de la période de déclaration ?
+  aC11508:
+    name: alerts_escalated
+    source_type: entry_only
+
+  # Avez-vous des commentaires sur l'une des questions de cette section ?
+  aC116A:
+    name: retention_years
+    source_type: entry_only
+
+  # Prière de partager vos retours et vos commentaires au sujet de cette section.
+  aC11601:
+    name: record_retention_policy
+    source_type: entry_only
+
+  # La ou les personnes dont le nom et le titre sont ajoutés ici attestent qu'elles ont fourni des
+  #   réponses exactes aux questions, au mieux de leurs capacités.
+  aS1:
+    name: status_1
+    source_type: entry_only
+
+  # Le nom et le titre de la personne ajoutée ici attestent qu'elle est dûment autorisée à
+  #   représenter l'entité déclarante et qu'elle s'est assurée que les données soumises ont été
+  #   correctement examinées et constituent une représentation exacte, au mieux de ses capacités.
+  aS2:
+    name: status_2
     source_type: entry_only
 
   # Avez-vous besoin de rendre ce questionnaire sous forme incomplète ?
@@ -1796,35 +1698,142 @@ fields:
     name: survey_incomplete
     source_type: entry_only
 
-  # Combien d'achats et de ventes de biens immobiliers ont-ils été effectués au cours de la période
-  #   de déclaration à des fins d'investissement , à l'exclusion des biens utilisés comme résidence
-  #   principale par l'acheteur ou par des personnes qui lui sont liées ?
-  aIR117:
-    name: ir_117
+
+  # ═══════════════════════════════════════════════════════════════════════════════
+  # SECTION: Activity & Clients (With Country Breakdown)
+  # Fields: 36
+  # ═══════════════════════════════════════════════════════════════════════════════
+
+  # Fournir la répartition en pourcentage des principales nationalités des bénéficiaires effectifs.
+  a1204S1:
+    name: bo_nationality_breakdown
     source_type: entry_only
 
-  # Combien d'achats ont-ils été effectués dans le but d’établir une résidence à Monaco au cours de
-  #   la période de déclaration ?
-  aIR1210:
-    name: combien_d_achats_ont_ils_ete_effectues_dans_le_but
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs exerçant un contrôle direct ou
+  #   indirect sur une personne morale, ventilé par nationalité principale.
+  a1202O:
+    name: bo_direct_indirect_by_nationality
     source_type: entry_only
 
-  # Certains des achats immobiliers effectués pendant la période de déclaration avaient-ils pour
-  #   but d'établir une résidence à Monaco ?
-  aIR129:
-    name: ir_129
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs représentant une personne morale ,
+  #   ventilé par nationalité principale.
+  a1202OB:
+    name: bo_representing_legal_entity
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de biens locatifs uniques , &gt;= 10.000 € par mois, qui ont
-  #   été loués à un moment donné au cours de la période de déclaration.
-  aIR2313:
-    name: count_biens_locatifs_uniques_gt_10_000_par_mois_qu
+  # Veuillez fournir le nombre total de bénéficiaires effectifs détenant au moins 25% , ventilé par
+  #   nationalité principale du BE.
+  a120425O:
+    name: bo_25pct_by_nationality
     source_type: entry_only
 
-  # Veuillez indiquer le nombre total de biens locatifs uniques , &lt; 10.000 € par mois, qui ont
-  #   été loués à un moment donné au cours de la période de déclaration.
-  aIR2316:
-    name: count_biens_locatifs_uniques_lt_10_000_par_mois_qu
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs des résidents étrangers , par
+  #   nationalité principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
+  a1207O:
+    name: bo_foreign_residents_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de bénéficiaires effectifs des non-résidents , par
+  #   nationalité principale du bénéficiaire effectif, pour les bénéficiaires effectifs détenant 25%.
+  a1210O:
+    name: bo_non_residents_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques
+  #   (individus), classés selon la nationalité principale de l'individu pour l’achat et la vente de
+  #   biens immobiliers.
+  a1401:
+    name: individuals_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des personnes morales , ventilé
+  #   selon le pays du siège ou de l’immatriculation, pour l’achat, la vente et la location de biens
+  #   immobiliers .
+  a1501:
+    name: legal_entities_by_country
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes
+  #   morales qui sont des particuliers fortunés ( HNWI ), ventilés par nationalité principale du
+  #   HNWI.
+  a11206B:
+    name: hnwi_bo_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes
+  #   morales et qui sont des particuliers très fortunés ( UHNWI ), ventilés par nationalité primaire
+  #   de l'UHNWI.
+  a112012B:
+    name: uhnwi_bo_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de personnes physiques qui sont des trustees à titre
+  #   professionnel, ventilé par nationalité primaire , pour l’achat, la vente et la location de
+  #   biens immobiliers.
+  a1808:
+    name: professional_trustees_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le n ombre total de personnes physiques qui sont des trustees à titre
+  #   professionnel, ventilé par pays dans lequel le trust a été créé , pour l’achat, la vente et la
+  #   location de biens immobiliers.
+  a1809:
+    name: professional_trustees_by_trust_country
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon le lieu de
+  #   résidence des PPE (y compris les clients nationaux), pour l’achat, la vente et la location de
+  #   biens immobiliers .
+  a11302RES:
+    name: pep_clients_by_residence
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon la
+  #   nationalité primaire de la PPE (y compris les clients nationaux), pour l’achat, la vente et la
+  #   location de biens immobiliers .
+  a11302:
+    name: pep_clients_by_nationality
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients qui sont les bénéficiaires effectifs uniques de
+  #   personnes morales/trusts et autres constructions juridiques et qui sont des PPE. Veuillez les
+  #   classer selon la nationalité principale de la PPE.
+  a11307:
+    name: pep_beneficial_owners
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des prestataires de
+  #   conservation ( Custodian Wallet Providers ), ventilé par pays d'établissement pour l’achat, la
+  #   vente et la location de biens immobiliers.
+  a13602B:
+    name: vasp_custodian_by_country
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui sont des fournisseurs d'échange
+  #   de monnaie virtuelle , ventilé par pays d'établissement, pour l’achat, la vente et la location
+  #   de biens immobiliers.
+  a13602A:
+    name: vasp_exchange_by_country
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total de clients uniques PSAV qui sont des services liés aux ICO
+  #   (offre au public de jetons) , ventilé par pays d'établissement, pour l’achat, la vente et la
+  #   location de biens immobiliers.
+  a13602C:
+    name: vasp_ico_by_country
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre total de clients uniques PSAV qui fournissent d'autres services ,
+  #   ventilé par pays d'établissement, pour l’achat, la vente et la location de biens immobiliers.
+  a13602D:
+    name: vasp_other_by_country
+    source_type: entry_only
+
+  # Veuillez fournir le nombre total de nationalités secondaires des clients uniques qui sont des
+  #   personnes physiques (individus), classés selon la(les) nationalité(s) secondaire(s) du client,
+  #   le cas échéant (y compris les nationaux).
+  a1402:
+    name: individuals_secondary_nationalities
     source_type: entry_only
 
   # Veuillez indiquer le nombre total de clients uniques , ventilé par nationalité primaire de
@@ -1834,42 +1843,11 @@ fields:
     name: ir_233
     source_type: entry_only
 
-  # Combien de clients uniques étaient des acheteurs ?
-  aIR233B:
-    name: ir_233b
-    source_type: entry_only
-
-  # Combien de clients uniques étaient des vendeurs ?
-  aIR233S:
-    name: ir_233s
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total de biens uniques loués au cours de la période de déclaration.
-  aIR234:
-    name: ir_234
-    source_type: entry_only
-
   # Veuillez indiquer le nombre total d'opérations effectuées par les clients, ventilé par
   #   nationalité primaire du client, ou par le pays du siège ou de l’immatriculation, pour l’achat
   #   et la vente de biens immobiliers au cours de la période de déclaration.
   aIR235B_1:
     name: count_transactions_effectuees_par_les_clients_vent
-    source_type: entry_only
-
-  # Pour combien d’achats/ventes avez-vous représenté l’acheteur ?
-  aIR235B_2:
-    name: pour_combien_d_achats_ventes_avez_vous_represente
-    source_type: entry_only
-
-  # Pour combien d’achats/ventes avez-vous représenté le vendeur ?
-  aIR235S:
-    name: ir_235s
-    source_type: entry_only
-
-  # Veuillez indiquer le nombre total d'opérations de location au cours de la période de
-  #   déclaration.
-  aIR236:
-    name: ir_236
     source_type: entry_only
 
   # Veuillez indiquer le nombre total d'opérations effectuées par les clients, ventilé par
@@ -1887,22 +1865,6 @@ fields:
     name: ir_238b
     source_type: entry_only
 
-  # L'Etat de Monaco a t-il préempté des biens à la vente ?
-  aIR2391:
-    name: ir_2391
-    source_type: entry_only
-
-  # Combien de biens ont été acquis par l'Etat de Monaco via l'exercice de son droit de préemption
-  #   ?
-  aIR2392:
-    name: ir_2392
-    source_type: entry_only
-
-  # Quelle était la valeur totale des biens préemptés ? (iso4217:EUR)
-  aIR2393:
-    name: quelle_etait_value_biens_preemptes_iso4217_eur
-    source_type: entry_only
-
   # Veuillez indiquer la valeur totale des fonds transférés par les clients pour l’achat et la
   #   vente de biens immobiliers (en euros) au cours de la période de déclaration et des 4 années
   #   précédentes, ventilée par nationalité primaire du client ou par le pays du siège ou de
@@ -1911,33 +1873,89 @@ fields:
     name: ir_239b
     source_type: entry_only
 
-  # Le titulaire de la carte professionnelle exerçant des activités d'agent immobilier est-il une
-  #   personne morale ?
-  aIR328:
-    name: ir_328
+  # Prière d’indiquer le nombre total de clients où des tiers locaux ont été utilisés pour
+  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
+  #   de les ventiler selon la nationalité principale du client.
+  a3102:
+    name: local_third_party_clients_by_nationality
     source_type: entry_only
 
-  # Quelle est la forme juridique de votre entité ?
-  aIR33LF:
-    name: quelle_est_la_forme_juridique_de_entity
+  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour
+  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
+  #   de les ventiler selon la nationalité principale du client.
+  a3104:
+    name: foreign_third_party_clients_by_nationality
     source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour
+  #   appliquer certaines/ toutes les mesures de vigilance au cours de la période de déclaration, et
+  #   de les ventiler selon le lieu de résidence du tiers étranger .
+  a3105:
+    name: foreign_third_party_by_residence
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, en les ventilant
+  #   selon la nationalité principale du client (dans le cas d’une personne physique) ou selon le
+  #   pays d’établissement (dans le cas d’une personne morale ou d’une construction juridique).
+  a3202:
+    name: introduced_clients_by_nationality
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de clients démarchés à travers des tiers, au cours de la
+  #   période de déclaration, en les ventilant selon la nationalité principale du client (dans le cas
+  #   d’une personne physique) ou selon le pays d’établissement (dans le cas d’une personne morale ou
+  #   d’une construction juridique).
+  a3204:
+    name: introduced_clients_period_by_nationality
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, en les ventilant
+  #   selon le lieu de résidence du tiers .
+  a3203:
+    name: introduced_clients_by_introducer_residence
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total d'entrées en relation à travers des tiers, au cours de la
+  #   période de déclaration, en les ventilant selon le lieu de résidence du tiers .
+  a3205:
+    name: introduced_clients_period_by_introducer
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre d'actionnaires détenant une participation de 25 % ou plus, ventilé
+  #   par nationalité primaire (personne physique) ou par pays d'établissement (personnes morales et
+  #   constructions juridiques).
+  a3306A:
+    name: enhanced_dd_individuals_by_residence
+    source_type: entry_only
+
+  # Veuillez indiquer le nombre de bénéficiaires effectifs détenant, soit une participation de 25 %
+  #   ou plus, soit contrôlant directement ou indirectement la société, soit étant un représentant
+  #   légal, ventilé par nationalité primaire.
+  a3306B:
+    name: enhanced_dd_by_country_residence
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de succursales, filiales et agences de l’entité locale
+  #   autorisée, en les ventilant par pays.
+  a3303:
+    name: simplified_dd_new_clients
+    source_type: entry_only
+
+  # Prière d’indiquer le nombre total de succursales et de filiales étrangères (à l’extérieur de
+  #   Monaco).
+  a3306:
+    name: enhanced_dd_individuals_by_nationality
+    source_type: entry_only
+
+
+  # ═══════════════════════════════════════════════════════════════════════════════
+  # SECTION: Legal Entities (With Country Breakdown)
+  # Fields: 1
+  # ═══════════════════════════════════════════════════════════════════════════════
 
   # Veuillez indiquer le nombre de clients qui sont des personnes morales monégasques, ventilé par
   #   type.
   aMLES:
     name: legal_entity_status
-    source_type: entry_only
-
-  # La ou les personnes dont le nom et le titre sont ajoutés ici attestent qu'elles ont fourni des
-  #   réponses exactes aux questions, au mieux de leurs capacités.
-  aS1:
-    name: status_1
-    source_type: entry_only
-
-  # Le nom et le titre de la personne ajoutée ici attestent qu'elle est dûment autorisée à
-  #   représenter l'entité déclarante et qu'elle s'est assurée que les données soumises ont été
-  #   correctement examinées et constituent une représentation exacte, au mieux de ses capacités.
-  aS2:
-    name: status_2
     source_type: entry_only
 
