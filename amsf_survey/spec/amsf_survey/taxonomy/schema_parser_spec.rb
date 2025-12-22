@@ -66,6 +66,59 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
         File.delete(temp_path) if File.exist?(temp_path)
       end
 
+      it "maps YES/NO enum to boolean (case-insensitive)" do
+        uppercase_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_upper" name="upper_field"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="YES"/>
+                  <enumeration value="NO"/>
+                </restriction>
+              </simpleType>
+            </element>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_uppercase_bool.xsd")
+        File.write(temp_path, uppercase_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:upper_field][:type]).to eq(:boolean)
+        # Original case preserved in valid_values
+        expect(result[:upper_field][:valid_values]).to eq(%w[YES NO])
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
+      end
+
+      it "maps OUI/NON enum to boolean (French uppercase)" do
+        french_upper_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_fr" name="french_field"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="OUI"/>
+                  <enumeration value="NON"/>
+                </restriction>
+              </simpleType>
+            </element>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_french_upper.xsd")
+        File.write(temp_path, french_upper_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:french_field][:type]).to eq(:boolean)
+        expect(result[:french_field][:valid_values]).to eq(%w[OUI NON])
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
+      end
+
       it "maps multi-value enum correctly" do
         expect(result[:t004][:type]).to eq(:enum)
         expect(result[:t004][:valid_values]).to eq(["Option A", "Option B", "Option C"])

@@ -88,14 +88,16 @@ module AmsfSurvey
         enums.map(&:value)
       end
 
+      # Boolean patterns for Yes/No fields (case-insensitive matching).
+      # Sorted alphabetically for consistent comparison.
       BOOLEAN_PATTERNS = [
-        %w[Non Oui],  # French
-        %w[No Yes]    # English
+        %w[non oui],  # French (lowercase for comparison)
+        %w[no yes]    # English (lowercase for comparison)
       ].freeze
 
       def determine_type(type_attr, enumeration_values)
         if enumeration_values
-          if BOOLEAN_PATTERNS.include?(enumeration_values.sort)
+          if boolean_enum?(enumeration_values)
             [:boolean, type_attr || "xbrli:stringItemType"]
           else
             [:enum, type_attr || "xbrli:stringItemType"]
@@ -105,6 +107,15 @@ module AmsfSurvey
         else
           [:string, type_attr || "xbrli:stringItemType"]
         end
+      end
+
+      # Checks if enumeration values represent a boolean (Yes/No) field.
+      # Case-insensitive to handle variations like "YES"/"NO", "Yes"/"No", etc.
+      def boolean_enum?(values)
+        return false unless values.size == 2
+
+        normalized = values.map(&:downcase).sort
+        BOOLEAN_PATTERNS.include?(normalized)
       end
     end
   end
