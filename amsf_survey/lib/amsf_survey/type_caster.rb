@@ -5,6 +5,20 @@ require "bigdecimal"
 module AmsfSurvey
   # Converts string inputs to appropriate Ruby types based on field type.
   # Used by Submission when setting field values to ensure data integrity.
+  #
+  # ## Error Handling Strategy
+  #
+  # Invalid inputs return nil rather than raising exceptions. This design choice:
+  # - Enables graceful handling of user input errors
+  # - Allows validation layer to report structured errors
+  # - Prevents data entry from failing catastrophically
+  #
+  # For regulatory submissions requiring strict mode, the Validator layer
+  # catches nil values via presence validation and reports them as errors.
+  # The audit trail is maintained in ValidationResult, not here.
+  #
+  # @see Validator For presence and range validation of cast values
+  # @see ValidationResult For structured error reporting with audit context
   module TypeCaster
     # Maximum input length for defense-in-depth against DoS.
     # Regulatory monetary values rarely exceed 20 digits.

@@ -381,6 +381,55 @@ RSpec.describe AmsfSurvey::Validator do
       expect(range_errors).to be_empty
     end
 
+    it "skips range validation for non-numeric values (type safety)" do
+      # If somehow a non-numeric value gets through, range validation should not crash
+      field_with_range = AmsfSurvey::Field.new(
+        id: :score,
+        name: :score,
+        type: :integer,
+        xbrl_type: "xbrli:integerItemType",
+        source_type: :entry_only,
+        label: "Score",
+        section_id: :general,
+        order: 1,
+        gate: false,
+        min: 0,
+        max: 100
+      )
+
+      section = AmsfSurvey::Section.new(
+        id: :general,
+        name: "General",
+        order: 1,
+        fields: [field_with_range]
+      )
+
+      questionnaire = AmsfSurvey::Questionnaire.new(
+        industry: :test,
+        year: 2025,
+        sections: [section]
+      )
+
+      sub = AmsfSurvey::Submission.new(
+        industry: :test,
+        year: 2025,
+        entity_id: "TEST",
+        period: Date.new(2025, 12, 31)
+      )
+      allow(sub).to receive(:questionnaire).and_return(questionnaire)
+
+      # Bypass TypeCaster by setting internal data directly
+      sub.instance_variable_get(:@data)[:score] = "not a number"
+
+      # Should not raise ArgumentError from comparison
+      expect { described_class.validate(sub) }.not_to raise_error
+
+      result = described_class.validate(sub)
+      # No range error since value is not numeric
+      range_errors = result.errors.select { |e| e.rule == :range }
+      expect(range_errors).to be_empty
+    end
+
     it "prefers explicit range over percentage heuristic" do
       # Field named 'percentage' but with explicit range 1-10
       field_with_explicit = AmsfSurvey::Field.new(

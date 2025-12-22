@@ -80,6 +80,10 @@ module AmsfSurvey
       return [] if min.nil? && max.nil?
       return [] if value.nil?
 
+      # Type safety: only compare if value is Numeric
+      # TypeCaster should ensure this, but guard against edge cases
+      return [] unless value.is_a?(Numeric)
+
       if min && value < min
         [ValidationError.new(
           field: field.id,

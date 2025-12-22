@@ -24,7 +24,11 @@ module AmsfSurvey
   LOCALE_PATH = File.expand_path("amsf_survey/locales/*.yml", __dir__)
   I18n.load_path += Dir[LOCALE_PATH]
   I18n.default_locale = :fr # Monaco regulatory context - French is primary
+  I18n.available_locales = %i[fr en]
 
-  # Fallback to English if French translation is missing
-  I18n.fallbacks = [:en] if I18n.respond_to?(:fallbacks=)
+  # Enable fallback chain: fr -> en
+  # This ensures missing French translations fall back to English
+  if I18n.respond_to?(:fallbacks)
+    I18n.fallbacks = I18n::Locale::Fallbacks.new(fr: [:en], en: [:en])
+  end
 end
