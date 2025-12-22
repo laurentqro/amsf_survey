@@ -357,7 +357,7 @@ RSpec.describe AmsfSurvey::Generator do
         # Context should still be present and valid
         context = doc.at_xpath("//xbrli:context", ns)
         expect(context).not_to be_nil
-        expect(context["id"]).to eq("ctx_2025")
+        expect(context["id"]).to eq("ctx_ENTITY_001_2025")
 
         identifier = doc.at_xpath("//xbrli:context/xbrli:entity/xbrli:identifier", ns)
         expect(identifier.text).to eq("ENTITY_001")
@@ -401,6 +401,63 @@ RSpec.describe AmsfSurvey::Generator do
         ns = { "xbrli" => "http://www.xbrl.org/2003/instance" }
         identifier = doc.at_xpath("//xbrli:identifier", ns)
         expect(identifier.text).to eq("ENT<>ID&\"'")
+      end
+
+      # T047: schemaRef includes correct xlink:href
+      it "includes schemaRef with correct filename from taxonomy namespace" do
+        submission = build_submission(tGATE: "Oui")
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "link" => "http://www.xbrl.org/2003/linkbase" }
+        schema_ref = doc.at_xpath("//link:schemaRef", ns)
+
+        expect(schema_ref).not_to be_nil
+        expect(schema_ref["xlink:type"]).to eq("simple")
+        expect(schema_ref["xlink:href"]).to eq("test_industry_2025.xsd")
+      end
+
+      # T048: context ID includes entity_id for uniqueness
+      it "generates context ID with entity_id for uniqueness" do
+        submission = build_submission(tGATE: "Oui")
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "xbrli" => "http://www.xbrl.org/2003/instance" }
+        context = doc.at_xpath("//xbrli:context", ns)
+
+        expect(context["id"]).to eq("ctx_ENTITY_001_2025")
+      end
+    end
+
+    # =========================================================================
+    # Error Handling (PR Review Feedback)
+    # =========================================================================
+    context "error handling" do
+      it "raises GeneratorError for invalid period type" do
+        submission = AmsfSurvey::Submission.new(
+          industry: :test_industry,
+          year: 2025,
+          entity_id: "ENTITY_001",
+          period: "2025-12-31" # String instead of Date
+        )
+        allow(submission).to receive(:questionnaire).and_return(questionnaire)
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /period must be a Date object/)
+      end
+
+      it "raises GeneratorError when questionnaire is nil" do
+        submission = AmsfSurvey::Submission.new(
+          industry: :test_industry,
+          year: 2025,
+          entity_id: "ENTITY_001",
+          period: Date.new(2025, 12, 31)
+        )
+        allow(submission).to receive(:questionnaire).and_return(nil)
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /questionnaire is not available/)
       end
     end
   end

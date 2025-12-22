@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
 require "nokogiri"
+require "bigdecimal"
 
 module AmsfSurvey
   # Generates XBRL instance XML documents from validated Submission objects.
   #
   # The Generator transforms survey response data into XBRL 2.1 format
   # compatible with the Monaco AMSF Strix portal.
+  #
+  # XBRL Document Structure:
+  #   xbrli:xbrl (root)
+  #     ├── link:schemaRef (taxonomy reference)
+  #     ├── xbrli:context (entity + period metadata)
+  #     └── strix:* facts (one element per field)
   #
   # @example Basic usage
   #   generator = Generator.new(submission)
@@ -17,12 +24,12 @@ module AmsfSurvey
   #   xml = generator.generate
   #
   class Generator
-    # Standard XBRL namespace URIs
+    # Standard XBRL namespace URIs (XBRL 2.1 specification)
     XBRLI_NS = "http://www.xbrl.org/2003/instance"
     LINK_NS = "http://www.xbrl.org/2003/linkbase"
     XLINK_NS = "http://www.w3.org/1999/xlink"
 
-    # Entity identifier scheme for Monaco AMSF
+    # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
 
     # @param submission [Submission] the source submission object
@@ -38,7 +45,9 @@ module AmsfSurvey
     # Generate XBRL instance XML from the submission.
     #
     # @return [String] the XBRL instance XML
+    # @raise [GeneratorError] if submission is invalid for generation
     def generate
+      validate_submission!
       doc = build_document
       format_output(doc)
     end
@@ -46,6 +55,23 @@ module AmsfSurvey
     private
 
     attr_reader :submission
+
+    # Validate that submission has required data for XBRL generation.
+    # Fails fast with clear error messages for common misconfigurations.
+    #
+    # @raise [GeneratorError] if validation fails
+    def validate_submission!
+      raise GeneratorError, "Submission cannot be nil" if submission.nil?
+
+      unless submission.period.respond_to?(:strftime)
+        raise GeneratorError, "Submission period must be a Date object, got: #{submission.period.class}"
+      end
+
+      if submission.questionnaire.nil?
+        raise GeneratorError, "Submission questionnaire is not available. " \
+                              "Ensure the industry is registered and year is supported."
+      end
+    end
 
     # Questionnaire provides field metadata and taxonomy namespace
     def questionnaire
@@ -57,9 +83,11 @@ module AmsfSurvey
       questionnaire.taxonomy_namespace
     end
 
-    # Generate a unique context ID for this submission
+    # Generate a unique context ID for this submission.
+    # Includes entity_id to ensure uniqueness if multiple submissions
+    # are ever combined in a single XBRL document.
     def context_id
-      @context_id ||= "ctx_#{submission.period.year}"
+      @context_id ||= "ctx_#{submission.entity_id}_#{submission.period.year}"
     end
 
     # Build the XBRL document using direct Nokogiri node creation
@@ -94,15 +122,16 @@ module AmsfSurvey
       parent.add_child(schema_ref)
     end
 
-    # Extract schema filename from taxonomy namespace
+    # Extract schema filename from taxonomy namespace.
+    # Falls back to "taxonomy.xsd" if namespace is nil or empty.
+    #
+    # @return [String] the XSD filename (e.g., "test_industry_2025.xsd")
     def extract_schema_filename
       # Extract the survey identifier from namespace and add .xsd extension
       # e.g., https://test.example.com/test_industry_2025 -> test_industry_2025.xsd
-      if taxonomy_namespace
-        File.basename(taxonomy_namespace) + ".xsd"
-      else
-        "taxonomy.xsd"
-      end
+      return "taxonomy.xsd" if taxonomy_namespace.nil? || taxonomy_namespace.to_s.empty?
+
+      File.basename(taxonomy_namespace) + ".xsd"
     end
 
     # Build the XBRL context element with entity and period
@@ -207,12 +236,15 @@ module AmsfSurvey
       end
     end
 
-    # Format decimal values with 2 decimal places
+    # Format decimal values with 2 decimal places.
+    # Uses BigDecimal for precision to avoid floating-point rounding errors,
+    # then formats with explicit decimal places to preserve trailing zeros.
     #
     # @param value [Numeric, BigDecimal] the numeric value
-    # @return [String] formatted with 2 decimal places
+    # @return [String] formatted with exactly 2 decimal places (e.g., "5000.50")
     def format_decimal(value)
-      format("%.2f", value)
+      rounded = BigDecimal(value.to_s).round(2)
+      format("%.2f", rounded)
     end
 
     # Format date for XBRL period instant
