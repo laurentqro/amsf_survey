@@ -477,4 +477,95 @@ RSpec.describe AmsfSurvey::Validator do
       expect(range_error.context[:max]).to eq(10) # Uses explicit range, not 100
     end
   end
+
+  describe "range resolution priority" do
+    it "uses Field#percentage? type when no explicit range" do
+      percentage_field = AmsfSurvey::Field.new(
+        id: :rate,
+        name: :rate,
+        type: :percentage,
+        xbrl_type: "xbrli:integerItemType",
+        source_type: :entry_only,
+        label: "Rate",
+        section_id: :general,
+        order: 1,
+        gate: false
+      )
+
+      section = AmsfSurvey::Section.new(
+        id: :general,
+        name: "General",
+        order: 1,
+        fields: [percentage_field]
+      )
+
+      questionnaire = AmsfSurvey::Questionnaire.new(
+        industry: :test,
+        year: 2025,
+        sections: [section]
+      )
+
+      sub = AmsfSurvey::Submission.new(
+        industry: :test,
+        year: 2025,
+        entity_id: "TEST",
+        period: Date.new(2025, 12, 31)
+      )
+      allow(sub).to receive(:questionnaire).and_return(questionnaire)
+
+      # Value 150 exceeds percentage range (0-100)
+      sub.instance_variable_get(:@data)[:rate] = 150
+
+      result = described_class.validate(sub, locale: :en)
+
+      range_error = result.errors.find { |e| e.rule == :range }
+      expect(range_error).not_to be_nil
+      expect(range_error.context[:max]).to eq(100)
+    end
+
+    it "falls back to name heuristic for legacy fields" do
+      # Field without explicit range or :percentage type, but with "percentage" in name
+      legacy_field = AmsfSurvey::Field.new(
+        id: :completion_percentage,
+        name: :completion_percentage,
+        type: :integer, # Not :percentage type
+        xbrl_type: "xbrli:integerItemType",
+        source_type: :entry_only,
+        label: "Completion",
+        section_id: :general,
+        order: 1,
+        gate: false
+        # No min/max
+      )
+
+      section = AmsfSurvey::Section.new(
+        id: :general,
+        name: "General",
+        order: 1,
+        fields: [legacy_field]
+      )
+
+      questionnaire = AmsfSurvey::Questionnaire.new(
+        industry: :test,
+        year: 2025,
+        sections: [section]
+      )
+
+      sub = AmsfSurvey::Submission.new(
+        industry: :test,
+        year: 2025,
+        entity_id: "TEST",
+        period: Date.new(2025, 12, 31)
+      )
+      allow(sub).to receive(:questionnaire).and_return(questionnaire)
+
+      sub[:completion_percentage] = 150
+
+      result = described_class.validate(sub, locale: :en)
+
+      range_error = result.errors.find { |e| e.rule == :range }
+      expect(range_error).not_to be_nil
+      expect(range_error.context[:max]).to eq(100) # Falls back to 0-100 heuristic
+    end
+  end
 end

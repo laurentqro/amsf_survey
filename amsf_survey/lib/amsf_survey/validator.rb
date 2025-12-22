@@ -109,26 +109,41 @@ module AmsfSurvey
     end
 
     # Get range constraints for a field.
-    # Prefers explicit Field#min/max, falls back to heuristic for percentage fields.
+    #
+    # Resolution order:
+    # 1. Explicit Field#min/max from taxonomy (preferred)
+    # 2. Field#percentage? type (if taxonomy uses :percentage type)
+    # 3. Name-based heuristic (temporary fallback)
     #
     # @param field [Field]
     # @return [Array(Integer, Integer), Array(nil, nil)] [min, max] or [nil, nil]
     def range_for_field(field)
-      # Use explicit range metadata if available
+      # Priority 1: Explicit range metadata from taxonomy
       return [field.min, field.max] if field.has_range?
 
-      # Fallback heuristic: percentage fields are 0-100
-      # TODO: Remove once taxonomy provides range metadata
-      if percentage_field_heuristic?(field)
-        [0, 100]
-      else
-        [nil, nil]
-      end
+      # Priority 2: Formal percentage type
+      return [0, 100] if field.percentage?
+
+      # Priority 3: Name-based heuristic (temporary)
+      return [0, 100] if percentage_name_heuristic?(field)
+
+      [nil, nil]
     end
 
-    # Heuristic: detect percentage fields by name.
-    # @deprecated Use Field#min/max instead when available from taxonomy.
-    def percentage_field_heuristic?(field)
+    # Temporary heuristic: detect percentage fields by name pattern.
+    #
+    # @deprecated This heuristic exists only for backwards compatibility with
+    #   taxonomies that don't yet provide Field#min/max or use :percentage type.
+    #   Remove once all taxonomies specify range constraints explicitly.
+    #
+    # @note This approach is fragile because it:
+    #   - Depends on English naming conventions
+    #   - Won't work for internationalized field names
+    #   - May false-positive on unrelated fields containing "percentage"
+    #
+    # @param field [Field]
+    # @return [Boolean]
+    def percentage_name_heuristic?(field)
       field.id.to_s.include?("percentage") || field.name.to_s.include?("percentage")
     end
   end

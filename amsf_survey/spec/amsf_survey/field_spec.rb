@@ -110,6 +110,12 @@ RSpec.describe AmsfSurvey::Field do
       field = described_class.new(**minimal_attrs.merge(type: :enum))
       expect(field.enum?).to be true
     end
+
+    it "#percentage? returns true for percentage type" do
+      field = described_class.new(**minimal_attrs.merge(type: :percentage))
+      expect(field.percentage?).to be true
+      expect(field.integer?).to be false
+    end
   end
 
   describe "source type predicates" do

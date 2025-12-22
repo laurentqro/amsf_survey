@@ -51,6 +51,7 @@ module AmsfSurvey
     def string? = type == :string
     def monetary? = type == :monetary
     def enum? = type == :enum
+    def percentage? = type == :percentage
 
     # Source type predicates
     def computed? = source_type == :computed
