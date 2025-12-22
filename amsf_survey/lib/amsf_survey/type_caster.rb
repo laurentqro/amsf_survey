@@ -6,6 +6,10 @@ module AmsfSurvey
   # Converts string inputs to appropriate Ruby types based on field type.
   # Used by Submission when setting field values to ensure data integrity.
   module TypeCaster
+    # Maximum input length for defense-in-depth against DoS.
+    # Regulatory monetary values rarely exceed 20 digits.
+    MAX_INPUT_LENGTH = 100
+
     module_function
 
     # Cast a value to the appropriate type based on field type.
@@ -33,27 +37,31 @@ module AmsfSurvey
     end
 
     # Cast to integer. Returns nil for empty, whitespace-only, or non-numeric strings.
+    # Also rejects inputs exceeding MAX_INPUT_LENGTH for DoS protection.
     def cast_integer(value)
       return value if value.is_a?(Integer)
 
       str = value.to_s.strip
       return nil if str.empty?
+      return nil if str.length > MAX_INPUT_LENGTH
       return nil unless str.match?(/\A-?\d+\z/)
 
       str.to_i
     end
 
     # Cast to BigDecimal for monetary precision.
-    # Returns nil for empty or non-numeric strings.
+    # Returns nil for empty, non-numeric, or excessively long strings.
+    # Catches ArgumentError and FloatDomainError for malformed inputs.
     def cast_monetary(value)
       return value if value.is_a?(BigDecimal)
       return nil if value.nil?
 
       str = value.to_s.strip
       return nil if str.empty?
+      return nil if str.length > MAX_INPUT_LENGTH
 
       BigDecimal(str)
-    rescue ArgumentError
+    rescue ArgumentError, FloatDomainError
       nil
     end
 

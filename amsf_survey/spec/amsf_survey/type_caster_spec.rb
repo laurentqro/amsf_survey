@@ -32,6 +32,18 @@ RSpec.describe AmsfSurvey::TypeCaster do
       it "returns nil for non-numeric string" do
         expect(described_class.cast("abc", :integer)).to be_nil
       end
+
+      it "rejects extremely long input strings (DoS protection)" do
+        long_input = "1" * 101 # Exceeds MAX_INPUT_LENGTH of 100
+        result = described_class.cast(long_input, :integer)
+        expect(result).to be_nil
+      end
+
+      it "accepts input at maximum length" do
+        max_input = "1" * 100 # Exactly MAX_INPUT_LENGTH
+        result = described_class.cast(max_input, :integer)
+        expect(result).to be_a(Integer)
+      end
     end
 
     context "with monetary fields" do
@@ -120,6 +132,18 @@ RSpec.describe AmsfSurvey::TypeCaster do
           expect(result).to be_nil
         end
 
+        it "rejects extremely long input strings (DoS protection)" do
+          long_input = "1" * 101 # Exceeds MAX_INPUT_LENGTH of 100
+          result = described_class.cast(long_input, :monetary)
+          expect(result).to be_nil
+        end
+
+        it "accepts input at maximum length" do
+          max_input = "1" * 100 # Exactly MAX_INPUT_LENGTH
+          result = described_class.cast(max_input, :monetary)
+          expect(result).to be_a(BigDecimal)
+        end
+
         it "preserves exact decimal representation vs float" do
           # This is why we use BigDecimal - floats have precision issues
           result = described_class.cast("0.1", :monetary)
@@ -203,6 +227,41 @@ RSpec.describe AmsfSurvey::TypeCaster do
     context "with unknown field type" do
       it "returns value unchanged" do
         expect(described_class.cast("test", :unknown)).to eq("test")
+      end
+    end
+
+    context "with Unicode and special characters" do
+      it "handles Unicode in string fields" do
+        result = described_class.cast("Société Générale", :string)
+        expect(result).to eq("Société Générale")
+      end
+
+      it "handles Unicode in enum fields" do
+        result = described_class.cast("Établissement", :enum)
+        expect(result).to eq("Établissement")
+      end
+
+      it "handles emoji in string fields" do
+        result = described_class.cast("Test 🏦", :string)
+        expect(result).to eq("Test 🏦")
+      end
+
+      it "handles French accents in boolean fields" do
+        # French regulatory context uses accented characters
+        result = described_class.cast("Complété", :boolean)
+        expect(result).to eq("Complété")
+      end
+
+      it "rejects Unicode digits in integer fields" do
+        # Arabic-Indic numerals should not be accepted
+        result = described_class.cast("١٢٣", :integer)
+        expect(result).to be_nil
+      end
+
+      it "rejects full-width digits in monetary fields" do
+        # Japanese full-width numerals
+        result = described_class.cast("１２３", :monetary)
+        expect(result).to be_nil
       end
     end
   end

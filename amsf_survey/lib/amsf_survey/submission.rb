@@ -52,11 +52,12 @@ module AmsfSurvey
       @data[field_id] = field.cast(value)
     end
 
-    # Get the raw data hash (for inspection/serialization).
+    # Get a frozen copy of the data hash (for inspection/serialization).
+    # Returns a defensive copy to prevent external mutation.
     #
-    # @return [Hash{Symbol => Object}] field values keyed by semantic field ID
+    # @return [Hash{Symbol => Object}] frozen field values keyed by semantic field ID
     def data
-      @data.dup
+      @data.dup.freeze
     end
 
     # Check if all required visible fields are filled.

@@ -256,6 +256,36 @@ RSpec.describe AmsfSurvey::Submission do
         is_agent: "Oui"
       })
     end
+
+    it "returns a frozen copy to prevent external mutation" do
+      submission = described_class.new(
+        industry: :real_estate,
+        year: 2025,
+        entity_id: "ENTITY_001",
+        period: Date.new(2025, 12, 31)
+      )
+
+      submission[:total_clients] = 50
+      data = submission.data
+
+      expect(data).to be_frozen
+      expect { data[:total_clients] = 100 }.to raise_error(FrozenError)
+    end
+
+    it "does not affect internal state when external copy is obtained" do
+      submission = described_class.new(
+        industry: :real_estate,
+        year: 2025,
+        entity_id: "ENTITY_001",
+        period: Date.new(2025, 12, 31)
+      )
+
+      submission[:total_clients] = 50
+      _data = submission.data
+
+      # Internal state should be unchanged
+      expect(submission[:total_clients]).to eq(50)
+    end
   end
 
   describe "#complete?" do
