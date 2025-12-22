@@ -5,6 +5,28 @@ require "nokogiri"
 module AmsfSurvey
   module Taxonomy
     # Parses XBRL schema (.xsd) files to extract field definitions and types.
+    #
+    # == Boolean Detection
+    #
+    # Two-value enumerations are classified as :boolean if they match known
+    # Yes/No patterns. Currently supported patterns (case-insensitive):
+    #
+    # - French: "Oui" / "Non"
+    # - English: "Yes" / "No"
+    #
+    # === Known Limitations
+    #
+    # Other boolean representations will be classified as :enum instead:
+    # - "Vrai" / "Faux" (French True/False)
+    # - "1" / "0" (numeric)
+    # - "True" / "False" (English)
+    # - "Ja" / "Nein" (German)
+    #
+    # This is intentional: only recognized Yes/No patterns get gate logic
+    # treatment. Other two-value enums are treated as regular enumerations.
+    #
+    # To add support for additional patterns, extend BOOLEAN_PATTERNS.
+    #
     class SchemaParser
       XBRLI_NS = "http://www.xbrl.org/2003/instance"
 

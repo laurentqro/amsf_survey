@@ -57,6 +57,11 @@ module AmsfSurvey
       !computed?
     end
 
+    # Sentinel value for missing/unanswered gate questions.
+    # Using a unique object ensures no collision with actual user values.
+    NOT_ANSWERED = Object.new.freeze
+    private_constant :NOT_ANSWERED
+
     # Evaluates gate dependencies against submission data.
     # Returns true if all dependencies are satisfied or if there are no dependencies.
     #
@@ -67,11 +72,24 @@ module AmsfSurvey
     #   String keys will not match dependencies.
     # @note Missing keys and nil values are treated as "not satisfied".
     #   A gate requiring "Oui" will return false if the key is missing or nil.
+    #   This is intentional: unanswered gates hide dependent fields.
+    #
+    # @example Basic usage
+    #   field.visible?({ tGATE: "Oui" })  # => true if depends_on[:tGATE] == "Oui"
+    #
+    # @example Missing gate value
+    #   field.visible?({})                # => false (unanswered gate hides field)
+    #   field.visible?({ tGATE: nil })    # => false (nil treated as unanswered)
+    #
     def visible?(data)
       return true if depends_on.empty?
 
       depends_on.all? do |gate_id, required_value|
-        data[gate_id] == required_value
+        # fetch with sentinel makes nil-handling explicit:
+        # - Missing key -> NOT_ANSWERED (never equals required_value)
+        # - nil value -> nil (never equals required_value like "Oui")
+        actual_value = data.fetch(gate_id, NOT_ANSWERED)
+        actual_value == required_value
       end
     end
   end
