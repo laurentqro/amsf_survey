@@ -1,0 +1,235 @@
+# frozen_string_literal: true
+
+require "nokogiri"
+
+module AmsfSurvey
+  # Generates XBRL instance XML documents from validated Submission objects.
+  #
+  # The Generator transforms survey response data into XBRL 2.1 format
+  # compatible with the Monaco AMSF Strix portal.
+  #
+  # @example Basic usage
+  #   generator = Generator.new(submission)
+  #   xml = generator.generate
+  #
+  # @example With options
+  #   generator = Generator.new(submission, pretty: true, include_empty: false)
+  #   xml = generator.generate
+  #
+  class Generator
+    # Standard XBRL namespace URIs
+    XBRLI_NS = "http://www.xbrl.org/2003/instance"
+    LINK_NS = "http://www.xbrl.org/2003/linkbase"
+    XLINK_NS = "http://www.w3.org/1999/xlink"
+
+    # Entity identifier scheme for Monaco AMSF
+    ENTITY_SCHEME = "https://amlcft.amsf.mc"
+
+    # @param submission [Submission] the source submission object
+    # @param options [Hash] generation options
+    # @option options [Boolean] :pretty (false) output indented XML
+    # @option options [Boolean] :include_empty (true) include empty facts for nil values
+    def initialize(submission, options = {})
+      @submission = submission
+      @pretty = options.fetch(:pretty, false)
+      @include_empty = options.fetch(:include_empty, true)
+    end
+
+    # Generate XBRL instance XML from the submission.
+    #
+    # @return [String] the XBRL instance XML
+    def generate
+      doc = build_document
+      format_output(doc)
+    end
+
+    private
+
+    attr_reader :submission
+
+    # Questionnaire provides field metadata and taxonomy namespace
+    def questionnaire
+      @questionnaire ||= submission.questionnaire
+    end
+
+    # The taxonomy namespace from the XSD (e.g., https://amlcft.amsf.mc/dcm/DTS/strix_...)
+    def taxonomy_namespace
+      questionnaire.taxonomy_namespace
+    end
+
+    # Generate a unique context ID for this submission
+    def context_id
+      @context_id ||= "ctx_#{submission.period.year}"
+    end
+
+    # Build the XBRL document using direct Nokogiri node creation
+    def build_document
+      doc = Nokogiri::XML::Document.new
+      doc.encoding = "UTF-8"
+
+      # Create root element with namespaces
+      root = Nokogiri::XML::Node.new("xbrl", doc)
+      root.add_namespace_definition("xbrli", XBRLI_NS)
+      root.add_namespace_definition("link", LINK_NS)
+      root.add_namespace_definition("xlink", XLINK_NS)
+      root.add_namespace_definition("strix", taxonomy_namespace)
+      root.namespace = root.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+
+      doc.root = root
+
+      # Build child elements
+      build_schema_ref(doc, root)
+      build_context(doc, root)
+      build_facts(doc, root)
+
+      doc
+    end
+
+    # Build the schemaRef element
+    def build_schema_ref(doc, parent)
+      schema_ref = Nokogiri::XML::Node.new("schemaRef", doc)
+      schema_ref.namespace = parent.namespace_definitions.find { |ns| ns.prefix == "link" }
+      schema_ref["xlink:type"] = "simple"
+      schema_ref["xlink:href"] = extract_schema_filename
+      parent.add_child(schema_ref)
+    end
+
+    # Extract schema filename from taxonomy namespace
+    def extract_schema_filename
+      # Extract the survey identifier from namespace and add .xsd extension
+      # e.g., https://test.example.com/test_industry_2025 -> test_industry_2025.xsd
+      if taxonomy_namespace
+        File.basename(taxonomy_namespace) + ".xsd"
+      else
+        "taxonomy.xsd"
+      end
+    end
+
+    # Build the XBRL context element with entity and period
+    def build_context(doc, parent)
+      xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+
+      # Context element
+      context = Nokogiri::XML::Node.new("context", doc)
+      context.namespace = xbrli_ns
+      context["id"] = context_id
+
+      # Entity element
+      entity = Nokogiri::XML::Node.new("entity", doc)
+      entity.namespace = xbrli_ns
+
+      # Identifier element
+      identifier = Nokogiri::XML::Node.new("identifier", doc)
+      identifier.namespace = xbrli_ns
+      identifier["scheme"] = ENTITY_SCHEME
+      identifier.content = submission.entity_id
+
+      entity.add_child(identifier)
+      context.add_child(entity)
+
+      # Period element
+      period = Nokogiri::XML::Node.new("period", doc)
+      period.namespace = xbrli_ns
+
+      # Instant element
+      instant = Nokogiri::XML::Node.new("instant", doc)
+      instant.namespace = xbrli_ns
+      instant.content = format_date(submission.period)
+
+      period.add_child(instant)
+      context.add_child(period)
+
+      parent.add_child(context)
+    end
+
+    # Build fact elements for all visible fields
+    def build_facts(doc, parent)
+      data = submission.data
+      strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
+
+      questionnaire.fields.each do |field|
+        next unless field.visible?(data)
+
+        value = data[field.id]
+
+        # Skip nil values if include_empty is false
+        next if value.nil? && !@include_empty
+
+        build_fact(doc, parent, strix_ns, field, value)
+      end
+    end
+
+    # Build a single fact element
+    def build_fact(doc, parent, strix_ns, field, value)
+      fact = Nokogiri::XML::Node.new(field.id.to_s, doc)
+      fact.namespace = strix_ns
+      fact["contextRef"] = context_id
+
+      # Add decimals attribute for numeric types
+      decimals = decimals_for(field.type)
+      fact["decimals"] = decimals if decimals
+
+      fact.content = format_value(value, field.type)
+
+      parent.add_child(fact)
+    end
+
+    # Determine decimals attribute based on field type
+    #
+    # @param type [Symbol] the field type
+    # @return [String, nil] the decimals value or nil for non-numeric types
+    def decimals_for(type)
+      case type
+      when :integer
+        "0"
+      when :monetary, :percentage
+        "2"
+      else
+        nil # No decimals for boolean, string, enum
+      end
+    end
+
+    # Format a value for XBRL output
+    #
+    # @param value [Object] the Ruby value
+    # @param type [Symbol] the field type
+    # @return [String] the formatted XBRL value
+    def format_value(value, type)
+      return "" if value.nil?
+
+      case type
+      when :monetary, :percentage
+        format_decimal(value)
+      else
+        # Booleans, strings, enums, integers - all convert to string
+        # Booleans are already stored as "Oui"/"Non" strings by TypeCaster
+        value.to_s
+      end
+    end
+
+    # Format decimal values with 2 decimal places
+    #
+    # @param value [Numeric, BigDecimal] the numeric value
+    # @return [String] formatted with 2 decimal places
+    def format_decimal(value)
+      format("%.2f", value)
+    end
+
+    # Format date for XBRL period instant
+    #
+    # @param date [Date] the date
+    # @return [String] YYYY-MM-DD format
+    def format_date(date)
+      date.strftime("%Y-%m-%d")
+    end
+
+    # Format the output based on pretty option
+    def format_output(doc)
+      if @pretty
+        doc.to_xml(indent: 2, save_with: Nokogiri::XML::Node::SaveOptions::FORMAT)
+      else
+        doc.to_xml(save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+      end
+    end
+  end
+end

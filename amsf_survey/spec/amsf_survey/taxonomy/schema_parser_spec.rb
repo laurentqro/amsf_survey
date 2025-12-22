@@ -148,6 +148,39 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
 
   end
 
+  describe "#target_namespace" do
+    it "extracts targetNamespace from XSD schema element" do
+      parser = described_class.new(xsd_path)
+      parser.parse
+      expect(parser.target_namespace).to eq("https://test.example.com/test_industry_2025")
+    end
+
+    it "returns nil before parse is called" do
+      parser = described_class.new(xsd_path)
+      expect(parser.target_namespace).to be_nil
+    end
+
+    it "returns nil when targetNamespace is not present" do
+      no_ns_xsd = <<~XML
+        <?xml version="1.0" encoding="utf-8"?>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                xmlns:xbrli="http://www.xbrl.org/2003/instance">
+          <element abstract="false" id="test_field" name="field"
+                   type="xbrli:stringItemType"
+                   substitutionGroup="xbrli:item" xbrli:periodType="instant"/>
+        </schema>
+      XML
+      temp_path = File.join(fixtures_path, "temp_no_namespace.xsd")
+      File.write(temp_path, no_ns_xsd)
+
+      parser = described_class.new(temp_path)
+      parser.parse
+      expect(parser.target_namespace).to be_nil
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+  end
+
   describe "error handling" do
     it "raises MissingTaxonomyFileError for missing file" do
       parser = described_class.new("/nonexistent/file.xsd")

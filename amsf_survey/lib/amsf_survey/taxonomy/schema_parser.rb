@@ -39,13 +39,19 @@ module AmsfSurvey
 
       MAX_FIELDS = 10_000
 
+      # The targetNamespace extracted from the XSD, available after parse
+      attr_reader :target_namespace
+
       def initialize(xsd_path)
         @xsd_path = xsd_path
+        @target_namespace = nil
       end
 
       def parse
         validate_file!
         doc = parse_document
+
+        @target_namespace = extract_target_namespace(doc)
 
         elements = doc.xpath("//xs:element[@abstract='false']", "xs" => "http://www.w3.org/2001/XMLSchema")
         validate_field_count!(elements.size)
@@ -61,6 +67,13 @@ module AmsfSurvey
       end
 
       private
+
+      def extract_target_namespace(doc)
+        schema_element = doc.root
+        return nil unless schema_element
+
+        schema_element["targetNamespace"]
+      end
 
       def validate_file!
         return if File.exist?(@xsd_path)

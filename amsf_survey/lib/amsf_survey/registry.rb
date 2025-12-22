@@ -70,6 +70,16 @@ module AmsfSurvey
       Validator.validate(submission)
     end
 
+    # Generate XBRL instance XML from a submission
+    # @param submission [Submission] the source submission
+    # @param options [Hash] generation options
+    # @option options [Boolean] :pretty (false) output indented XML
+    # @option options [Boolean] :include_empty (true) include empty facts for nil values
+    # @return [String] XBRL instance XML
+    def to_xbrl(submission, **options)
+      Generator.new(submission, options).generate
+    end
+
     # Reset registry state (for testing only)
     # @api private
     def reset_registry! # :nodoc:
