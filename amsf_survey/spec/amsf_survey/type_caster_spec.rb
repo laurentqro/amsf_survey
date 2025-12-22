@@ -69,6 +69,65 @@ RSpec.describe AmsfSurvey::TypeCaster do
       it "returns nil for non-numeric string" do
         expect(described_class.cast("invalid", :monetary)).to be_nil
       end
+
+      # Regulatory financial data precision edge cases
+      context "decimal precision for regulatory data" do
+        it "handles very large monetary values" do
+          result = described_class.cast("999999999999999.99", :monetary)
+          expect(result).to eq(BigDecimal("999999999999999.99"))
+          expect(result.to_s("F")).to eq("999999999999999.99")
+        end
+
+        it "preserves high precision decimals" do
+          result = described_class.cast("1234.123456789", :monetary)
+          expect(result).to eq(BigDecimal("1234.123456789"))
+          # Verify precision is maintained
+          expect(result.to_s("F")).to include("1234.123456789")
+        end
+
+        it "handles scientific notation" do
+          result = described_class.cast("1.23e5", :monetary)
+          expect(result).to eq(BigDecimal("123000"))
+        end
+
+        it "handles negative scientific notation" do
+          result = described_class.cast("1.5e-3", :monetary)
+          expect(result).to eq(BigDecimal("0.0015"))
+        end
+
+        it "handles zero with decimals" do
+          result = described_class.cast("0.00", :monetary)
+          expect(result).to eq(BigDecimal("0"))
+          expect(result.zero?).to be true
+        end
+
+        it "handles negative monetary values" do
+          result = described_class.cast("-12345.67", :monetary)
+          expect(result).to eq(BigDecimal("-12345.67"))
+          expect(result.negative?).to be true
+        end
+
+        it "handles European decimal format with comma" do
+          # Note: BigDecimal doesn't parse comma as decimal separator
+          # This documents expected behavior - commas are invalid
+          result = described_class.cast("1234,56", :monetary)
+          expect(result).to be_nil
+        end
+
+        it "handles thousands separators (invalid)" do
+          # BigDecimal doesn't parse thousands separators
+          result = described_class.cast("1,234.56", :monetary)
+          expect(result).to be_nil
+        end
+
+        it "preserves exact decimal representation vs float" do
+          # This is why we use BigDecimal - floats have precision issues
+          result = described_class.cast("0.1", :monetary)
+          # Float would give 0.1000000000000000055511151231257827021181583404541015625
+          expect(result).to eq(BigDecimal("0.1"))
+          expect(result + BigDecimal("0.2")).to eq(BigDecimal("0.3"))
+        end
+      end
     end
 
     context "with boolean fields" do
