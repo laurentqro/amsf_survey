@@ -357,7 +357,7 @@ RSpec.describe AmsfSurvey::Generator do
         # Context should still be present and valid
         context = doc.at_xpath("//xbrli:context", ns)
         expect(context).not_to be_nil
-        expect(context["id"]).to eq("ctx_ENTITY_001_2025")
+        expect(context["id"]).to eq("ctx_ENTITY_001_20251231")
 
         identifier = doc.at_xpath("//xbrli:context/xbrli:entity/xbrli:identifier", ns)
         expect(identifier.text).to eq("ENTITY_001")
@@ -481,7 +481,7 @@ RSpec.describe AmsfSurvey::Generator do
         ns = { "xbrli" => "http://www.xbrl.org/2003/instance" }
         context = doc.at_xpath("//xbrli:context", ns)
 
-        expect(context["id"]).to eq("ctx_ENTITY_001_2025")
+        expect(context["id"]).to eq("ctx_ENTITY_001_20251231")
       end
     end
 

@@ -85,10 +85,11 @@ module AmsfSurvey
     end
 
     # Generate a unique context ID for this submission.
-    # Includes entity_id to ensure uniqueness if multiple submissions
-    # are ever combined in a single XBRL document.
+    # Includes entity_id and full date to ensure uniqueness if multiple
+    # submissions are ever combined in a single XBRL document.
+    # Uses YYYYMMDD format for period to handle multiple reporting periods per year.
     def context_id
-      @context_id ||= "ctx_#{submission.entity_id}_#{submission.period.year}"
+      @context_id ||= "ctx_#{submission.entity_id}_#{submission.period.strftime('%Y%m%d')}"
     end
 
     # Build the XBRL document using direct Nokogiri node creation
