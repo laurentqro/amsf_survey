@@ -20,15 +20,15 @@ require_relative "amsf_survey/taxonomy/loader"
 require_relative "amsf_survey/registry"
 
 module AmsfSurvey
-  # Load I18n translations for validation messages
+  # Default locale for validation messages (Monaco regulatory context)
+  # Host applications can override via the locale: parameter on validate()
+  DEFAULT_LOCALE = :fr
+
+  # Load I18n translations for validation messages (additive, safe for gems)
   LOCALE_PATH = File.expand_path("amsf_survey/locales/*.yml", __dir__)
   I18n.load_path += Dir[LOCALE_PATH]
-  I18n.default_locale = :fr # Monaco regulatory context - French is primary
-  I18n.available_locales = %i[fr en]
 
-  # Enable fallback chain: fr -> en
-  # This ensures missing French translations fall back to English
-  if I18n.respond_to?(:fallbacks)
-    I18n.fallbacks = I18n::Locale::Fallbacks.new(fr: [:en], en: [:en])
-  end
+  # Note: We intentionally do NOT mutate I18n.default_locale, available_locales,
+  # or fallbacks here. Host applications control those settings.
+  # Use AmsfSurvey::Validator.validate(submission, locale: :fr) to specify locale.
 end

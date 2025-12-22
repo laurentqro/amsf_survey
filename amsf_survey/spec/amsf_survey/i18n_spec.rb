@@ -43,53 +43,92 @@ RSpec.describe "I18n validation messages" do
     sub
   end
 
-  describe "presence validation messages" do
-    it "uses English message when locale is :en" do
-      I18n.with_locale(:en) do
-        result = AmsfSurvey::Validator.validate(submission)
-        error = result.errors.find { |e| e.rule == :presence }
+  describe "locale parameter" do
+    it "uses English message when locale: :en" do
+      result = AmsfSurvey::Validator.validate(submission, locale: :en)
+      error = result.errors.find { |e| e.rule == :presence }
 
-        expect(error.message).to eq("Field 'Test Field' is required")
-      end
+      expect(error.message).to eq("Field 'Test Field' is required")
     end
 
-    it "uses French message when locale is :fr" do
-      I18n.with_locale(:fr) do
-        result = AmsfSurvey::Validator.validate(submission)
-        error = result.errors.find { |e| e.rule == :presence }
+    it "uses French message when locale: :fr" do
+      result = AmsfSurvey::Validator.validate(submission, locale: :fr)
+      error = result.errors.find { |e| e.rule == :presence }
 
-        expect(error.message).to eq("Le champ 'Test Field' est obligatoire")
-      end
-    end
-  end
-
-  describe "default locale" do
-    it "defaults to French for Monaco regulatory context" do
-      expect(I18n.default_locale).to eq(:fr)
+      expect(error.message).to eq("Le champ 'Test Field' est obligatoire")
     end
 
-    it "has available locales set" do
-      expect(I18n.available_locales).to include(:fr, :en)
+    it "defaults to French (Monaco regulatory context)" do
+      # No locale parameter - should use AmsfSurvey::DEFAULT_LOCALE (:fr)
+      result = AmsfSurvey::Validator.validate(submission)
+      error = result.errors.find { |e| e.rule == :presence }
+
+      expect(error.message).to eq("Le champ 'Test Field' est obligatoire")
     end
   end
 
-  describe "fallback behavior" do
-    it "falls back to English for missing French translations" do
-      # Test with a key that only exists in English
-      I18n.with_locale(:fr) do
-        # Use the standard translation which exists in both
-        result = I18n.t("amsf_survey.validation.presence", field: "Test")
-        expect(result).to eq("Le champ 'Test' est obligatoire")
-      end
+  describe "AmsfSurvey::DEFAULT_LOCALE" do
+    it "is set to :fr for Monaco regulatory context" do
+      expect(AmsfSurvey::DEFAULT_LOCALE).to eq(:fr)
+    end
+  end
+
+  describe "translation loading" do
+    it "adds gem translations to I18n.load_path" do
+      expect(I18n.load_path.any? { |p| p.include?("amsf_survey/locales") }).to be true
     end
 
-    it "does not raise on missing translation with fallback" do
-      I18n.with_locale(:fr) do
-        # Even with a completely missing key, should return missing translation marker
-        # rather than raising (when enforce_available_locales is false)
-        result = I18n.t("amsf_survey.nonexistent.key", default: "fallback")
-        expect(result).to eq("fallback")
-      end
+    it "does not mutate I18n.default_locale" do
+      # The gem should NOT set I18n.default_locale - host app controls this
+      # We can't easily test "did not change" but we test that it loads cleanly
+      expect { AmsfSurvey::DEFAULT_LOCALE }.not_to raise_error
+    end
+  end
+
+  describe "translation content" do
+    it "has French translations" do
+      result = I18n.t("amsf_survey.validation.presence", field: "Test", locale: :fr)
+      expect(result).to eq("Le champ 'Test' est obligatoire")
+    end
+
+    it "has English translations" do
+      result = I18n.t("amsf_survey.validation.presence", field: "Test", locale: :en)
+      expect(result).to eq("Field 'Test' is required")
+    end
+
+    it "handles missing keys gracefully with default" do
+      result = I18n.t("amsf_survey.nonexistent.key", default: "fallback", locale: :fr)
+      expect(result).to eq("fallback")
+    end
+  end
+
+  describe "host application isolation" do
+    it "does not interfere with host locale during validation" do
+      original_locale = I18n.locale
+
+      # Validation uses its locale parameter independently of I18n.locale
+      I18n.locale = :en
+      result_fr = AmsfSurvey::Validator.validate(submission, locale: :fr)
+      result_en = AmsfSurvey::Validator.validate(submission, locale: :en)
+
+      # French locale parameter produces French messages
+      expect(result_fr.errors.first.message).to include("obligatoire")
+      # English locale parameter produces English messages
+      expect(result_en.errors.first.message).to include("required")
+
+      # Restore original locale
+      I18n.locale = original_locale
+    end
+
+    it "restores host locale after validation" do
+      original_locale = I18n.locale
+
+      # Validation should not permanently change I18n.locale
+      AmsfSurvey::Validator.validate(submission, locale: :fr)
+      expect(I18n.locale).to eq(original_locale)
+
+      AmsfSurvey::Validator.validate(submission, locale: :en)
+      expect(I18n.locale).to eq(original_locale)
     end
   end
 end

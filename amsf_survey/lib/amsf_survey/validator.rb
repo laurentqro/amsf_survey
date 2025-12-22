@@ -12,25 +12,28 @@ module AmsfSurvey
     # Validate a submission and return structured results.
     #
     # @param submission [Submission] the submission to validate
+    # @param locale [Symbol] locale for error messages (default: AmsfSurvey::DEFAULT_LOCALE)
     # @return [ValidationResult] validation outcome with errors and warnings
-    def validate(submission)
-      errors = []
-      warnings = []
-      data = submission.internal_data
+    def validate(submission, locale: AmsfSurvey::DEFAULT_LOCALE)
+      I18n.with_locale(locale) do
+        errors = []
+        warnings = []
+        data = submission.internal_data
 
-      # Single pass through all fields for efficiency
-      submission.questionnaire.fields.each do |field|
-        next unless field.visible?(data)
+        # Single pass through all fields for efficiency
+        submission.questionnaire.fields.each do |field|
+          next unless field.visible?(data)
 
-        value = data[field.id]
+          value = data[field.id]
 
-        # Run all validations for this field
-        errors.concat(validate_field_presence(field, value))
-        errors.concat(validate_field_enum(field, value))
-        errors.concat(validate_field_range(field, value))
+          # Run all validations for this field
+          errors.concat(validate_field_presence(field, value))
+          errors.concat(validate_field_enum(field, value))
+          errors.concat(validate_field_range(field, value))
+        end
+
+        ValidationResult.new(errors: errors, warnings: warnings)
       end
-
-      ValidationResult.new(errors: errors, warnings: warnings)
     end
 
     # Validate presence for a single field.

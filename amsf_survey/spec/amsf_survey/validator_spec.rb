@@ -172,7 +172,7 @@ RSpec.describe AmsfSurvey::Validator do
 
   describe "presence validation" do
     it "creates error with correct message" do
-      result = described_class.validate(submission)
+      result = described_class.validate(submission, locale: :en)
 
       error = result.errors.find { |e| e.field == :total_clients && e.rule == :presence }
       expect(error).not_to be_nil
@@ -191,7 +191,7 @@ RSpec.describe AmsfSurvey::Validator do
     it "validates percentage fields are 0-100" do
       submission[:high_risk_percentage] = 150
 
-      result = described_class.validate(submission)
+      result = described_class.validate(submission, locale: :en)
 
       range_error = result.errors.find { |e| e.rule == :range }
       expect(range_error).not_to be_nil
@@ -213,7 +213,7 @@ RSpec.describe AmsfSurvey::Validator do
     it "validates minimum is 0" do
       submission[:high_risk_percentage] = -10
 
-      result = described_class.validate(submission)
+      result = described_class.validate(submission, locale: :en)
 
       range_error = result.errors.find { |e| e.rule == :range }
       expect(range_error).not_to be_nil
@@ -353,7 +353,7 @@ RSpec.describe AmsfSurvey::Validator do
     it "uses Field#min/max for range validation" do
       submission_with_range[:score] = 15
 
-      result = described_class.validate(submission_with_range)
+      result = described_class.validate(submission_with_range, locale: :en)
 
       range_error = result.errors.find { |e| e.rule == :range }
       expect(range_error).not_to be_nil
@@ -364,7 +364,7 @@ RSpec.describe AmsfSurvey::Validator do
     it "validates minimum from Field#min" do
       submission_with_range[:score] = 0
 
-      result = described_class.validate(submission_with_range)
+      result = described_class.validate(submission_with_range, locale: :en)
 
       range_error = result.errors.find { |e| e.rule == :range }
       expect(range_error).not_to be_nil
