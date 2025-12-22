@@ -58,26 +58,32 @@ module AmsfSurvey
     end
 
     # Boolean fields preserve string values ("Oui"/"Non").
+    # Returns nil for empty strings for consistency with other types.
     # Validation handles checking if the value is valid.
     def cast_boolean(value)
       return nil if value.nil?
 
-      value.to_s
+      str = value.to_s.strip
+      str.empty? ? nil : str
     end
 
     # Enum fields preserve string values.
+    # Returns nil for empty strings for consistency with other types.
     # Validation handles checking if the value is in valid_values.
     def cast_enum(value)
       return nil if value.nil?
 
-      value.to_s
+      str = value.to_s.strip
+      str.empty? ? nil : str
     end
 
     # String fields convert to string via to_s.
+    # Returns nil for empty strings for consistency with other types.
     def cast_string(value)
       return nil if value.nil?
 
-      value.to_s
+      str = value.to_s.strip
+      str.empty? ? nil : str
     end
   end
 end

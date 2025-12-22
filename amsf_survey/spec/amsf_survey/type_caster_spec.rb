@@ -87,6 +87,14 @@ RSpec.describe AmsfSurvey::TypeCaster do
       it "returns any string value (validation handles invalid)" do
         expect(described_class.cast("Maybe", :boolean)).to eq("Maybe")
       end
+
+      it "returns nil for empty string" do
+        expect(described_class.cast("", :boolean)).to be_nil
+      end
+
+      it "returns nil for whitespace-only string" do
+        expect(described_class.cast("   ", :boolean)).to be_nil
+      end
     end
 
     context "with enum fields" do
@@ -101,6 +109,14 @@ RSpec.describe AmsfSurvey::TypeCaster do
       it "converts non-string to string" do
         expect(described_class.cast(123, :enum)).to eq("123")
       end
+
+      it "returns nil for empty string" do
+        expect(described_class.cast("", :enum)).to be_nil
+      end
+
+      it "returns nil for whitespace-only string" do
+        expect(described_class.cast("   ", :enum)).to be_nil
+      end
     end
 
     context "with string fields" do
@@ -114,6 +130,14 @@ RSpec.describe AmsfSurvey::TypeCaster do
 
       it "returns nil for nil" do
         expect(described_class.cast(nil, :string)).to be_nil
+      end
+
+      it "returns nil for empty string" do
+        expect(described_class.cast("", :string)).to be_nil
+      end
+
+      it "returns nil for whitespace-only string" do
+        expect(described_class.cast("   ", :string)).to be_nil
       end
     end
 
