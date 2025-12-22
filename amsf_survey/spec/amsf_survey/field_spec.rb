@@ -49,6 +49,37 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.verbose_label).to be_nil
       expect(field.valid_values).to be_nil
       expect(field.depends_on).to eq({})
+      expect(field.min).to be_nil
+      expect(field.max).to be_nil
+    end
+
+    it "accepts min and max range constraints" do
+      field = described_class.new(**minimal_attrs, min: 0, max: 100)
+
+      expect(field.min).to eq(0)
+      expect(field.max).to eq(100)
+    end
+  end
+
+  describe "#has_range?" do
+    it "returns false when neither min nor max is set" do
+      field = described_class.new(**minimal_attrs)
+      expect(field.has_range?).to be false
+    end
+
+    it "returns true when min is set" do
+      field = described_class.new(**minimal_attrs, min: 0)
+      expect(field.has_range?).to be true
+    end
+
+    it "returns true when max is set" do
+      field = described_class.new(**minimal_attrs, max: 100)
+      expect(field.has_range?).to be true
+    end
+
+    it "returns true when both min and max are set" do
+      field = described_class.new(**minimal_attrs, min: 0, max: 100)
+      expect(field.has_range?).to be true
     end
   end
 

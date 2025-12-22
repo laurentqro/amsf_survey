@@ -74,8 +74,9 @@ module AmsfSurvey
       errors
     end
 
-    # Validate fields with range constraints (percentage fields).
-    # Currently validates fields with "percentage" in their name as 0-100.
+    # Validate fields with range constraints.
+    # Uses Field#min and Field#max when available, with fallback heuristic
+    # for percentage fields (0-100) until taxonomy provides range metadata.
     #
     # @param submission [Submission]
     # @return [Array<ValidationError>]
@@ -85,26 +86,28 @@ module AmsfSurvey
 
       submission.questionnaire.fields.each do |field|
         next unless field.visible?(data)
-        next unless is_percentage_field?(field)
+
+        min, max = range_for_field(field)
+        next if min.nil? && max.nil?
 
         value = data[field.id]
         next if value.nil?
 
-        if value < 0
+        if min && value < min
           errors << ValidationError.new(
             field: field.id,
             rule: :range,
-            message: "Field '#{field.label}' must be at least 0",
+            message: "Field '#{field.label}' must be at least #{min}",
             severity: :error,
-            context: { value: value, min: 0, max: 100 }
+            context: { value: value, min: min, max: max }
           )
-        elsif value > 100
+        elsif max && value > max
           errors << ValidationError.new(
             field: field.id,
             rule: :range,
-            message: "Field '#{field.label}' must be at most 100",
+            message: "Field '#{field.label}' must be at most #{max}",
             severity: :error,
-            context: { value: value, min: 0, max: 100 }
+            context: { value: value, min: min, max: max }
           )
         end
       end
@@ -112,9 +115,27 @@ module AmsfSurvey
       errors
     end
 
-    # Check if field is a percentage field (heuristic based on name).
-    # In the future, this could be driven by taxonomy metadata.
-    def is_percentage_field?(field)
+    # Get range constraints for a field.
+    # Prefers explicit Field#min/max, falls back to heuristic for percentage fields.
+    #
+    # @param field [Field]
+    # @return [Array(Integer, Integer), Array(nil, nil)] [min, max] or [nil, nil]
+    def range_for_field(field)
+      # Use explicit range metadata if available
+      return [field.min, field.max] if field.has_range?
+
+      # Fallback heuristic: percentage fields are 0-100
+      # TODO: Remove once taxonomy provides range metadata
+      if percentage_field_heuristic?(field)
+        [0, 100]
+      else
+        [nil, nil]
+      end
+    end
+
+    # Heuristic: detect percentage fields by name.
+    # @deprecated Use Field#min/max instead when available from taxonomy.
+    def percentage_field_heuristic?(field)
       field.id.to_s.include?("percentage") || field.name.to_s.include?("percentage")
     end
   end

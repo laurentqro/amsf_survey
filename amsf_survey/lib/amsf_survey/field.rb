@@ -6,7 +6,7 @@ module AmsfSurvey
   class Field
     attr_reader :id, :name, :type, :xbrl_type, :source_type, :label,
                 :verbose_label, :valid_values, :section_id, :order,
-                :depends_on, :gate
+                :depends_on, :gate, :min, :max
 
     def initialize(
       id:,
@@ -20,7 +20,9 @@ module AmsfSurvey
       gate:,
       verbose_label: nil,
       valid_values: nil,
-      depends_on: {}
+      depends_on: {},
+      min: nil,
+      max: nil
     )
       @id = id
       @name = name
@@ -34,6 +36,13 @@ module AmsfSurvey
       @verbose_label = verbose_label
       @valid_values = valid_values
       @depends_on = depends_on || {}
+      @min = min
+      @max = max
+    end
+
+    # Check if this field has range constraints.
+    def has_range?
+      !@min.nil? || !@max.nil?
     end
 
     # Type predicates

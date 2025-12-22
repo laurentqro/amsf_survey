@@ -304,4 +304,128 @@ RSpec.describe AmsfSurvey::Validator do
       expect(is_agent_errors).to be_empty
     end
   end
+
+  describe "explicit range validation via Field#min/max" do
+    let(:field_with_range) do
+      AmsfSurvey::Field.new(
+        id: :score,
+        name: :score,
+        type: :integer,
+        xbrl_type: "xbrli:integerItemType",
+        source_type: :entry_only,
+        label: "Score",
+        section_id: :general,
+        order: 7,
+        gate: false,
+        min: 1,
+        max: 10
+      )
+    end
+
+    let(:section_with_range) do
+      AmsfSurvey::Section.new(
+        id: :general,
+        name: "General Information",
+        order: 1,
+        fields: [field_with_range]
+      )
+    end
+
+    let(:questionnaire_with_range) do
+      AmsfSurvey::Questionnaire.new(
+        industry: :test,
+        year: 2025,
+        sections: [section_with_range]
+      )
+    end
+
+    let(:submission_with_range) do
+      submission = AmsfSurvey::Submission.new(
+        industry: :test,
+        year: 2025,
+        entity_id: "TEST",
+        period: Date.new(2025, 12, 31)
+      )
+      allow(submission).to receive(:questionnaire).and_return(questionnaire_with_range)
+      submission
+    end
+
+    it "uses Field#min/max for range validation" do
+      submission_with_range[:score] = 15
+
+      result = described_class.validate(submission_with_range)
+
+      range_error = result.errors.find { |e| e.rule == :range }
+      expect(range_error).not_to be_nil
+      expect(range_error.message).to include("at most 10")
+      expect(range_error.context[:max]).to eq(10)
+    end
+
+    it "validates minimum from Field#min" do
+      submission_with_range[:score] = 0
+
+      result = described_class.validate(submission_with_range)
+
+      range_error = result.errors.find { |e| e.rule == :range }
+      expect(range_error).not_to be_nil
+      expect(range_error.message).to include("at least 1")
+      expect(range_error.context[:min]).to eq(1)
+    end
+
+    it "accepts value within explicit range" do
+      submission_with_range[:score] = 5
+
+      result = described_class.validate(submission_with_range)
+
+      range_errors = result.errors.select { |e| e.rule == :range }
+      expect(range_errors).to be_empty
+    end
+
+    it "prefers explicit range over percentage heuristic" do
+      # Field named 'percentage' but with explicit range 1-10
+      field_with_explicit = AmsfSurvey::Field.new(
+        id: :custom_percentage,
+        name: :custom_percentage,
+        type: :integer,
+        xbrl_type: "xbrli:integerItemType",
+        source_type: :entry_only,
+        label: "Custom Percentage",
+        section_id: :general,
+        order: 1,
+        gate: false,
+        min: 1,
+        max: 10
+      )
+
+      section = AmsfSurvey::Section.new(
+        id: :general,
+        name: "General",
+        order: 1,
+        fields: [field_with_explicit]
+      )
+
+      questionnaire = AmsfSurvey::Questionnaire.new(
+        industry: :test,
+        year: 2025,
+        sections: [section]
+      )
+
+      sub = AmsfSurvey::Submission.new(
+        industry: :test,
+        year: 2025,
+        entity_id: "TEST",
+        period: Date.new(2025, 12, 31)
+      )
+      allow(sub).to receive(:questionnaire).and_return(questionnaire)
+
+      # Value 50 would be valid if using 0-100 heuristic, but invalid for 1-10
+      sub[:custom_percentage] = 50
+
+      result = described_class.validate(sub)
+
+      range_error = result.errors.find { |e| e.rule == :range }
+      expect(range_error).not_to be_nil
+      expect(range_error.context[:max]).to eq(10) # Uses explicit range, not 100
+    end
+  end
 end
