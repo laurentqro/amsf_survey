@@ -95,7 +95,13 @@ module AmsfSurvey
     def validate_industry!(industry)
       return if registered?(industry)
 
-      raise TaxonomyLoadError, "Industry not registered: #{industry}"
+      available = registered_industries
+      message = if available.empty?
+                  "Industry not registered: #{industry}. No industries registered yet."
+                else
+                  "Industry not registered: #{industry}. Available: #{available.join(', ')}"
+                end
+      raise TaxonomyLoadError, message
     end
 
     def validate_year!(industry, year)
@@ -105,7 +111,13 @@ module AmsfSurvey
 
       return if supported_years(industry).include?(year)
 
-      raise TaxonomyLoadError, "Year not supported for #{industry}: #{year}"
+      available = supported_years(industry)
+      message = if available.empty?
+                  "Year not supported for #{industry}: #{year}. No years available."
+                else
+                  "Year not supported for #{industry}: #{year}. Available: #{available.join(', ')}"
+                end
+      raise TaxonomyLoadError, message
     end
 
     def load_questionnaire(industry, year)

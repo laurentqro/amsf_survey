@@ -109,16 +109,36 @@ RSpec.describe "AmsfSurvey Registry" do
       FileUtils.rm_rf(File.join(fixtures_path, "other_industry"))
     end
 
-    it "raises error for unregistered industry" do
+    it "raises error for unregistered industry with available options" do
       expect {
         AmsfSurvey.questionnaire(industry: :unknown, year: 2025)
-      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not registered/)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not registered.*Available: test_industry/)
     end
 
-    it "raises error for unsupported year" do
+    it "raises error for unregistered industry when none registered" do
+      AmsfSurvey.reset_registry!
+      expect {
+        AmsfSurvey.questionnaire(industry: :unknown, year: 2025)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not registered.*No industries registered yet/)
+    end
+
+    it "raises error for unsupported year with available options" do
       expect {
         AmsfSurvey.questionnaire(industry: :test_industry, year: 1999)
-      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported/)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported.*Available: 2025/)
+    end
+
+    it "raises error for unsupported year when no years available" do
+      # Register an industry with no year subdirectories
+      empty_path = File.join(fixtures_path, "empty_industry")
+      FileUtils.mkdir_p(empty_path)
+      AmsfSurvey.register_plugin(industry: :empty_industry, taxonomy_path: empty_path)
+
+      expect {
+        AmsfSurvey.questionnaire(industry: :empty_industry, year: 2025)
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported.*No years available/)
+    ensure
+      FileUtils.rm_rf(empty_path)
     end
 
     it "raises error for negative year" do
