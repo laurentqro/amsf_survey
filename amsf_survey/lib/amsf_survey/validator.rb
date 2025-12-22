@@ -3,6 +3,9 @@
 module AmsfSurvey
   # Orchestrates validation of a submission against all applicable rules.
   # Checks presence, enum values, ranges, and conditional requirements.
+  #
+  # Uses a single-pass approach for efficiency: each field is visited once
+  # and all applicable validations are run during that visit.
   module Validator
     module_function
 
@@ -13,106 +16,89 @@ module AmsfSurvey
     def validate(submission)
       errors = []
       warnings = []
+      data = submission.internal_data
 
-      # Collect all validation errors
-      errors.concat(validate_presence(submission))
-      errors.concat(validate_enums(submission))
-      errors.concat(validate_ranges(submission))
+      # Single pass through all fields for efficiency
+      submission.questionnaire.fields.each do |field|
+        next unless field.visible?(data)
+
+        value = data[field.id]
+
+        # Run all validations for this field
+        errors.concat(validate_field_presence(field, value))
+        errors.concat(validate_field_enum(field, value))
+        errors.concat(validate_field_range(field, value))
+      end
 
       ValidationResult.new(errors: errors, warnings: warnings)
     end
 
-    # Validate required fields are present.
+    # Validate presence for a single field.
     #
-    # @param submission [Submission]
+    # @param field [Field] the field to validate
+    # @param value [Object, nil] the current value
     # @return [Array<ValidationError>]
-    def validate_presence(submission)
-      errors = []
-      data = submission.internal_data
+    def validate_field_presence(field, value)
+      return [] unless field.required?
+      return [] unless value.nil?
 
-      submission.questionnaire.fields.each do |field|
-        next unless field.required? && field.visible?(data)
-        next if data.key?(field.id) && !data[field.id].nil?
+      [ValidationError.new(
+        field: field.id,
+        rule: :presence,
+        message: I18n.t("amsf_survey.validation.presence", field: field.label),
+        severity: :error
+      )]
+    end
 
-        errors << ValidationError.new(
+    # Validate enum value for a single field.
+    #
+    # @param field [Field] the field to validate
+    # @param value [Object, nil] the current value
+    # @return [Array<ValidationError>]
+    def validate_field_enum(field, value)
+      return [] unless field.valid_values && !field.valid_values.empty?
+      return [] if value.nil? # Presence check handles missing values
+
+      return [] if field.valid_values.include?(value)
+
+      [ValidationError.new(
+        field: field.id,
+        rule: :enum,
+        message: I18n.t("amsf_survey.validation.enum", field: field.label, valid_values: field.valid_values.join(", ")),
+        severity: :error,
+        context: { value: value, valid_values: field.valid_values }
+      )]
+    end
+
+    # Validate range constraints for a single field.
+    #
+    # @param field [Field] the field to validate
+    # @param value [Object, nil] the current value
+    # @return [Array<ValidationError>]
+    def validate_field_range(field, value)
+      min, max = range_for_field(field)
+      return [] if min.nil? && max.nil?
+      return [] if value.nil?
+
+      if min && value < min
+        [ValidationError.new(
           field: field.id,
-          rule: :presence,
-          message: I18n.t("amsf_survey.validation.presence", field: field.label),
-          severity: :error
-        )
+          rule: :range,
+          message: I18n.t("amsf_survey.validation.range_min", field: field.label, min: min),
+          severity: :error,
+          context: { value: value, min: min, max: max }
+        )]
+      elsif max && value > max
+        [ValidationError.new(
+          field: field.id,
+          rule: :range,
+          message: I18n.t("amsf_survey.validation.range_max", field: field.label, max: max),
+          severity: :error,
+          context: { value: value, min: min, max: max }
+        )]
+      else
+        []
       end
-
-      errors
-    end
-
-    # Validate enum fields have valid values.
-    #
-    # @param submission [Submission]
-    # @return [Array<ValidationError>]
-    def validate_enums(submission)
-      errors = []
-      data = submission.internal_data
-
-      submission.questionnaire.fields.each do |field|
-        next unless field.valid_values && !field.valid_values.empty?
-        next unless field.visible?(data)
-
-        value = data[field.id]
-        next if value.nil? # Presence check handles missing values
-
-        unless field.valid_values.include?(value)
-          errors << ValidationError.new(
-            field: field.id,
-            rule: :enum,
-            message: I18n.t("amsf_survey.validation.enum", field: field.label, valid_values: field.valid_values.join(", ")),
-            severity: :error,
-            context: { value: value, valid_values: field.valid_values }
-          )
-        end
-      end
-
-      errors
-    end
-
-    # Validate fields with range constraints.
-    # Uses Field#min and Field#max when available, with fallback heuristic
-    # for percentage fields (0-100) until taxonomy provides range metadata.
-    #
-    # @param submission [Submission]
-    # @return [Array<ValidationError>]
-    def validate_ranges(submission)
-      errors = []
-      data = submission.internal_data
-
-      submission.questionnaire.fields.each do |field|
-        next unless field.visible?(data)
-
-        min, max = range_for_field(field)
-        next if min.nil? && max.nil?
-
-        value = data[field.id]
-        next if value.nil?
-
-        if min && value < min
-          errors << ValidationError.new(
-            field: field.id,
-            rule: :range,
-            message: I18n.t("amsf_survey.validation.range_min", field: field.label, min: min),
-            severity: :error,
-            context: { value: value, min: min, max: max }
-          )
-        elsif max && value > max
-          errors << ValidationError.new(
-            field: field.id,
-            rule: :range,
-            message: I18n.t("amsf_survey.validation.range_max", field: field.label, max: max),
-            severity: :error,
-            context: { value: value, min: min, max: max }
-          )
-        end
-      end
-
-      errors
     end
 
     # Get range constraints for a field.
