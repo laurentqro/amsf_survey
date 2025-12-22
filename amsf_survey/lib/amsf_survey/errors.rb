@@ -39,4 +39,14 @@ module AmsfSurvey
       super("Semantic mappings file not found in: #{taxonomy_path}")
     end
   end
+
+  # Raised when attempting to access or set a field that doesn't exist in the questionnaire
+  class UnknownFieldError < Error
+    attr_reader :field_id
+
+    def initialize(field_id)
+      @field_id = field_id
+      super("Unknown field: #{field_id}")
+    end
+  end
 end

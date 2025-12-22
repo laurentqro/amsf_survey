@@ -25,8 +25,8 @@
 
 **Purpose**: Add new error types and prepare gem structure for submission/validation classes
 
-- [ ] T001 Add UnknownFieldError and TaxonomyLoadError to lib/amsf_survey/errors.rb
-- [ ] T002 Create spec/amsf_survey/errors_spec.rb with tests for new error types
+- [x] T001 Add UnknownFieldError and TaxonomyLoadError to lib/amsf_survey/errors.rb
+- [x] T002 Create spec/amsf_survey/errors_spec.rb with tests for new error types
 
 ---
 
@@ -36,9 +36,9 @@
 
 **⚠️ CRITICAL**: Submission#[]= depends on TypeCaster - no submission work can begin without this
 
-- [ ] T003 [P] Create spec/amsf_survey/type_caster_spec.rb with tests for all type conversions
-- [ ] T004 Implement TypeCaster module in lib/amsf_survey/type_caster.rb
-- [ ] T005 Add Field#cast method that delegates to TypeCaster in lib/amsf_survey/field.rb
+- [x] T003 [P] Create spec/amsf_survey/type_caster_spec.rb with tests for all type conversions
+- [x] T004 Implement TypeCaster module in lib/amsf_survey/type_caster.rb
+- [x] T005 Add Field#cast method that delegates to TypeCaster in lib/amsf_survey/field.rb
 
 **Checkpoint**: TypeCaster ready - Submission implementation can now begin
 
@@ -54,21 +54,21 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T006 [P] [US1] Create spec/amsf_survey/submission_spec.rb with initialization tests
-- [ ] T007 [P] [US1] Add tests for bracket notation get/set with type casting
-- [ ] T008 [P] [US1] Add tests for unknown field error handling
-- [ ] T009 [P] [US1] Add tests for questionnaire access
+- [x] T006 [P] [US1] Create spec/amsf_survey/submission_spec.rb with initialization tests
+- [x] T007 [P] [US1] Add tests for bracket notation get/set with type casting
+- [x] T008 [P] [US1] Add tests for unknown field error handling
+- [x] T009 [P] [US1] Add tests for questionnaire access
 
 ### Implementation for User Stories 1 & 4
 
-- [ ] T010 [US1] Create Submission class with ActiveModel::Model in lib/amsf_survey/submission.rb
-- [ ] T011 [US1] Implement Submission#[]= with type casting via Field#cast
-- [ ] T012 [US1] Implement Submission#[] for reading values
-- [ ] T013 [US1] Implement Submission#questionnaire for accessing associated questionnaire
-- [ ] T014 [US1] Implement Submission#data for raw data hash access
-- [ ] T015 [US1] Add build_submission helper to lib/amsf_survey/registry.rb
-- [ ] T016 [US1] Add AmsfSurvey.build_submission facade method in lib/amsf_survey.rb
-- [ ] T017 [US1] Require submission.rb in lib/amsf_survey.rb
+- [x] T010 [US1] Create Submission class with ActiveModel::Model in lib/amsf_survey/submission.rb
+- [x] T011 [US1] Implement Submission#[]= with type casting via Field#cast
+- [x] T012 [US1] Implement Submission#[] for reading values
+- [x] T013 [US1] Implement Submission#questionnaire for accessing associated questionnaire
+- [x] T014 [US1] Implement Submission#data for raw data hash access
+- [x] T015 [US1] Add build_submission helper to lib/amsf_survey/registry.rb
+- [x] T016 [US1] Add AmsfSurvey.build_submission facade method in lib/amsf_survey.rb
+- [x] T017 [US1] Require submission.rb in lib/amsf_survey.rb
 
 **Checkpoint**: Submission creation and value setting works with type casting - MVP complete
 
@@ -82,17 +82,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Create tests for Submission#complete? in spec/amsf_survey/submission_spec.rb
-- [ ] T019 [P] [US2] Create tests for Submission#missing_fields including gate-aware logic
-- [ ] T020 [P] [US2] Create tests for Submission#completion_percentage
-- [ ] T021 [P] [US2] Create tests for Submission#missing_entry_only_fields
+- [x] T018 [P] [US2] Create tests for Submission#complete? in spec/amsf_survey/submission_spec.rb
+- [x] T019 [P] [US2] Create tests for Submission#missing_fields including gate-aware logic
+- [x] T020 [P] [US2] Create tests for Submission#completion_percentage
+- [x] T021 [P] [US2] Create tests for Submission#missing_entry_only_fields
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Implement Submission#complete? in lib/amsf_survey/submission.rb
-- [ ] T023 [US2] Implement Submission#missing_fields with gate-aware visibility
-- [ ] T024 [US2] Implement Submission#completion_percentage
-- [ ] T025 [US2] Implement Submission#missing_entry_only_fields
+- [x] T022 [US2] Implement Submission#complete? in lib/amsf_survey/submission.rb
+- [x] T023 [US2] Implement Submission#missing_fields with gate-aware visibility
+- [x] T024 [US2] Implement Submission#completion_percentage
+- [x] T025 [US2] Implement Submission#missing_entry_only_fields
 
 **Checkpoint**: Completeness tracking works - users can see progress
 
@@ -106,24 +106,24 @@
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Create spec/amsf_survey/validation_error_spec.rb
-- [ ] T027 [P] [US3] Create spec/amsf_survey/validation_result_spec.rb
-- [ ] T028 [P] [US3] Create spec/amsf_survey/validator_spec.rb with presence tests
-- [ ] T029 [P] [US3] Add tests for range validation in validator_spec.rb
-- [ ] T030 [P] [US3] Add tests for enum validation in validator_spec.rb
-- [ ] T031 [P] [US3] Add tests for conditional validation in validator_spec.rb
+- [x] T026 [P] [US3] Create spec/amsf_survey/validation_error_spec.rb
+- [x] T027 [P] [US3] Create spec/amsf_survey/validation_result_spec.rb
+- [x] T028 [P] [US3] Create spec/amsf_survey/validator_spec.rb with presence tests
+- [x] T029 [P] [US3] Add tests for range validation in validator_spec.rb
+- [x] T030 [P] [US3] Add tests for enum validation in validator_spec.rb
+- [x] T031 [P] [US3] Add tests for conditional validation in validator_spec.rb
 
 ### Implementation for User Story 3
 
-- [ ] T032 [P] [US3] Create ValidationError class in lib/amsf_survey/validation_error.rb
-- [ ] T033 [P] [US3] Create ValidationResult class in lib/amsf_survey/validation_result.rb
-- [ ] T034 [US3] Create Validator module in lib/amsf_survey/validator.rb with validate method
-- [ ] T035 [US3] Implement Validator.validate_presence for required field checks
-- [ ] T036 [US3] Implement Validator.validate_ranges for min/max checks
-- [ ] T037 [US3] Implement Validator.validate_enums for valid value checks
-- [ ] T038 [US3] Implement Validator.validate_conditionals for gate-dependent checks
-- [ ] T039 [US3] Add AmsfSurvey.validate(submission) facade method in lib/amsf_survey.rb
-- [ ] T040 [US3] Require validation classes in lib/amsf_survey.rb
+- [x] T032 [P] [US3] Create ValidationError class in lib/amsf_survey/validation_error.rb
+- [x] T033 [P] [US3] Create ValidationResult class in lib/amsf_survey/validation_result.rb
+- [x] T034 [US3] Create Validator module in lib/amsf_survey/validator.rb with validate method
+- [x] T035 [US3] Implement Validator.validate_presence for required field checks
+- [x] T036 [US3] Implement Validator.validate_ranges for min/max checks
+- [x] T037 [US3] Implement Validator.validate_enums for valid value checks
+- [x] T038 [US3] Implement Validator.validate_conditionals for gate-dependent checks
+- [x] T039 [US3] Add AmsfSurvey.validate(submission) facade method in lib/amsf_survey.rb
+- [x] T040 [US3] Require validation classes in lib/amsf_survey.rb
 
 **Checkpoint**: Validation works - data quality assurance available
 
@@ -137,16 +137,16 @@
 
 ### Tests for User Story 5
 
-- [ ] T041 [P] [US5] Add tests for sum check error context in validator_spec.rb
-- [ ] T042 [P] [US5] Add tests for range error context in validator_spec.rb
-- [ ] T043 [P] [US5] Add tests for warnings vs errors separation in validation_result_spec.rb
+- [x] T041 [P] [US5] Add tests for sum check error context in validator_spec.rb
+- [x] T042 [P] [US5] Add tests for range error context in validator_spec.rb
+- [x] T043 [P] [US5] Add tests for warnings vs errors separation in validation_result_spec.rb
 
 ### Implementation for User Story 5
 
-- [ ] T044 [US5] Add context hash with expected/actual to sum check errors
-- [ ] T045 [US5] Add context hash with value/min/max to range errors
-- [ ] T046 [US5] Implement ValidationResult#error_count and #warning_count
-- [ ] T047 [US5] Add ValidationError#to_h and #to_s methods
+- [x] T044 [US5] Add context hash with expected/actual to sum check errors
+- [x] T045 [US5] Add context hash with value/min/max to range errors
+- [x] T046 [US5] Implement ValidationResult#error_count and #warning_count
+- [x] T047 [US5] Add ValidationError#to_h and #to_s methods
 
 **Checkpoint**: Detailed validation errors available - debugging enabled
 
@@ -156,11 +156,11 @@
 
 **Purpose**: Integration tests, edge cases, and documentation validation
 
-- [ ] T048 Create spec/amsf_survey/integration/submission_validation_spec.rb
-- [ ] T049 Add edge case tests (nil values, empty strings, missing industry)
-- [ ] T050 Validate against quickstart.md usage examples
-- [ ] T051 Run full test suite and verify 100% line coverage
-- [ ] T052 Update CLAUDE.md if any command patterns changed
+- [x] T048 Create spec/amsf_survey/integration/submission_validation_spec.rb
+- [x] T049 Add edge case tests (nil values, empty strings, missing industry)
+- [x] T050 Validate against quickstart.md usage examples
+- [x] T051 Run full test suite and verify 100% line coverage
+- [x] T052 Update CLAUDE.md if any command patterns changed
 
 ---
 

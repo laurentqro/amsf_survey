@@ -57,6 +57,15 @@ module AmsfSurvey
       !computed?
     end
 
+    # Cast a value to the appropriate type for this field.
+    # Delegates to TypeCaster based on field type.
+    #
+    # @param value [Object] the value to cast
+    # @return [Object, nil] the cast value
+    def cast(value)
+      TypeCaster.cast(value, type)
+    end
+
     # Sentinel value for missing/unanswered gate questions.
     # Using a unique object ensures no collision with actual user values.
     NOT_ANSWERED = Object.new.freeze

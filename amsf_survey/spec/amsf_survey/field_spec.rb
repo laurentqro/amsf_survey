@@ -196,4 +196,38 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.required?).to be true
     end
   end
+
+  describe "#cast" do
+    it "delegates to TypeCaster with field type" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast("123")).to eq(123)
+    end
+
+    it "casts string to integer for integer field" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast("42")).to eq(42)
+    end
+
+    it "casts string to BigDecimal for monetary field" do
+      field = described_class.new(**minimal_attrs.merge(type: :monetary))
+      result = field.cast("1234.56")
+      expect(result).to be_a(BigDecimal)
+      expect(result).to eq(BigDecimal("1234.56"))
+    end
+
+    it "preserves string for boolean field" do
+      field = described_class.new(**minimal_attrs.merge(type: :boolean))
+      expect(field.cast("Oui")).to eq("Oui")
+    end
+
+    it "preserves string for enum field" do
+      field = described_class.new(**minimal_attrs.merge(type: :enum))
+      expect(field.cast("Option A")).to eq("Option A")
+    end
+
+    it "returns nil for nil input" do
+      field = described_class.new(**minimal_attrs.merge(type: :integer))
+      expect(field.cast(nil)).to be_nil
+    end
+  end
 end

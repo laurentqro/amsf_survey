@@ -84,5 +84,22 @@ RSpec.describe AmsfSurvey do
         expect(error.message).to eq("Semantic mappings file not found in: #{taxonomy_path}")
       end
     end
+
+    describe AmsfSurvey::UnknownFieldError do
+      let(:field_id) { :nonexistent_field }
+      let(:error) { described_class.new(field_id) }
+
+      it "inherits from AmsfSurvey::Error" do
+        expect(described_class.superclass).to eq(AmsfSurvey::Error)
+      end
+
+      it "stores the field id" do
+        expect(error.field_id).to eq(field_id)
+      end
+
+      it "includes the field id in the message" do
+        expect(error.message).to eq("Unknown field: #{field_id}")
+      end
+    end
   end
 end
