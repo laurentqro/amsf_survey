@@ -59,6 +59,14 @@ module AmsfSurvey
 
     # Evaluates gate dependencies against submission data.
     # Returns true if all dependencies are satisfied or if there are no dependencies.
+    #
+    # @param data [Hash{Symbol => String}] submission data with symbol keys
+    # @return [Boolean] true if field should be visible
+    #
+    # @note Data hash must use symbol keys (e.g., { tGATE: "Oui" }).
+    #   String keys will not match dependencies.
+    # @note Missing keys and nil values are treated as "not satisfied".
+    #   A gate requiring "Oui" will return false if the key is missing or nil.
     def visible?(data)
       return true if depends_on.empty?
 

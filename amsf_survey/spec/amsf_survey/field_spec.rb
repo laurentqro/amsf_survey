@@ -125,6 +125,22 @@ RSpec.describe AmsfSurvey::Field do
       it "returns false when gate field is missing from data" do
         expect(field.visible?({})).to be false
       end
+
+      it "returns false when gate field value is nil" do
+        # Explicit nil in data hash should not satisfy "Oui" requirement
+        expect(field.visible?({ tGATE: nil })).to be false
+      end
+
+      it "returns false when gate field value is empty string" do
+        # Empty string should not satisfy "Oui" requirement
+        expect(field.visible?({ tGATE: "" })).to be false
+      end
+
+      it "requires symbol keys (string keys do not match)" do
+        # Dependencies use symbol keys, so string keys won't match
+        # This documents the expected behavior - callers must use symbol keys
+        expect(field.visible?({ "tGATE" => "Oui" })).to be false
+      end
     end
 
     context "with multiple dependencies" do
