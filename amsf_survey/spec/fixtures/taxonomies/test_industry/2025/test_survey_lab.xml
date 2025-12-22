@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linkbase
+  xmlns="http://www.xbrl.org/2003/linkbase"
+  xmlns:xbrli="http://www.xbrl.org/2003/instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xbrl.org/2003/linkbase http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd">
+    <labelLink
+      xlink:role="http://www.xbrl.org/2003/role/link"
+      xlink:type="extended">
+        <!-- tGATE labels -->
+        <loc
+          xlink:href="test_survey.xsd#test_tGATE"
+          xlink:label="test_tGATE"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_tGATE"
+          xlink:to="label_test_tGATE"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_tGATE"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">&lt;p&gt;Avez-vous effectue des activites?&lt;/p&gt;</label>
+        <label
+          xlink:label="label_test_tGATE"
+          xlink:role="http://www.xbrl.org/2003/role/verboseLabel"
+          xlink:type="resource"
+          xml:lang="fr">&lt;p&gt;Avez-vous effectue des activites?&lt;/p&gt; &lt;p&gt;Si non, veuillez expliquer pourquoi.&lt;/p&gt;</label>
+        <!-- t001 labels -->
+        <loc
+          xlink:href="test_survey.xsd#test_t001"
+          xlink:label="test_t001"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_t001"
+          xlink:to="label_test_t001"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_t001"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">&lt;p&gt;Nombre total de clients&lt;/p&gt;</label>
+        <label
+          xlink:label="label_test_t001"
+          xlink:role="http://www.xbrl.org/2003/role/verboseLabel"
+          xlink:type="resource"
+          xml:lang="fr">&lt;p&gt;Nombre total de clients&lt;/p&gt; &lt;p&gt;Incluez tous les clients actifs.&lt;/p&gt;</label>
+        <!-- t002 labels -->
+        <loc
+          xlink:href="test_survey.xsd#test_t002"
+          xlink:label="test_t002"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_t002"
+          xlink:to="label_test_t002"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_t002"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">Commentaires</label>
+        <!-- t003 labels -->
+        <loc
+          xlink:href="test_survey.xsd#test_t003"
+          xlink:label="test_t003"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_t003"
+          xlink:to="label_test_t003"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_t003"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">&lt;b&gt;Montant total&lt;/b&gt;</label>
+        <!-- t004 labels -->
+        <loc
+          xlink:href="test_survey.xsd#test_t004"
+          xlink:label="test_t004"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_t004"
+          xlink:to="label_test_t004"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_t004"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">Type de service</label>
+    </labelLink>
+</linkbase>

@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt"]
   spec.require_paths = ["lib"]
 
-  # No runtime dependencies in this phase
+  spec.add_dependency "nokogiri", "~> 1.15"
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"

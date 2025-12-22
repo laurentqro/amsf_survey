@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(.specify/scripts/bash/create-new-feature.sh:*)",
+      "Bash(mkdir:*)",
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)",
+      "Bash(.specify/scripts/bash/update-agent-context.sh:*)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(bundle install:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(cat:*)",
+      "Bash(ruby:*)",
+      "Bash(gem list:*)",
+      "Bash(bundle exec ruby:*)",
+      "Bash(gem build:*)",
+      "Bash(bundle exec rake:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git rm:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Skill(superpowers:brainstorm)"
+    ]
+  }
+}
