@@ -93,13 +93,6 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
       end
     end
 
-    describe "section roles" do
-      it "extracts section role definitions" do
-        roles = result[:_roles]
-        expect(roles).to be_a(Hash)
-        expect(roles.keys.map(&:to_s)).to include(match(/Link_General/), match(/Link_Details/))
-      end
-    end
   end
 
   describe "error handling" do

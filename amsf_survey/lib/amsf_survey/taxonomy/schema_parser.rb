@@ -7,7 +7,6 @@ module AmsfSurvey
     # Parses XBRL schema (.xsd) files to extract field definitions and types.
     class SchemaParser
       XBRLI_NS = "http://www.xbrl.org/2003/instance"
-      LINK_NS = "http://www.xbrl.org/2003/linkbase"
 
       TYPE_MAPPING = {
         "xbrli:integerItemType" => :integer,
@@ -30,7 +29,6 @@ module AmsfSurvey
         validate_field_count!(elements.size)
 
         result = {}
-        result[:_roles] = extract_roles(doc)
 
         elements.each do |element|
           field_data = extract_field(element)
@@ -62,19 +60,6 @@ module AmsfSurvey
         doc
       rescue Nokogiri::XML::SyntaxError => e
         raise MalformedTaxonomyError.new(@xsd_path, e.message)
-      end
-
-      def extract_roles(doc)
-        roles = {}
-        doc.xpath("//link:roleType", "link" => LINK_NS).each do |role|
-          role_id = role["id"]&.sub(/^roleType_/, "")&.strip&.to_sym
-          role_uri = role["roleURI"]
-          definition = role.at_xpath("link:definition", "link" => LINK_NS)&.text
-          next unless role_id && role_uri
-
-          roles[role_id] = { uri: role_uri, name: definition || role_id.to_s }
-        end
-        roles
       end
 
       def extract_field(element)
