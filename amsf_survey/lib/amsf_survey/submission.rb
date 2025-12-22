@@ -95,6 +95,13 @@ module AmsfSurvey
                              .map(&:id)
     end
 
+    # Internal data access for validation.
+    # @api private
+    # @return [Hash{Symbol => Object}] raw data hash reference
+    def internal_data
+      @data
+    end
+
     private
 
     # Validate that a field exists in the questionnaire.

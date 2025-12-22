@@ -28,7 +28,7 @@ module AmsfSurvey
     # @return [Array<ValidationError>]
     def validate_presence(submission)
       errors = []
-      data = submission.instance_variable_get(:@data)
+      data = submission.internal_data
 
       submission.questionnaire.fields.each do |field|
         next unless field.required? && field.visible?(data)
@@ -51,7 +51,7 @@ module AmsfSurvey
     # @return [Array<ValidationError>]
     def validate_enums(submission)
       errors = []
-      data = submission.instance_variable_get(:@data)
+      data = submission.internal_data
 
       submission.questionnaire.fields.each do |field|
         next unless field.valid_values && !field.valid_values.empty?
@@ -81,7 +81,7 @@ module AmsfSurvey
     # @return [Array<ValidationError>]
     def validate_ranges(submission)
       errors = []
-      data = submission.instance_variable_get(:@data)
+      data = submission.internal_data
 
       submission.questionnaire.fields.each do |field|
         next unless field.visible?(data)
