@@ -37,7 +37,7 @@ module AmsfSurvey
         errors << ValidationError.new(
           field: field.id,
           rule: :presence,
-          message: "Field '#{field.label}' is required",
+          message: I18n.t("amsf_survey.validation.presence", field: field.label),
           severity: :error
         )
       end
@@ -64,7 +64,7 @@ module AmsfSurvey
           errors << ValidationError.new(
             field: field.id,
             rule: :enum,
-            message: "Field '#{field.label}' must be one of: #{field.valid_values.join(', ')}",
+            message: I18n.t("amsf_survey.validation.enum", field: field.label, valid_values: field.valid_values.join(", ")),
             severity: :error,
             context: { value: value, valid_values: field.valid_values }
           )
@@ -97,7 +97,7 @@ module AmsfSurvey
           errors << ValidationError.new(
             field: field.id,
             rule: :range,
-            message: "Field '#{field.label}' must be at least #{min}",
+            message: I18n.t("amsf_survey.validation.range_min", field: field.label, min: min),
             severity: :error,
             context: { value: value, min: min, max: max }
           )
@@ -105,7 +105,7 @@ module AmsfSurvey
           errors << ValidationError.new(
             field: field.id,
             rule: :range,
-            message: "Field '#{field.label}' must be at most #{max}",
+            message: I18n.t("amsf_survey.validation.range_max", field: field.label, max: max),
             severity: :error,
             context: { value: value, min: min, max: max }
           )
