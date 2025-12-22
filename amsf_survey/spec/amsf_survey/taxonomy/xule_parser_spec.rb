@@ -89,6 +89,67 @@ RSpec.describe AmsfSurvey::Taxonomy::XuleParser do
     end
   end
 
+  describe "EXISTENCE_PATTERN whitespace variations" do
+    # The pattern must handle various whitespace formatting in XULE files
+    # since different tools may format the rules differently
+
+    it "matches compact format: $a1==Yes and $a2>0" do
+      xule_content = <<~XULE
+        output tGATE-t001
+        $a1==Yes and $a2>0
+        message { "Compact" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_compact.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules][:t001]).to eq({ tGATE: "Yes" })
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+
+    it "matches spaced format: $a1 == Yes and $a2 > 0" do
+      xule_content = <<~XULE
+        output tGATE-t001
+        $a1 == Yes and $a2 > 0
+        message { "Spaced" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_spaced.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules][:t001]).to eq({ tGATE: "Yes" })
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+
+    it "matches extra whitespace: $a1  ==  Yes   and   $a2  >  0" do
+      xule_content = <<~XULE
+        output tGATE-t001
+        $a1  ==  Yes   and   $a2  >  0
+        message { "Extra spaces" }
+      XULE
+      temp_path = File.join(fixtures_path, "temp_extra.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules][:t001]).to eq({ tGATE: "Yes" })
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+
+    it "handles Windows line endings (CRLF)" do
+      xule_content = "output tGATE-t001\r\n$a1 == Yes and $a2>0\r\nmessage { \"CRLF\" }\r\n"
+      temp_path = File.join(fixtures_path, "temp_crlf.xule")
+      File.write(temp_path, xule_content)
+
+      result = described_class.new(temp_path).parse
+      expect(result[:gate_rules][:t001]).to eq({ tGATE: "Yes" })
+    ensure
+      File.delete(temp_path) if File.exist?(temp_path)
+    end
+  end
+
   describe "skipping non-gate rules" do
     it "skips sum validation rules (ending in -Sum)" do
       xule_content = <<~XULE

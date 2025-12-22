@@ -3,16 +3,53 @@
 module AmsfSurvey
   module Taxonomy
     # Parses XULE files to extract gate question dependencies.
-    # Only extracts existence/gate rules, not sum validation rules.
+    #
+    # XULE (XBRL Universal Language for Expressions) is used by AMSF to define
+    # validation rules. This parser specifically extracts "gate" rules that
+    # control field visibility based on Yes/No answers.
+    #
+    # == Gate Rules
+    # Gate rules follow this pattern in XULE:
+    #
+    #   output tGATE-t001
+    #   $a1 == Yes and $a2>0
+    #   message { "Field t001 requires tGATE to be Yes" }
+    #
+    # Where:
+    # - tGATE is the "gate" field (a Yes/No question)
+    # - t001 is the "controlled" field (only visible when gate is Yes)
+    # - $a1 refers to the gate field value, $a2 refers to the controlled field
+    #
+    # == Known Limitations
+    # - Only supports "Yes" as the gate value (French "Oui" not yet supported in XULE)
+    # - Does not handle complex boolean expressions (AND/OR combinations)
+    # - Does not parse gate values other than "Yes" (e.g., specific enum values)
+    # - Assumes AMSF's specific XULE convention for existence checks
+    #
+    # == Skipped Rule Types
+    # - Sum validation rules (output ending in -Sum)
+    # - Dimension rules (output with multiple hyphens)
+    # - Any rule not matching the existence check pattern
+    #
     class XuleParser
       # Pattern for gate rules: output {gate}-{controlled} (two fields only)
+      # Example: "output tGATE-t001" captures tGATE and t001
       GATE_PATTERN = /^output\s+(\w+)-(\w+)$/
 
-      # Pattern to identify existence checks (gate rules vs sum rules)
-      # Matches: $a1 == Yes and $a2>0  (with flexible whitespace)
+      # Pattern to identify existence checks (gate rules vs sum rules).
+      # AMSF uses this specific pattern for gate validation:
+      #   $a1 == Yes and $a2>0
+      # Meaning: "If gate field ($a1) is Yes, then controlled field ($a2) must exist (>0)"
+      #
+      # Whitespace is flexible:
+      #   - "$a1==Yes and $a2>0" matches
+      #   - "$a1 == Yes and $a2 > 0" matches
+      #   - "$a1  ==  Yes   and   $a2  >  0" matches
       EXISTENCE_PATTERN = /\$a1\s*==\s*Yes\s+and\s+\$a2\s*>\s*0/
 
-      # Pattern to identify sum validation rules (skip these)
+      # Pattern to identify sum validation rules (skip these).
+      # Sum rules validate that fields add up correctly, not visibility.
+      # Example: "output a1101-a1102-a1103-Sum"
       SUM_PATTERN = /-Sum$/
 
       def initialize(xule_path)
