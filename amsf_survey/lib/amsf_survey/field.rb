@@ -75,21 +75,21 @@ module AmsfSurvey
     # Evaluates gate dependencies against submission data.
     # Returns true if all dependencies are satisfied or if there are no dependencies.
     #
-    # @param data [Hash{Symbol => String}] submission data with lowercase symbol keys
+    # @param data [Hash{Symbol => String}] submission data with original XBRL ID keys
     # @return [Boolean] true if field should be visible
     #
-    # @note Data hash must use lowercase symbol keys (e.g., { tgate: "Oui" }).
-    #   Both depends_on keys and Submission data keys are normalized to lowercase.
+    # @note Data hash must use original XBRL ID keys (e.g., { tGATE: "Oui" }).
+    #   depends_on keys preserve original XBRL casing from taxonomy.
     # @note Missing keys and nil values are treated as "not satisfied".
     #   A gate requiring "Oui" will return false if the key is missing or nil.
     #   This is intentional: unanswered gates hide dependent fields.
     #
     # @example Basic usage
-    #   field.visible?({ tgate: "Oui" })  # => true if depends_on[:tgate] == "Oui"
+    #   field.visible?({ tGATE: "Oui" })  # => true if depends_on[:tGATE] == "Oui"
     #
     # @example Missing gate value
     #   field.visible?({})                # => false (unanswered gate hides field)
-    #   field.visible?({ tgate: nil })    # => false (nil treated as unanswered)
+    #   field.visible?({ tGATE: nil })    # => false (nil treated as unanswered)
     #
     def visible?(data)
       return true if depends_on.empty?

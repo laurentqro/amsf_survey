@@ -185,7 +185,8 @@ module AmsfSurvey
       questionnaire.fields.each do |field|
         next unless field.visible?(data)
 
-        value = data[field.id]
+        # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
+        value = data[field.xbrl_id]
 
         # Skip nil values if include_empty is false
         next if value.nil? && !@include_empty

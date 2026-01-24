@@ -78,8 +78,8 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       it "sets depends_on for controlled fields with translated values" do
         controlled = questionnaire.field(:t001)
         # XULE uses "Yes" but it gets translated to the schema's actual value ("Oui")
-        # depends_on keys are now lowercase
-        expect(controlled.depends_on).to eq({ tgate: "Oui" })
+        # depends_on keys preserve original XBRL casing for internal logic
+        expect(controlled.depends_on).to eq({ tGATE: "Oui" })
       end
 
       it "leaves non-gated fields without dependencies" do

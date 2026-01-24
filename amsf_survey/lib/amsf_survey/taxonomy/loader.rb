@@ -81,18 +81,17 @@ module AmsfSurvey
 
       # Translates XULE "Yes"/"No" literals to actual valid values from the schema.
       # XULE uses English boolean literals, but taxonomies may use French ("Oui"/"Non").
-      # Also normalizes gate field IDs to lowercase for consistent API access.
+      # Preserves original XBRL ID casing for internal logic.
       #
       # @param xule_deps [Hash, nil] Dependencies from XuleParser (e.g., { tGATE: "Yes" })
       # @param schema_data [Hash] Parsed schema with valid_values for each field
-      # @return [Hash] Dependencies with lowercase keys and translated values (e.g., { tgate: "Oui" })
+      # @return [Hash] Dependencies with original keys and translated values (e.g., { tGATE: "Oui" })
       def resolve_gate_dependencies(xule_deps, schema_data)
         return {} if xule_deps.nil? || xule_deps.empty?
 
         xule_deps.each_with_object({}) do |(gate_id, xule_value), result|
-          # Normalize gate field ID to lowercase symbol
-          lowercase_gate_id = gate_id.to_s.downcase.to_sym
-          result[lowercase_gate_id] = translate_gate_value(xule_value, schema_data[gate_id])
+          # Preserve original XBRL ID casing for internal logic
+          result[gate_id] = translate_gate_value(xule_value, schema_data[gate_id])
         end
       end
 

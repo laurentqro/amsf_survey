@@ -11,7 +11,8 @@ module AmsfSurvey
       @year = year
       @sections = sections
       @taxonomy_namespace = taxonomy_namespace
-      @field_index = build_field_index
+      @field_index = build_field_index          # lowercase id -> Field (public API)
+      @xbrl_field_index = build_xbrl_field_index # xbrl_id -> Field (internal)
     end
 
     # Returns all fields across all sections in order
@@ -40,11 +41,23 @@ module AmsfSurvey
       fields.select(&:gate?)
     end
 
+    # Internal lookup by original XBRL ID (for Submission internal logic)
+    # @api private
+    def field_by_xbrl_id(xbrl_id)
+      @xbrl_field_index[xbrl_id]
+    end
+
     private
 
     def build_field_index
       fields.each_with_object({}) do |field, index|
         index[field.id] = field
+      end
+    end
+
+    def build_xbrl_field_index
+      fields.each_with_object({}) do |field, index|
+        index[field.xbrl_id] = field
       end
     end
   end

@@ -115,20 +115,22 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
     subject(:questionnaire) { AmsfSurvey.questionnaire(industry: :real_estate, year: 2025) }
 
     it "hides dependent fields when gate is closed" do
-      # Find a field that depends on aactive (lowercase key in depends_on)
-      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aactive] }
-      skip("No field depends on aactive") unless dependent_field
+      # Find a field that depends on aACTIVE (original XBRL casing in depends_on)
+      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
+      skip("No field depends on aACTIVE") unless dependent_field
 
       # When gate is "Non" (French for No), dependent fields should be hidden
-      expect(dependent_field.visible?({ aactive: "Non" })).to be false
+      # Data hash uses original XBRL ID keys
+      expect(dependent_field.visible?({ aACTIVE: "Non" })).to be false
     end
 
     it "shows dependent fields when gate is open" do
-      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aactive] }
-      skip("No field depends on aactive") unless dependent_field
+      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
+      skip("No field depends on aACTIVE") unless dependent_field
 
       # Taxonomy uses French "Oui"/"Non" - XULE's "Yes" is translated to schema values
-      expect(dependent_field.visible?({ aactive: "Oui" })).to be true
+      # Data hash uses original XBRL ID keys
+      expect(dependent_field.visible?({ aACTIVE: "Oui" })).to be true
     end
   end
 end

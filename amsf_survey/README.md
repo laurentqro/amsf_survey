@@ -134,7 +134,7 @@ submission = AmsfSurvey.build_submission(
   period: Date.new(2025, 12, 31)
 )
 
-# Set values using lowercase field IDs (any casing works, normalized internally)
+# Set values using any casing (normalized at public API boundary)
 submission[:aactive] = "Oui"
 submission[:a1101] = 150
 
@@ -142,6 +142,9 @@ submission.complete?              # => false (not all fields filled)
 submission.completion_percentage  # => 0.6%
 submission.missing_fields         # => [:a1102, :a1103, ...] (lowercase IDs)
 submission[:a1101]                # => 150
+
+# Internal data uses original XBRL IDs
+submission.data                   # => { aACTIVE: "Oui", a1101: 150 }
 ```
 
 ### Generator

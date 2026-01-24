@@ -4,6 +4,9 @@ module AmsfSurvey
   # Container for survey response data.
   # Holds entity_id, period, industry, year, and a hash of field values.
   # Provides access to the questionnaire and tracks completeness.
+  #
+  # Public API uses lowercase field IDs for convenience.
+  # Internal storage uses original XBRL IDs for consistency with taxonomy.
   class Submission
     attr_reader :industry, :year, :entity_id, :period
 
@@ -18,7 +21,7 @@ module AmsfSurvey
       @year = year
       @entity_id = entity_id
       @period = period
-      @data = {}
+      @data = {}  # Keyed by original XBRL ID (e.g., :tGATE, :a1101)
     end
 
     # Get the questionnaire associated with this submission's industry and year.
@@ -29,34 +32,34 @@ module AmsfSurvey
       @questionnaire ||= AmsfSurvey.questionnaire(industry: industry, year: year)
     end
 
-    # Get a field value by lowercase field ID.
-    # Input is normalized to lowercase for consistent lookup.
+    # Get a field value by field ID.
+    # Input is normalized to lowercase for public API convenience.
     #
-    # @param field_id [Symbol, String] the field identifier
+    # @param field_id [Symbol, String] the field identifier (any casing)
     # @return [Object, nil] the stored value or nil
     # @raise [UnknownFieldError] if field doesn't exist in questionnaire
     def [](field_id)
-      field_id = normalize_field_id(field_id)
-      validate_field!(field_id)
-      @data[field_id]
+      field = lookup_field(field_id)
+      @data[field.xbrl_id]
     end
 
-    # Set a field value by lowercase field ID.
-    # Input is normalized to lowercase. Value is automatically type-cast.
+    # Set a field value by field ID.
+    # Input is normalized to lowercase for public API convenience.
+    # Value is automatically type-cast and stored with original XBRL ID.
     #
-    # @param field_id [Symbol, String] the field identifier
+    # @param field_id [Symbol, String] the field identifier (any casing)
     # @param value [Object] the value to set (will be type-cast)
     # @raise [UnknownFieldError] if field doesn't exist in questionnaire
     def []=(field_id, value)
-      field_id = normalize_field_id(field_id)
-      field = validate_field!(field_id)
-      @data[field_id] = field.cast(value)
+      field = lookup_field(field_id)
+      @data[field.xbrl_id] = field.cast(value)
     end
 
     # Get a frozen copy of the data hash (for inspection/serialization).
     # Returns a defensive copy to prevent external mutation.
+    # Keys are original XBRL IDs.
     #
-    # @return [Hash{Symbol => Object}] frozen field values keyed by semantic field ID
+    # @return [Hash{Symbol => Object}] frozen field values keyed by XBRL ID
     def data
       @data.dup.freeze
     end
@@ -70,8 +73,9 @@ module AmsfSurvey
 
     # Get list of required visible fields that are not filled.
     # Respects gate visibility - hidden fields are not considered missing.
+    # Returns lowercase field IDs for public API consistency.
     #
-    # @return [Array<Symbol>] missing field IDs
+    # @return [Array<Symbol>] missing field IDs (lowercase)
     def missing_fields
       required_visible_fields.select { |field| field_missing?(field) }
                              .map(&:id)
@@ -90,26 +94,13 @@ module AmsfSurvey
 
     private
 
-    # Internal data access for validation.
-    # @api private
-    # @return [Hash{Symbol => Object}] raw data hash reference
-    def internal_data
-      @data
-    end
-
-    # Normalize field ID to lowercase symbol for consistent lookup.
+    # Lookup field by any casing, normalize via public API.
     # @param field_id [Symbol, String] the field identifier
-    # @return [Symbol] lowercase field ID
-    def normalize_field_id(field_id)
-      field_id.to_s.downcase.to_sym
-    end
-
-    # Validate that a field exists in the questionnaire.
-    # @param field_id [Symbol] the field identifier
     # @return [Field] the field if found
     # @raise [UnknownFieldError] if field doesn't exist
-    def validate_field!(field_id)
-      field = questionnaire.field(field_id)
+    def lookup_field(field_id)
+      normalized_id = field_id.to_s.downcase.to_sym
+      field = questionnaire.field(normalized_id)
       raise UnknownFieldError, field_id unless field
 
       field
@@ -122,13 +113,15 @@ module AmsfSurvey
 
     # Get all visible fields (gate dependencies satisfied).
     # All visible fields are required by law for obligated entities.
+    # Uses internal @data hash which has XBRL ID keys matching depends_on.
     def visible_fields
       questionnaire.fields.select { |field| field.visible?(@data) }
     end
 
     # Check if a field value is missing (nil or not set).
+    # Uses xbrl_id for internal lookup since @data uses XBRL IDs.
     def field_missing?(field)
-      !@data.key?(field.id) || @data[field.id].nil?
+      !@data.key?(field.xbrl_id) || @data[field.xbrl_id].nil?
     end
   end
 end

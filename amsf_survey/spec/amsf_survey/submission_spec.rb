@@ -253,7 +253,7 @@ RSpec.describe AmsfSurvey::Submission do
   end
 
   describe "#data" do
-    it "returns the raw data hash with lowercase keys" do
+    it "returns the raw data hash with original XBRL ID keys" do
       submission = described_class.new(
         industry: :real_estate,
         year: 2025,
@@ -264,6 +264,7 @@ RSpec.describe AmsfSurvey::Submission do
       submission[:total_clients] = 50
       submission[:is_agent] = "Oui"
 
+      # Data is keyed by original XBRL IDs (which happen to be lowercase in this fixture)
       expect(submission.data).to eq({
         total_clients: 50,
         is_agent: "Oui"

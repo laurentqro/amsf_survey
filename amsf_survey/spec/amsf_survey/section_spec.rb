@@ -23,7 +23,7 @@ RSpec.describe AmsfSurvey::Section do
       section_id: :general,
       order: 2,
       gate: false,
-      depends_on: { tgate: "Oui" }
+      depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
   end
 
@@ -81,7 +81,7 @@ RSpec.describe AmsfSurvey::Section do
     context "when any field is visible" do
       it "returns true" do
         # field1 has no dependencies, so it's always visible
-        expect(section.visible?({ tgate: "Non" })).to be true
+        expect(section.visible?({ tGATE: "Non" })).to be true
       end
     end
 
@@ -95,7 +95,7 @@ RSpec.describe AmsfSurvey::Section do
           section_id: :gated,
           order: 1,
           gate: false,
-          depends_on: { tgate: "Oui" }
+          depends_on: { tGATE: "Oui" }  # Original XBRL casing
         )
       end
 
@@ -108,7 +108,7 @@ RSpec.describe AmsfSurvey::Section do
           section_id: :gated,
           order: 2,
           gate: false,
-          depends_on: { tgate: "Oui" }
+          depends_on: { tGATE: "Oui" }  # Original XBRL casing
         )
       end
 
@@ -122,11 +122,11 @@ RSpec.describe AmsfSurvey::Section do
       end
 
       it "returns false when gate is closed" do
-        expect(gated_section.visible?({ tgate: "Non" })).to be false
+        expect(gated_section.visible?({ tGATE: "Non" })).to be false
       end
 
       it "returns true when gate is open" do
-        expect(gated_section.visible?({ tgate: "Oui" })).to be true
+        expect(gated_section.visible?({ tGATE: "Oui" })).to be true
       end
     end
 
