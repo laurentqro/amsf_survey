@@ -88,14 +88,14 @@ module AmsfSurvey
       (filled.to_f / visible.size * 100).round(1)
     end
 
+    private
+
     # Internal data access for validation.
     # @api private
     # @return [Hash{Symbol => Object}] raw data hash reference
     def internal_data
       @data
     end
-
-    private
 
     # Normalize field ID to lowercase symbol for consistent lookup.
     # @param field_id [Symbol, String] the field identifier
