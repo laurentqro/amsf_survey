@@ -67,14 +67,9 @@ module AmsfSurvey
       TypeCaster.cast(value, type)
     end
 
-    # Evaluates gate dependencies against submission data.
-    # Returns true if all dependencies are satisfied or if there are no dependencies.
-    #
-    # @param data [Hash{Symbol => String}] submission data with original XBRL ID keys
-    # @return [Boolean] true if field should be visible
-    #
-    # @note Data hash must use original XBRL ID keys (e.g., { tGATE: "Oui" }).
-    #   Missing keys and nil values are treated as "not satisfied".
+    # Evaluates gate dependencies against internal submission data.
+    # Used by Submission#visible_fields - not part of public API.
+    # Data hash must use original XBRL ID keys to match depends_on.
     def visible?(data)
       return true if depends_on.empty?
 
@@ -82,5 +77,7 @@ module AmsfSurvey
         data.key?(gate_id) && data[gate_id] == required_value
       end
     end
+
+    private :visible?
   end
 end

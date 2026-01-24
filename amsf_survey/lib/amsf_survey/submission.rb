@@ -110,7 +110,7 @@ module AmsfSurvey
     # All visible fields are required by law for obligated entities.
     # Uses internal @data hash which has XBRL ID keys matching depends_on.
     def visible_fields
-      questionnaire.fields.select { |field| field.visible?(@data) }
+      questionnaire.fields.select { |field| field.send(:visible?, @data) }
     end
 
     # Check if a field value is missing (nil or not set).

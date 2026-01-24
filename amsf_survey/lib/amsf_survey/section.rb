@@ -23,11 +23,14 @@ module AmsfSurvey
       fields.empty?
     end
 
-    # Returns true if any field in the section is visible given the data
+    # Returns true if any field in the section is visible given the data.
+    # Used internally - not part of public API.
     def visible?(data)
       return false if empty?
 
-      fields.any? { |field| field.visible?(data) }
+      fields.any? { |field| field.send(:visible?, data) }
     end
+
+    private :visible?
   end
 end

@@ -133,12 +133,12 @@ RSpec.describe AmsfSurvey::Field do
     end
   end
 
-  describe "#visible?" do
+  describe "#visible? (private, tested via send)" do
     context "with no dependencies" do
       it "returns true regardless of data" do
         field = described_class.new(**minimal_attrs, depends_on: {})
-        expect(field.visible?({})).to be true
-        expect(field.visible?({ tGATE: "Non" })).to be true
+        expect(field.send(:visible?, {})).to be true
+        expect(field.send(:visible?, { tGATE: "Non" })).to be true
       end
     end
 
@@ -148,31 +148,31 @@ RSpec.describe AmsfSurvey::Field do
       end
 
       it "returns true when dependency is satisfied" do
-        expect(field.visible?({ tGATE: "Oui" })).to be true
+        expect(field.send(:visible?, { tGATE: "Oui" })).to be true
       end
 
       it "returns false when dependency is not satisfied" do
-        expect(field.visible?({ tGATE: "Non" })).to be false
+        expect(field.send(:visible?, { tGATE: "Non" })).to be false
       end
 
       it "returns false when gate field is missing from data" do
-        expect(field.visible?({})).to be false
+        expect(field.send(:visible?, {})).to be false
       end
 
       it "returns false when gate field value is nil" do
         # Explicit nil in data hash should not satisfy "Oui" requirement
-        expect(field.visible?({ tGATE: nil })).to be false
+        expect(field.send(:visible?, { tGATE: nil })).to be false
       end
 
       it "returns false when gate field value is empty string" do
         # Empty string should not satisfy "Oui" requirement
-        expect(field.visible?({ tGATE: "" })).to be false
+        expect(field.send(:visible?, { tGATE: "" })).to be false
       end
 
       it "requires symbol keys (string keys do not match)" do
         # Dependencies use symbol keys, so string keys won't match
         # This documents the expected behavior - callers must use symbol keys
-        expect(field.visible?({ "tGATE" => "Oui" })).to be false
+        expect(field.send(:visible?, { "tGATE" => "Oui" })).to be false
       end
     end
 
@@ -185,12 +185,12 @@ RSpec.describe AmsfSurvey::Field do
       end
 
       it "returns true when all dependencies are satisfied" do
-        expect(field.visible?({ tGATE: "Oui", tGATE2: "Oui" })).to be true
+        expect(field.send(:visible?, { tGATE: "Oui", tGATE2: "Oui" })).to be true
       end
 
       it "returns false when any dependency is not satisfied" do
-        expect(field.visible?({ tGATE: "Oui", tGATE2: "Non" })).to be false
-        expect(field.visible?({ tGATE: "Non", tGATE2: "Oui" })).to be false
+        expect(field.send(:visible?, { tGATE: "Oui", tGATE2: "Non" })).to be false
+        expect(field.send(:visible?, { tGATE: "Non", tGATE2: "Oui" })).to be false
       end
     end
   end

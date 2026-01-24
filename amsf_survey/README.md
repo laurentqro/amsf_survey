@@ -163,14 +163,13 @@ xml = AmsfSurvey.to_xbrl(submission, include_empty: false)   # Omit nil fields
 Some fields only appear based on answers to "gate" questions:
 
 ```ruby
-# If aactive = "Non", most fields become hidden/optional
+# Check if a field is a gate question
 field = q.field(:aactive)  # "Did you act as a professional agent?"
 field.gate?  # => true
 
-# Dependent fields check visibility
-client_field = q.field(:a1101)
-client_field.visible?({ aactive: "Non" })  # => false (hidden)
-client_field.visible?({ aactive: "Oui" })  # => true (visible)
+# Visibility is handled automatically by Submission
+submission[:aactive] = "Non"
+submission.missing_fields  # Only includes fields visible given current gate values
 ```
 
 The submission respects gate visibility - hidden fields are not counted as missing.

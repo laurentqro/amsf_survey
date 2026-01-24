@@ -183,7 +183,7 @@ module AmsfSurvey
       strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
 
       questionnaire.fields.each do |field|
-        next unless field.visible?(data)
+        next unless field.send(:visible?, data)
 
         # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
         value = data[field.xbrl_id]
