@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-fr:
-  amsf_survey:
-    validation:
-      presence: "Le champ '%{field}' est obligatoire"
-      enum: "Le champ '%{field}' doit être l'une des valeurs suivantes : %{valid_values}"
-      range_min: "Le champ '%{field}' doit être au moins %{min}"
-      range_max: "Le champ '%{field}' doit être au plus %{max}"

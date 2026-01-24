@@ -10,15 +10,14 @@ module AmsfSurvey
   #
   # Invalid inputs return nil rather than raising exceptions. This design choice:
   # - Enables graceful handling of user input errors
-  # - Allows validation layer to report structured errors
+  # - Allows Submission#missing_fields to identify unfilled fields
   # - Prevents data entry from failing catastrophically
   #
-  # For regulatory submissions requiring strict mode, the Validator layer
-  # catches nil values via presence validation and reports them as errors.
-  # The audit trail is maintained in ValidationResult, not here.
+  # For regulatory compliance, validation is delegated to Arelle (external XBRL validator).
+  # The gem tracks completeness via Submission#complete? and Submission#missing_fields.
   #
-  # @see Validator For presence and range validation of cast values
-  # @see ValidationResult For structured error reporting with audit context
+  # @see Submission#complete? For checking if all visible fields are filled
+  # @see Submission#missing_fields For listing unfilled visible fields
   module TypeCaster
     # Maximum input length for defense-in-depth against DoS.
     # Regulatory monetary values rarely exceed 20 digits.

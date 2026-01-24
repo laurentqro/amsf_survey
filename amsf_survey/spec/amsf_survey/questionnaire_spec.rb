@@ -24,7 +24,7 @@ RSpec.describe AmsfSurvey::Questionnaire do
       section_id: :general,
       order: 2,
       gate: false,
-      depends_on: { tgate: "Oui" }
+      depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
   end
 
@@ -50,7 +50,7 @@ RSpec.describe AmsfSurvey::Questionnaire do
       section_id: :details,
       order: 1,
       gate: false,
-      depends_on: { tgate: "Oui" }
+      depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
   end
 

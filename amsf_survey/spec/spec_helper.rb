@@ -13,11 +13,6 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "amsf_survey"
 
 RSpec.configure do |config|
-  # Use English locale for test assertions (messages are predictable)
-  config.before(:suite) do
-    I18n.locale = :en
-  end
-
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
