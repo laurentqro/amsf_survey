@@ -29,25 +29,26 @@ module AmsfSurvey
       @questionnaire ||= AmsfSurvey.questionnaire(industry: industry, year: year)
     end
 
-    # Get a field value by semantic name.
+    # Get a field value by lowercase field ID.
+    # Input is normalized to lowercase for consistent lookup.
     #
-    # @param field_id [Symbol] the field identifier
+    # @param field_id [Symbol, String] the field identifier
     # @return [Object, nil] the stored value or nil
     # @raise [UnknownFieldError] if field doesn't exist in questionnaire
     def [](field_id)
-      field_id = field_id.to_sym
+      field_id = normalize_field_id(field_id)
       validate_field!(field_id)
       @data[field_id]
     end
 
-    # Set a field value by semantic name.
-    # Value is automatically type-cast based on field definition.
+    # Set a field value by lowercase field ID.
+    # Input is normalized to lowercase. Value is automatically type-cast.
     #
-    # @param field_id [Symbol] the field identifier
+    # @param field_id [Symbol, String] the field identifier
     # @param value [Object] the value to set (will be type-cast)
     # @raise [UnknownFieldError] if field doesn't exist in questionnaire
     def []=(field_id, value)
-      field_id = field_id.to_sym
+      field_id = normalize_field_id(field_id)
       field = validate_field!(field_id)
       @data[field_id] = field.cast(value)
     end
@@ -76,24 +77,15 @@ module AmsfSurvey
                              .map(&:id)
     end
 
-    # Calculate completion percentage based on required visible fields.
+    # Calculate completion percentage based on visible fields.
     #
     # @return [Float] percentage from 0.0 to 100.0
     def completion_percentage
-      required = required_visible_fields
-      return 100.0 if required.empty?
+      visible = visible_fields
+      return 100.0 if visible.empty?
 
-      filled = required.count { |field| !field_missing?(field) }
-      (filled.to_f / required.size * 100).round(1)
-    end
-
-    # Get list of entry-only fields that are missing.
-    # Entry-only fields require fresh user input (not prefillable or computed).
-    #
-    # @return [Array<Symbol>] missing entry-only field IDs
-    def missing_entry_only_fields
-      required_visible_fields.select { |field| field.entry_only? && field_missing?(field) }
-                             .map(&:id)
+      filled = visible.count { |field| !field_missing?(field) }
+      (filled.to_f / visible.size * 100).round(1)
     end
 
     # Internal data access for validation.
@@ -104,6 +96,13 @@ module AmsfSurvey
     end
 
     private
+
+    # Normalize field ID to lowercase symbol for consistent lookup.
+    # @param field_id [Symbol, String] the field identifier
+    # @return [Symbol] lowercase field ID
+    def normalize_field_id(field_id)
+      field_id.to_s.downcase.to_sym
+    end
 
     # Validate that a field exists in the questionnaire.
     # @param field_id [Symbol] the field identifier
@@ -116,13 +115,15 @@ module AmsfSurvey
       field
     end
 
-    # Get all required visible fields.
-    # Required = not computed
-    # Visible = gate dependencies satisfied
+    # Alias for visible_fields (backwards compatibility during transition)
     def required_visible_fields
-      questionnaire.fields.select do |field|
-        field.required? && field.visible?(@data)
-      end
+      visible_fields
+    end
+
+    # Get all visible fields (gate dependencies satisfied).
+    # All visible fields are required by law for obligated entities.
+    def visible_fields
+      questionnaire.fields.select { |field| field.visible?(@data) }
     end
 
     # Check if a field value is missing (nil or not set).

@@ -196,7 +196,7 @@ module AmsfSurvey
 
     # Build a single fact element
     def build_fact(doc, parent, strix_ns, field, value)
-      fact = Nokogiri::XML::Node.new(field.id.to_s, doc)
+      fact = Nokogiri::XML::Node.new(field.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
       fact["contextRef"] = context_id
 

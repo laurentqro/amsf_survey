@@ -4,10 +4,8 @@ RSpec.describe AmsfSurvey::Section do
   let(:field1) do
     AmsfSurvey::Field.new(
       id: :t001,
-      name: :total_clients,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :computed,
       label: "Total clients",
       section_id: :general,
       order: 1,
@@ -19,15 +17,13 @@ RSpec.describe AmsfSurvey::Section do
   let(:field2) do
     AmsfSurvey::Field.new(
       id: :t002,
-      name: :comments,
       type: :string,
       xbrl_type: "xbrli:stringItemType",
-      source_type: :entry_only,
       label: "Comments",
       section_id: :general,
       order: 2,
       gate: false,
-      depends_on: { tGATE: "Oui" }
+      depends_on: { tgate: "Oui" }
     )
   end
 
@@ -85,7 +81,7 @@ RSpec.describe AmsfSurvey::Section do
     context "when any field is visible" do
       it "returns true" do
         # field1 has no dependencies, so it's always visible
-        expect(section.visible?({ tGATE: "Non" })).to be true
+        expect(section.visible?({ tgate: "Non" })).to be true
       end
     end
 
@@ -93,30 +89,26 @@ RSpec.describe AmsfSurvey::Section do
       let(:gated_field1) do
         AmsfSurvey::Field.new(
           id: :g1,
-          name: :gated1,
           type: :integer,
           xbrl_type: "xbrli:integerItemType",
-          source_type: :entry_only,
           label: "Gated 1",
           section_id: :gated,
           order: 1,
           gate: false,
-          depends_on: { tGATE: "Oui" }
+          depends_on: { tgate: "Oui" }
         )
       end
 
       let(:gated_field2) do
         AmsfSurvey::Field.new(
           id: :g2,
-          name: :gated2,
           type: :integer,
           xbrl_type: "xbrli:integerItemType",
-          source_type: :entry_only,
           label: "Gated 2",
           section_id: :gated,
           order: 2,
           gate: false,
-          depends_on: { tGATE: "Oui" }
+          depends_on: { tgate: "Oui" }
         )
       end
 
@@ -130,11 +122,11 @@ RSpec.describe AmsfSurvey::Section do
       end
 
       it "returns false when gate is closed" do
-        expect(gated_section.visible?({ tGATE: "Non" })).to be false
+        expect(gated_section.visible?({ tgate: "Non" })).to be false
       end
 
       it "returns true when gate is open" do
-        expect(gated_section.visible?({ tGATE: "Oui" })).to be true
+        expect(gated_section.visible?({ tgate: "Oui" })).to be true
       end
     end
 

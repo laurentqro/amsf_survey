@@ -4,10 +4,8 @@ RSpec.describe AmsfSurvey::Field do
   let(:minimal_attrs) do
     {
       id: :t001,
-      name: :total_clients,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :computed,
       label: "Total number of clients",
       section_id: :general,
       order: 1,
@@ -20,10 +18,9 @@ RSpec.describe AmsfSurvey::Field do
       field = described_class.new(**minimal_attrs)
 
       expect(field.id).to eq(:t001)
-      expect(field.name).to eq(:total_clients)
+      expect(field.xbrl_id).to eq(:t001)
       expect(field.type).to eq(:integer)
       expect(field.xbrl_type).to eq("xbrli:integerItemType")
-      expect(field.source_type).to eq(:computed)
       expect(field.label).to eq("Total number of clients")
       expect(field.section_id).to eq(:general)
       expect(field.order).to eq(1)
@@ -58,6 +55,24 @@ RSpec.describe AmsfSurvey::Field do
 
       expect(field.min).to eq(0)
       expect(field.max).to eq(100)
+    end
+  end
+
+  describe "#id and #xbrl_id" do
+    it "returns lowercase id for API usage" do
+      field = described_class.new(**minimal_attrs.merge(id: :aACTIVE))
+      expect(field.id).to eq(:aactive)
+    end
+
+    it "returns original casing in xbrl_id for XBRL generation" do
+      field = described_class.new(**minimal_attrs.merge(id: :aACTIVE))
+      expect(field.xbrl_id).to eq(:aACTIVE)
+    end
+
+    it "handles already lowercase IDs" do
+      field = described_class.new(**minimal_attrs.merge(id: :a1101))
+      expect(field.id).to eq(:a1101)
+      expect(field.xbrl_id).to eq(:a1101)
     end
   end
 
@@ -115,25 +130,6 @@ RSpec.describe AmsfSurvey::Field do
       field = described_class.new(**minimal_attrs.merge(type: :percentage))
       expect(field.percentage?).to be true
       expect(field.integer?).to be false
-    end
-  end
-
-  describe "source type predicates" do
-    it "#computed? returns true for computed source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :computed))
-      expect(field.computed?).to be true
-      expect(field.prefillable?).to be false
-      expect(field.entry_only?).to be false
-    end
-
-    it "#prefillable? returns true for prefillable source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :prefillable))
-      expect(field.prefillable?).to be true
-    end
-
-    it "#entry_only? returns true for entry_only source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only))
-      expect(field.entry_only?).to be true
     end
   end
 
@@ -208,29 +204,6 @@ RSpec.describe AmsfSurvey::Field do
     it "returns false when field is not a gate" do
       field = described_class.new(**minimal_attrs, gate: false)
       expect(field.gate?).to be false
-    end
-  end
-
-  describe "#required?" do
-    it "returns false for computed fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :computed))
-      expect(field.required?).to be false
-    end
-
-    it "returns true for entry_only fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only))
-      expect(field.required?).to be true
-    end
-
-    it "returns true for prefillable fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :prefillable))
-      expect(field.required?).to be true
-    end
-
-    it "returns true for fields with dependencies (when visible)" do
-      # Dependencies control visibility, not whether input is required
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only), depends_on: { tGATE: "Oui" })
-      expect(field.required?).to be true
     end
   end
 

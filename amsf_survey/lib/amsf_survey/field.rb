@@ -4,16 +4,14 @@ module AmsfSurvey
   # Represents a single survey question with all metadata.
   # Immutable value object built by the taxonomy loader.
   class Field
-    attr_reader :id, :name, :type, :xbrl_type, :source_type, :label,
+    attr_reader :xbrl_id, :type, :xbrl_type, :label,
                 :verbose_label, :valid_values, :section_id, :order,
                 :depends_on, :gate, :min, :max
 
     def initialize(
       id:,
-      name:,
       type:,
       xbrl_type:,
-      source_type:,
       label:,
       section_id:,
       order:,
@@ -24,11 +22,10 @@ module AmsfSurvey
       min: nil,
       max: nil
     )
-      @id = id
-      @name = name
+      @xbrl_id = id
+      @id = id.to_s.downcase.to_sym
       @type = type
       @xbrl_type = xbrl_type
-      @source_type = source_type
       @label = label
       @section_id = section_id
       @order = order
@@ -38,6 +35,11 @@ module AmsfSurvey
       @depends_on = depends_on || {}
       @min = min
       @max = max
+    end
+
+    # Returns lowercase ID for API usage (e.g., :aactive, :a1101)
+    def id
+      @id
     end
 
     # Check if this field has range constraints.
@@ -53,19 +55,8 @@ module AmsfSurvey
     def enum? = type == :enum
     def percentage? = type == :percentage
 
-    # Source type predicates
-    def computed? = source_type == :computed
-    def prefillable? = source_type == :prefillable
-    def entry_only? = source_type == :entry_only
-
     # Gate predicates
     def gate? = gate
-
-    # Returns true if this field requires user input when visible.
-    # Computed fields are never required (values derived automatically).
-    def required?
-      !computed?
-    end
 
     # Cast a value to the appropriate type for this field.
     # Delegates to TypeCaster based on field type.

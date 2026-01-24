@@ -46,18 +46,19 @@ XBRL taxonomy files (`.xsd`, `_lab.xml`, `_def.xml`, `_pre.xml`, `_cal.xml`, `.x
 - Validation rules (sum checks, conditional presence, ranges)
 - Gate question dependencies
 
-The `semantic_mappings.yml` file bridges XBRL codes to Ruby-friendly field names but MUST NOT introduce logic not derivable from taxonomy files.
+No additional mapping files are required. Field IDs come directly from the taxonomy.
 
-**Rationale**: Single source of truth prevents drift between XBRL output and regulatory requirements.
+**Rationale**: Single source of truth prevents drift between XBRL output and regulatory requirements. Eliminating mapping layers reduces maintenance burden when taxonomies change.
 
-### IV. Semantic Abstraction
+### IV. Direct XBRL ID Access
 
-Consumers MUST have no notion of XBRL internals.
-- Public API uses semantic field names (`:total_unique_clients`), not XBRL codes (`a1101`)
-- XBRL generation is an internal implementation detail
-- Field metadata (labels, help text, input types) exposed through Ruby objects, not XML
+Consumers access fields using XBRL element IDs directly.
+- Public API uses lowercase XBRL IDs (`:aactive`, `:a1101`) for consistent access
+- Original casing preserved internally (`xbrl_id`) for XBRL generation
+- Field metadata (labels, help text, input types) exposed through Ruby objects
+- No separate semantic mapping layer required
 
-**Rationale**: Enables form-driven UIs and business logic without XBRL expertise.
+**Rationale**: Direct ID access eliminates maintenance overhead of semantic mappings. CRM developers work directly with taxonomy field IDs, simplifying onboarding when new taxonomies are released.
 
 ### V. Test-First Development (NON-NEGOTIABLE)
 
@@ -116,4 +117,23 @@ This constitution supersedes all other development practices in this repository.
 - Complexity beyond these principles MUST be justified in writing
 - Use `docs/plans/2025-12-21-amsf-survey-design.md` as the authoritative design reference
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-21 | **Last Amended**: 2025-12-21
+**Version**: 1.1.0 | **Ratified**: 2025-12-21 | **Last Amended**: 2026-01-24
+
+---
+
+## Amendment History
+
+### v1.1.0 (2026-01-24)
+
+**Principles III & IV amended** to remove semantic mapping layer.
+
+**Change**: Replaced "Semantic Abstraction" principle with "Direct XBRL ID Access". Removed references to `semantic_mappings.yml`.
+
+**Rationale**: The semantic mapping layer (`:total_clients` → `a1101`) created maintenance overhead without providing proportional value. When new taxonomies are released, CRM developers must update mappings manually. Direct XBRL ID access means dropping a new taxonomy into the gem works immediately.
+
+**Migration**:
+- `semantic_mappings.yml` files deleted
+- `Field#name` and `Field#source_type` removed
+- `Field#id` returns lowercase XBRL ID
+- `Field#xbrl_id` preserves original casing for XBRL generation
+- `Validator` class removed (Arelle is authoritative)

@@ -7,10 +7,8 @@ RSpec.describe AmsfSurvey::Submission do
   let(:integer_field) do
     AmsfSurvey::Field.new(
       id: :total_clients,
-      name: :total_clients,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :entry_only,
       label: "Total Clients",
       section_id: :general,
       order: 1,
@@ -21,10 +19,8 @@ RSpec.describe AmsfSurvey::Submission do
   let(:monetary_field) do
     AmsfSurvey::Field.new(
       id: :total_amount,
-      name: :total_amount,
       type: :monetary,
       xbrl_type: "xbrli:monetaryItemType",
-      source_type: :prefillable,
       label: "Total Amount",
       section_id: :general,
       order: 2,
@@ -35,10 +31,8 @@ RSpec.describe AmsfSurvey::Submission do
   let(:boolean_field) do
     AmsfSurvey::Field.new(
       id: :is_agent,
-      name: :is_agent,
       type: :boolean,
       xbrl_type: "xbrli:booleanItemType",
-      source_type: :entry_only,
       label: "Is Agent",
       section_id: :general,
       order: 3,
@@ -50,10 +44,8 @@ RSpec.describe AmsfSurvey::Submission do
   let(:dependent_field) do
     AmsfSurvey::Field.new(
       id: :agent_details,
-      name: :agent_details,
       type: :string,
       xbrl_type: "xbrli:stringItemType",
-      source_type: :entry_only,
       label: "Agent Details",
       section_id: :general,
       order: 4,
@@ -65,10 +57,8 @@ RSpec.describe AmsfSurvey::Submission do
   let(:computed_field) do
     AmsfSurvey::Field.new(
       id: :computed_total,
-      name: :computed_total,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :computed,
       label: "Computed Total",
       section_id: :general,
       order: 5,
@@ -196,6 +186,23 @@ RSpec.describe AmsfSurvey::Submission do
       end
     end
 
+    context "case normalization" do
+      it "normalizes field ID to lowercase" do
+        submission[:TOTAL_CLIENTS] = 50
+        expect(submission[:total_clients]).to eq(50)
+      end
+
+      it "normalizes mixed-case field ID" do
+        submission[:Total_Clients] = 75
+        expect(submission[:total_clients]).to eq(75)
+      end
+
+      it "accepts string keys and normalizes to lowercase symbols" do
+        submission["TOTAL_CLIENTS"] = 100
+        expect(submission[:total_clients]).to eq(100)
+      end
+    end
+
     context "unknown fields" do
       it "raises UnknownFieldError for unknown field" do
         expect {
@@ -232,6 +239,12 @@ RSpec.describe AmsfSurvey::Submission do
       expect(submission[:total_clients]).to be_nil
     end
 
+    it "normalizes field ID to lowercase for lookup" do
+      submission[:total_clients] = 50
+      expect(submission[:TOTAL_CLIENTS]).to eq(50)
+      expect(submission["Total_Clients"]).to eq(50)
+    end
+
     it "raises UnknownFieldError for unknown field" do
       expect {
         submission[:nonexistent_field]
@@ -240,7 +253,7 @@ RSpec.describe AmsfSurvey::Submission do
   end
 
   describe "#data" do
-    it "returns the raw data hash" do
+    it "returns the raw data hash with lowercase keys" do
       submission = described_class.new(
         industry: :real_estate,
         year: 2025,
@@ -298,25 +311,25 @@ RSpec.describe AmsfSurvey::Submission do
       )
     end
 
-    context "with all required visible fields filled" do
+    context "with all visible fields filled" do
       it "returns true" do
-        # Fill all required non-computed visible fields
-        # total_clients, total_amount, is_agent are required (non-computed)
+        # Fill all visible fields
+        # total_clients, total_amount, is_agent, computed_total are visible
         # agent_details depends on is_agent = "Oui"
         submission[:total_clients] = 50
         submission[:total_amount] = "1000.00"
         submission[:is_agent] = "Non"
-        # computed_total is computed, not required
+        submission[:computed_total] = 100
         # agent_details is hidden because is_agent = "Non"
 
         expect(submission.complete?).to be true
       end
     end
 
-    context "with missing required fields" do
+    context "with missing fields" do
       it "returns false" do
         submission[:total_clients] = 50
-        # total_amount and is_agent are missing
+        # total_amount, is_agent, computed_total are missing
 
         expect(submission.complete?).to be false
       end
@@ -327,6 +340,7 @@ RSpec.describe AmsfSurvey::Submission do
         submission[:total_clients] = 50
         submission[:total_amount] = "1000.00"
         submission[:is_agent] = "Oui"
+        submission[:computed_total] = 100
         # agent_details is now visible and required
 
         expect(submission.complete?).to be false
@@ -337,6 +351,7 @@ RSpec.describe AmsfSurvey::Submission do
         submission[:total_amount] = "1000.00"
         submission[:is_agent] = "Oui"
         submission[:agent_details] = "Agent info"
+        submission[:computed_total] = 100
 
         expect(submission.complete?).to be true
       end
@@ -353,16 +368,18 @@ RSpec.describe AmsfSurvey::Submission do
       )
     end
 
-    it "returns all required visible fields when empty" do
+    it "returns all visible fields when empty" do
       # With is_agent not set, agent_details is hidden
-      expect(submission.missing_fields).to contain_exactly(:total_clients, :total_amount, :is_agent)
+      expect(submission.missing_fields).to contain_exactly(
+        :total_clients, :total_amount, :is_agent, :computed_total
+      )
     end
 
     it "excludes filled fields" do
       submission[:total_clients] = 50
       submission[:is_agent] = "Non"
 
-      expect(submission.missing_fields).to contain_exactly(:total_amount)
+      expect(submission.missing_fields).to contain_exactly(:total_amount, :computed_total)
     end
 
     it "excludes hidden fields when gate is not satisfied" do
@@ -374,14 +391,16 @@ RSpec.describe AmsfSurvey::Submission do
 
     it "includes dependent fields when gate is satisfied" do
       submission[:is_agent] = "Oui"
-      # agent_details is now visible and required
+      # agent_details is now visible
 
       expect(submission.missing_fields).to include(:agent_details)
     end
 
-    it "excludes computed fields" do
-      # computed_total should never appear in missing_fields
-      expect(submission.missing_fields).not_to include(:computed_total)
+    it "returns lowercase field IDs" do
+      # All missing field IDs should be lowercase symbols
+      submission.missing_fields.each do |field_id|
+        expect(field_id).to eq(field_id.to_s.downcase.to_sym)
+      end
     end
   end
 
@@ -399,59 +418,27 @@ RSpec.describe AmsfSurvey::Submission do
       expect(submission.completion_percentage).to eq(0.0)
     end
 
-    it "returns 100.0 when all required fields are filled" do
+    it "returns 100.0 when all visible fields are filled" do
       submission[:total_clients] = 50
       submission[:total_amount] = "1000.00"
       submission[:is_agent] = "Non"
+      submission[:computed_total] = 100
 
       expect(submission.completion_percentage).to eq(100.0)
     end
 
-    it "returns percentage based on filled/required ratio" do
+    it "returns percentage based on filled/visible ratio" do
       submission[:total_clients] = 50
-      # 1 of 3 required fields filled
-      expect(submission.completion_percentage).to be_within(0.1).of(33.3)
+      # 1 of 4 visible fields filled
+      expect(submission.completion_percentage).to eq(25.0)
     end
 
     it "adjusts for gate-dependent fields" do
       submission[:is_agent] = "Oui"
       submission[:total_clients] = 50
-      # Now 4 required fields: total_clients, total_amount, is_agent, agent_details
+      # Now 5 visible fields: total_clients, total_amount, is_agent, agent_details, computed_total
       # 2 filled: is_agent, total_clients
-      expect(submission.completion_percentage).to eq(50.0)
-    end
-  end
-
-  describe "#missing_entry_only_fields" do
-    let(:submission) do
-      described_class.new(
-        industry: :real_estate,
-        year: 2025,
-        entity_id: "ENTITY_001",
-        period: Date.new(2025, 12, 31)
-      )
-    end
-
-    it "returns only entry_only fields that are missing" do
-      # total_clients and is_agent are entry_only
-      # total_amount is prefillable
-      expect(submission.missing_entry_only_fields).to contain_exactly(:total_clients, :is_agent)
-    end
-
-    it "excludes prefillable fields" do
-      # total_amount is prefillable, should not appear
-      expect(submission.missing_entry_only_fields).not_to include(:total_amount)
-    end
-
-    it "excludes filled entry_only fields" do
-      submission[:total_clients] = 50
-      expect(submission.missing_entry_only_fields).not_to include(:total_clients)
-    end
-
-    it "respects gate visibility" do
-      submission[:is_agent] = "Oui"
-      # agent_details is entry_only and now visible
-      expect(submission.missing_entry_only_fields).to include(:agent_details)
+      expect(submission.completion_percentage).to eq(40.0)
     end
   end
 end

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/CFT regulatory survey submissions. Generates and validates XBRL instance documents for the Strix portal.
+Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/CFT regulatory survey submissions. Generates XBRL instance documents for the Strix portal.
 
 **Architecture**: Monorepo with industry-agnostic core gem (`amsf_survey/`) and pluggable industry taxonomies (`amsf_survey-{industry}/`).
 
@@ -33,16 +33,27 @@ gem build amsf_survey.gemspec
 
 - `AmsfSurvey.questionnaire(industry:, year:)` - Access questionnaire structure
 - `AmsfSurvey.build_submission(...)` - Create submission objects
-- `AmsfSurvey.validate(submission)` - Ruby-native validation (optional `:arelle` engine)
 - `AmsfSurvey.to_xbrl(submission)` - Generate XBRL XML
 
 Key classes:
-- `Questionnaire` - Container for sections/fields, supports field lookup by ID or semantic name, exposes `taxonomy_namespace`
+- `Questionnaire` - Container for sections/fields, supports field lookup by lowercase ID, exposes `taxonomy_namespace`
 - `Section` - Logical grouping of fields with visibility rules
-- `Field` - Metadata (type, source_type, labels, visibility rules, gate dependencies)
+- `Field` - Metadata (type, labels, visibility rules, gate dependencies). Has `id` (lowercase for API) and `xbrl_id` (original casing for XBRL)
 - `Submission` - Holds entity data with type casting, tracks completeness
-- `Validator` - Presence, sum checks, conditional logic, range validation
 - `Generator` - XBRL instance XML output with proper namespaces, context, and facts
+
+### Field ID Handling
+
+Fields use a dual-ID system:
+- `field.id` - Lowercase symbol for consistent API access (e.g., `:aactive`)
+- `field.xbrl_id` - Original casing preserved for XBRL generation (e.g., `:aACTIVE`)
+
+Field lookup normalizes input to lowercase:
+```ruby
+questionnaire.field(:aACTIVE)  # Returns field with id: :aactive
+questionnaire.field(:AACTIVE)  # Same field
+questionnaire.field(:aactive)  # Same field
+```
 
 ### Taxonomy Parsers (`lib/amsf_survey/taxonomy/`)
 
@@ -69,20 +80,14 @@ AmsfSurvey.register_plugin(
 )
 ```
 
-Taxonomy files per year: `.xsd`, `_lab.xml`, `_def.xml`, `_pre.xml`, `_cal.xml`, `.xule`, `semantic_mappings.yml`
+Taxonomy files per year: `.xsd`, `_lab.xml`, `_def.xml`, `_pre.xml`, `_cal.xml`, `.xule`
 
-### Field Source Types
+### Validation
 
-| Type | Meaning |
-|------|---------|
-| `:computed` | Derived from other fields via formula |
-| `:prefillable` | Can be pre-populated from external data |
-| `:entry_only` | Requires fresh input each submission |
-
-### Validation Flow
-
-1. Ruby-native validation (fast, no dependencies) - default
-2. Arelle validation (optional) - authoritative XULE compliance check
+Validation is delegated to Arelle (external XBRL validator) which uses the authoritative XULE rules from the taxonomy. The gem provides:
+- `submission.complete?` - Check if all visible fields are filled
+- `submission.missing_fields` - List unfilled visible fields
+- `submission.completion_percentage` - Progress indicator
 
 ### XBRL Generation
 
@@ -100,9 +105,9 @@ Options:
 
 ## Domain Context
 
-XBRL taxonomy files in `docs/real_estate_taxonomy/` are the source of truth for field definitions. The `semantic_mappings.yml` maps XBRL codes (e.g., `a1101`) to semantic Ruby field names.
+XBRL taxonomy files in `docs/real_estate_taxonomy/` are the source of truth for field definitions. Fields are accessed using their XBRL element IDs (lowercase for API, original casing for XBRL output).
 
-Gate questions control field visibility: if `acted_as_professional_agent: false`, dependent fields become invisible and optional.
+Gate questions control field visibility: if a gate field is set to "Non", dependent fields become invisible and are not included in completeness checks.
 
 ## Speckit Workflow
 
@@ -116,11 +121,12 @@ Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
 
 ## Active Technologies
 - Ruby 3.2+ + RSpec (testing), SimpleCov (coverage), Rake (tasks)
-- Nokogiri ~> 1.15 (XML parsing), YAML (semantic mappings)
+- Nokogiri ~> 1.15 (XML parsing)
 - File-based taxonomy loading from plugin gems
 
 ## Recent Changes
+- 005-remove-semantic-indirection: Removed semantic_mappings.yml and Validator. Field IDs now use XBRL element names directly (lowercase for API, original for XBRL)
 - 004-xbrl-generator: Added XBRL instance XML generation (Generator class, AmsfSurvey.to_xbrl method)
-- 003-submission-validation: Added Submission and Validator classes with type casting
+- 003-submission-validation: Added Submission class with type casting
 - 002-taxonomy-loader: Added taxonomy loading infrastructure (Questionnaire, Section, Field, parsers, Registry.questionnaire())
 - 001-monorepo-setup: Initial monorepo structure with core and plugin gems
