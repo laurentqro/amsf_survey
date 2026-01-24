@@ -77,8 +77,8 @@ module AmsfSurvey
     #
     # @return [Array<Symbol>] missing field IDs (lowercase)
     def missing_fields
-      required_visible_fields.select { |field| field_missing?(field) }
-                             .map(&:id)
+      visible_fields.select { |field| field_missing?(field) }
+                    .map(&:id)
     end
 
     # Calculate completion percentage based on visible fields.
@@ -104,11 +104,6 @@ module AmsfSurvey
       raise UnknownFieldError, field_id unless field
 
       field
-    end
-
-    # Alias for visible_fields (backwards compatibility during transition)
-    def required_visible_fields
-      visible_fields
     end
 
     # Get all visible fields (gate dependencies satisfied).
