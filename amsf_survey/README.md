@@ -141,6 +141,7 @@ submission[:a1101] = 150
 submission.complete?              # => false (not all fields filled)
 submission.completion_percentage  # => 0.6%
 submission.missing_fields         # => [:a1102, :a1103, ...] (lowercase IDs)
+submission.field_visible?(:a1101) # => true (check if field should be shown in UI)
 submission[:a1101]                # => 150
 
 # Internal data uses original XBRL IDs
@@ -167,8 +168,14 @@ Some fields only appear based on answers to "gate" questions:
 field = q.field(:aactive)  # "Did you act as a professional agent?"
 field.gate?  # => true
 
-# Visibility is handled automatically by Submission
+# Check field visibility for UI rendering
 submission[:aactive] = "Non"
+submission.field_visible?(:a1101)  # => false (hidden because gate is "Non")
+
+submission[:aactive] = "Oui"
+submission.field_visible?(:a1101)  # => true (visible because gate is "Oui")
+
+# Completeness respects gate visibility
 submission.missing_fields  # Only includes fields visible given current gate values
 ```
 

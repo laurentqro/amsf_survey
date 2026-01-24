@@ -92,6 +92,17 @@ module AmsfSurvey
       (filled.to_f / visible.size * 100).round(1)
     end
 
+    # Check if a field is visible given current gate values.
+    # Use this to determine which fields to show in a UI.
+    #
+    # @param field_id [Symbol, String] the field identifier (any casing)
+    # @return [Boolean] true if field should be visible
+    # @raise [UnknownFieldError] if field doesn't exist in questionnaire
+    def field_visible?(field_id)
+      field = lookup_field(field_id)
+      field.send(:visible?, @data)
+    end
+
     private
 
     # Lookup field by any casing, normalize via public API.

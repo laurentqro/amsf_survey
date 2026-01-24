@@ -442,4 +442,52 @@ RSpec.describe AmsfSurvey::Submission do
       expect(submission.completion_percentage).to eq(40.0)
     end
   end
+
+  describe "#field_visible?" do
+    let(:submission) do
+      described_class.new(
+        industry: :real_estate,
+        year: 2025,
+        entity_id: "ENTITY_001",
+        period: Date.new(2025, 12, 31)
+      )
+    end
+
+    context "field with no dependencies" do
+      it "returns true" do
+        expect(submission.field_visible?(:total_clients)).to be true
+      end
+    end
+
+    context "field with gate dependency" do
+      it "returns false when gate is not satisfied" do
+        submission[:is_agent] = "Non"
+        expect(submission.field_visible?(:agent_details)).to be false
+      end
+
+      it "returns true when gate is satisfied" do
+        submission[:is_agent] = "Oui"
+        expect(submission.field_visible?(:agent_details)).to be true
+      end
+
+      it "returns false when gate is not answered" do
+        expect(submission.field_visible?(:agent_details)).to be false
+      end
+    end
+
+    context "case normalization" do
+      it "accepts any casing for field ID" do
+        expect(submission.field_visible?(:TOTAL_CLIENTS)).to be true
+        expect(submission.field_visible?("Total_Clients")).to be true
+      end
+    end
+
+    context "unknown field" do
+      it "raises UnknownFieldError" do
+        expect {
+          submission.field_visible?(:nonexistent)
+        }.to raise_error(AmsfSurvey::UnknownFieldError)
+      end
+    end
+  end
 end
