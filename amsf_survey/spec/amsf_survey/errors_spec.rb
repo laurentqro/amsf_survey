@@ -84,5 +84,30 @@ RSpec.describe AmsfSurvey do
         expect(error.message).to eq("Unknown field: #{field_id}")
       end
     end
+
+    describe AmsfSurvey::MissingStructureFileError do
+      it "includes file path in message" do
+        error = described_class.new("/path/to/missing.yml")
+        expect(error.message).to eq("Structure file not found: /path/to/missing.yml")
+        expect(error.file_path).to eq("/path/to/missing.yml")
+      end
+
+      it "inherits from TaxonomyLoadError" do
+        expect(described_class.superclass).to eq(AmsfSurvey::TaxonomyLoadError)
+      end
+    end
+
+    describe AmsfSurvey::DuplicateFieldError do
+      it "includes field id and location in message" do
+        error = described_class.new(:aactive, "Section 1, Subsection 2")
+        expect(error.message).to eq("Duplicate field 'aactive' in Section 1, Subsection 2")
+        expect(error.field_id).to eq(:aactive)
+        expect(error.location).to eq("Section 1, Subsection 2")
+      end
+
+      it "inherits from TaxonomyLoadError" do
+        expect(described_class.superclass).to eq(AmsfSurvey::TaxonomyLoadError)
+      end
+    end
   end
 end

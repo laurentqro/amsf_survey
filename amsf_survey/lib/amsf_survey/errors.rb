@@ -42,4 +42,25 @@ module AmsfSurvey
 
   # Raised when XBRL generation fails due to invalid submission data
   class GeneratorError < Error; end
+
+  # Raised when questionnaire_structure.yml is not found
+  class MissingStructureFileError < TaxonomyLoadError
+    attr_reader :file_path
+
+    def initialize(file_path)
+      @file_path = file_path
+      super("Structure file not found: #{file_path}")
+    end
+  end
+
+  # Raised when a field appears multiple times in questionnaire_structure.yml
+  class DuplicateFieldError < TaxonomyLoadError
+    attr_reader :field_id, :location
+
+    def initialize(field_id, location)
+      @field_id = field_id
+      @location = location
+      super("Duplicate field '#{field_id}' in #{location}")
+    end
+  end
 end
