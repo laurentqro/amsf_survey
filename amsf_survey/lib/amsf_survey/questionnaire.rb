@@ -14,10 +14,15 @@ module AmsfSurvey
       @field_index = build_field_index
     end
 
+    # Returns all questions from all sections in order
+    def questions
+      sections.flat_map(&:questions)
+    end
+
     # Returns all fields across all sections in order
     # Extracts the Field from each Question in the hierarchy
     def fields
-      sections.flat_map(&:questions).map(&:field)
+      questions.map(&:field)
     end
 
     # Lookup field by lowercase ID
@@ -26,9 +31,14 @@ module AmsfSurvey
       @field_index[id.to_s.downcase.to_sym]
     end
 
-    # Total number of fields
+    # Total number of questions
+    def question_count
+      questions.length
+    end
+
+    # Total number of fields (alias for question_count)
     def field_count
-      fields.length
+      question_count
     end
 
     # Number of sections

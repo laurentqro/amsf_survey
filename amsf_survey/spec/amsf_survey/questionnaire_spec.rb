@@ -108,6 +108,23 @@ RSpec.describe AmsfSurvey::Questionnaire do
     end
   end
 
+  describe "#questions" do
+    it "returns all questions from all sections" do
+      expect(questionnaire.questions).to eq([q1, q2, q3, q4, q5])
+    end
+
+    it "returns questions in section order" do
+      numbers = questionnaire.questions.map(&:number)
+      expect(numbers).to eq([1, 2, 3, 1, 2])  # Section 1: 1,2,3; Section 2: 1,2
+    end
+  end
+
+  describe "#question_count" do
+    it "returns total number of questions" do
+      expect(questionnaire.question_count).to eq(5)
+    end
+  end
+
   describe "#fields" do
     it "returns all fields across all sections" do
       expect(questionnaire.fields).to eq([gate_field, integer_field, string_field, monetary_field, enum_field])
