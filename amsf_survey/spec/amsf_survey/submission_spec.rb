@@ -369,6 +369,50 @@ RSpec.describe AmsfSurvey::Submission do
     end
   end
 
+  describe "#unanswered_questions" do
+    let(:submission) do
+      described_class.new(
+        industry: :real_estate,
+        year: 2025,
+        entity_id: "ENTITY_001",
+        period: Date.new(2025, 12, 31)
+      )
+    end
+
+    it "returns Question objects for unanswered visible questions" do
+      # All questions are unanswered, but agent_details is hidden (is_agent not set)
+      unanswered = submission.unanswered_questions
+      expect(unanswered).to all(be_a(AmsfSurvey::Question))
+      expect(unanswered.map(&:id)).to contain_exactly(
+        :total_clients, :total_amount, :is_agent, :computed_total
+      )
+    end
+
+    it "excludes answered questions" do
+      submission[:total_clients] = 50
+      submission[:is_agent] = "Non"
+
+      unanswered = submission.unanswered_questions
+      expect(unanswered.map(&:id)).to contain_exactly(:total_amount, :computed_total)
+    end
+
+    it "excludes invisible questions when gate is not satisfied" do
+      submission[:is_agent] = "Non"
+      # agent_details is hidden
+
+      unanswered = submission.unanswered_questions
+      expect(unanswered.map(&:id)).not_to include(:agent_details)
+    end
+
+    it "includes dependent questions when gate is satisfied" do
+      submission[:is_agent] = "Oui"
+      # agent_details is now visible
+
+      unanswered = submission.unanswered_questions
+      expect(unanswered.map(&:id)).to include(:agent_details)
+    end
+  end
+
   describe "#missing_fields" do
     let(:submission) do
       described_class.new(

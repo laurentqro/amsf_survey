@@ -71,14 +71,22 @@ module AmsfSurvey
       missing_fields.empty?
     end
 
+    # Get list of visible questions that are not answered.
+    # Respects gate visibility - hidden questions are not considered unanswered.
+    #
+    # @return [Array<Question>] unanswered questions
+    def unanswered_questions
+      visible_questions.select { |question| question_unanswered?(question) }
+    end
+
     # Get list of required visible fields that are not filled.
     # Respects gate visibility - hidden fields are not considered missing.
     # Returns lowercase field IDs for public API consistency.
+    # Kept for backwards compatibility - prefer unanswered_questions.
     #
     # @return [Array<Symbol>] missing field IDs (lowercase)
     def missing_fields
-      visible_fields.select { |field| field_missing?(field) }
-                    .map(&:id)
+      unanswered_questions.map(&:id)
     end
 
     # Calculate completion percentage based on visible fields.
@@ -117,15 +125,26 @@ module AmsfSurvey
       field
     end
 
-    # Get all visible fields (gate dependencies satisfied).
-    # All visible fields are required by law for obligated entities.
+    # Get all visible questions (gate dependencies satisfied).
     # Uses internal @data hash which has XBRL ID keys matching depends_on.
+    def visible_questions
+      questionnaire.questions.select { |question| question.visible?(@data) }
+    end
+
+    # Get all visible fields (gate dependencies satisfied).
+    # Kept for backwards compatibility with completion_percentage.
     def visible_fields
-      questionnaire.fields.select { |field| field.send(:visible?, @data) }
+      visible_questions.map(&:field)
+    end
+
+    # Check if a question is unanswered (nil or not set).
+    # Uses xbrl_id for internal lookup since @data uses XBRL IDs.
+    def question_unanswered?(question)
+      !@data.key?(question.xbrl_id) || @data[question.xbrl_id].nil?
     end
 
     # Check if a field value is missing (nil or not set).
-    # Uses xbrl_id for internal lookup since @data uses XBRL IDs.
+    # Kept for backwards compatibility with completion_percentage.
     def field_missing?(field)
       !@data.key?(field.xbrl_id) || @data[field.xbrl_id].nil?
     end
