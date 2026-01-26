@@ -36,7 +36,7 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       end
 
       it "assigns correct types" do
-        expect(questionnaire.field(:tGATE).type).to eq(:boolean)
+        expect(questionnaire.field(:tgate).type).to eq(:boolean)
         expect(questionnaire.field(:t001).type).to eq(:integer)
         expect(questionnaire.field(:t002).type).to eq(:string)
         expect(questionnaire.field(:t003).type).to eq(:monetary)
@@ -46,53 +46,39 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       it "preserves XBRL types" do
         expect(questionnaire.field(:t001).xbrl_type).to eq("xbrli:integerItemType")
       end
-    end
 
-    describe "semantic mappings" do
-      it "applies semantic names from mappings" do
-        expect(questionnaire.field(:total_clients)).not_to be_nil
-        expect(questionnaire.field(:total_clients).id).to eq(:t001)
+      it "uses lowercase IDs for API access" do
+        expect(questionnaire.field(:t001).id).to eq(:t001)
+        expect(questionnaire.field(:tgate).id).to eq(:tgate)
       end
 
-      it "applies source_type from mappings" do
-        expect(questionnaire.field(:total_clients).source_type).to eq(:computed)
-        expect(questionnaire.field(:total_amount).source_type).to eq(:prefillable)
-        expect(questionnaire.field(:performed_activities).source_type).to eq(:entry_only)
-      end
-
-      it "uses XBRL code as name for unmapped fields" do
-        unmapped = questionnaire.field(:t002)
-        expect(unmapped.name).to eq(:t002)
-        expect(unmapped.id).to eq(:t002)
-      end
-
-      it "defaults to entry_only for unmapped fields" do
-        unmapped = questionnaire.field(:t002)
-        expect(unmapped.source_type).to eq(:entry_only)
+      it "preserves original casing in xbrl_id for XBRL generation" do
+        expect(questionnaire.field(:tgate).xbrl_id).to eq(:tGATE)
       end
     end
 
     describe "labels" do
       it "strips HTML from labels" do
-        field = questionnaire.field(:tGATE)
+        field = questionnaire.field(:tgate)
         expect(field.label).to eq("Avez-vous effectue des activites?")
       end
 
       it "includes verbose labels when present" do
-        field = questionnaire.field(:tGATE)
+        field = questionnaire.field(:tgate)
         expect(field.verbose_label).to include("Si non, veuillez expliquer pourquoi")
       end
     end
 
     describe "gate dependencies" do
       it "marks gate fields" do
-        gate = questionnaire.field(:tGATE)
+        gate = questionnaire.field(:tgate)
         expect(gate.gate?).to be true
       end
 
       it "sets depends_on for controlled fields with translated values" do
         controlled = questionnaire.field(:t001)
         # XULE uses "Yes" but it gets translated to the schema's actual value ("Oui")
+        # depends_on keys preserve original XBRL casing for internal logic
         expect(controlled.depends_on).to eq({ tGATE: "Oui" })
       end
 
@@ -154,9 +140,19 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       end
     end
 
+    describe "field ordering" do
+      it "sorts fields by presentation order attribute, not document order" do
+        # The standard fixture has arcs in document order matching presentation order
+        # Verify fields are returned in presentation order (by order attribute)
+        general_section = questionnaire.sections.find { |s| s.name == "Link_General" }
+        field_ids = general_section.fields.map(&:id)
+        expect(field_ids).to eq(%i[tgate t001 t002])
+      end
+    end
+
     describe "valid_values" do
       it "sets valid_values for boolean fields" do
-        field = questionnaire.field(:tGATE)
+        field = questionnaire.field(:tgate)
         expect(field.valid_values).to eq(%w[Oui Non])
       end
 
@@ -172,27 +168,12 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
     end
   end
 
-  describe "error handling" do
-    it "raises MissingSemanticMappingError when mappings file is missing" do
-      # Use a path without semantic_mappings.yml
-      temp_path = File.join(fixtures_path, "..", "no_mappings")
-      FileUtils.mkdir_p(temp_path)
-      FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), temp_path)
-
-      loader = described_class.new(temp_path)
-      expect { loader.load(:test, 2025) }.to raise_error(AmsfSurvey::MissingSemanticMappingError)
-    ensure
-      FileUtils.rm_rf(temp_path)
-    end
-  end
-
   describe "multiple file handling" do
     it "warns when multiple XSD files are found" do
       temp_path = File.join(fixtures_path, "..", "multi_xsd")
       FileUtils.mkdir_p(temp_path)
       FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), temp_path)
       FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), File.join(temp_path, "extra.xsd"))
-      FileUtils.cp(File.join(fixtures_path, "semantic_mappings.yml"), temp_path)
       FileUtils.cp(File.join(fixtures_path, "test_survey_pre.xml"), temp_path)
 
       loader = described_class.new(temp_path)

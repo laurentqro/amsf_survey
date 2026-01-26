@@ -4,13 +4,10 @@ RSpec.describe AmsfSurvey::Questionnaire do
   let(:gate_field) do
     AmsfSurvey::Field.new(
       id: :tGATE,
-      name: :performed_activities,
       type: :boolean,
       xbrl_type: "xbrli:stringItemType",
-      source_type: :entry_only,
       label: "Did you perform activities?",
       section_id: :general,
-      order: 1,
       gate: true,
       valid_values: %w[Oui Non],
       depends_on: {}
@@ -20,28 +17,22 @@ RSpec.describe AmsfSurvey::Questionnaire do
   let(:integer_field) do
     AmsfSurvey::Field.new(
       id: :t001,
-      name: :total_clients,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :computed,
       label: "Total clients",
       section_id: :general,
-      order: 2,
       gate: false,
-      depends_on: { tGATE: "Oui" }
+      depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
   end
 
   let(:string_field) do
     AmsfSurvey::Field.new(
       id: :t002,
-      name: :t002, # Unmapped - uses XBRL code
       type: :string,
       xbrl_type: "xbrli:stringItemType",
-      source_type: :entry_only,
       label: "Comments",
       section_id: :general,
-      order: 3,
       gate: false,
       depends_on: {}
     )
@@ -50,28 +41,22 @@ RSpec.describe AmsfSurvey::Questionnaire do
   let(:monetary_field) do
     AmsfSurvey::Field.new(
       id: :t003,
-      name: :total_amount,
       type: :monetary,
       xbrl_type: "xbrli:monetaryItemType",
-      source_type: :prefillable,
       label: "Total amount",
       section_id: :details,
-      order: 1,
       gate: false,
-      depends_on: { tGATE: "Oui" }
+      depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
   end
 
   let(:enum_field) do
     AmsfSurvey::Field.new(
       id: :t004,
-      name: :t004,
       type: :enum,
       xbrl_type: "xbrli:stringItemType",
-      source_type: :entry_only,
       label: "Service type",
       section_id: :details,
-      order: 2,
       gate: false,
       valid_values: ["Option A", "Option B", "Option C"],
       depends_on: {}
@@ -133,26 +118,28 @@ RSpec.describe AmsfSurvey::Questionnaire do
 
     it "returns fields in section order then field order" do
       ids = questionnaire.fields.map(&:id)
-      expect(ids).to eq(%i[tGATE t001 t002 t003 t004])
+      expect(ids).to eq(%i[tgate t001 t002 t003 t004])
     end
   end
 
   describe "#field" do
-    it "finds field by semantic name" do
-      expect(questionnaire.field(:total_clients)).to eq(integer_field)
-      expect(questionnaire.field(:total_amount)).to eq(monetary_field)
-    end
-
-    it "finds field by XBRL code" do
+    it "finds field by lowercase ID" do
       expect(questionnaire.field(:t001)).to eq(integer_field)
       expect(questionnaire.field(:t003)).to eq(monetary_field)
+    end
+
+    it "normalizes mixed-case input to lowercase" do
+      expect(questionnaire.field(:T001)).to eq(integer_field)
+      expect(questionnaire.field(:tGATE)).to eq(gate_field)
+      expect(questionnaire.field("T003")).to eq(monetary_field)
     end
 
     it "returns nil for unknown field" do
       expect(questionnaire.field(:unknown)).to be_nil
     end
 
-    it "finds unmapped fields by XBRL code (same as name)" do
+    it "finds fields by lowercase ID regardless of original casing" do
+      expect(questionnaire.field(:tgate)).to eq(gate_field)
       expect(questionnaire.field(:t002)).to eq(string_field)
     end
   end
@@ -172,24 +159,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
   describe "#gate_fields" do
     it "returns fields where gate is true" do
       expect(questionnaire.gate_fields).to eq([gate_field])
-    end
-  end
-
-  describe "#computed_fields" do
-    it "returns fields with source_type :computed" do
-      expect(questionnaire.computed_fields).to eq([integer_field])
-    end
-  end
-
-  describe "#prefillable_fields" do
-    it "returns fields with source_type :prefillable" do
-      expect(questionnaire.prefillable_fields).to eq([monetary_field])
-    end
-  end
-
-  describe "#entry_only_fields" do
-    it "returns fields with source_type :entry_only" do
-      expect(questionnaire.entry_only_fields).to eq([gate_field, string_field, enum_field])
     end
   end
 end

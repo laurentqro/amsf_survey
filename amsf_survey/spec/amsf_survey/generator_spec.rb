@@ -472,6 +472,24 @@ RSpec.describe AmsfSurvey::Generator do
         expect(schema_ref["xlink:href"]).to eq("taxonomy.xsd")
       end
 
+      it "falls back to taxonomy.xsd for invalid URI" do
+        custom_questionnaire = AmsfSurvey::Questionnaire.new(
+          industry: :test_industry,
+          year: 2025,
+          sections: [],
+          taxonomy_namespace: "http://[invalid"
+        )
+        submission = build_submission(tGATE: "Oui")
+        allow(submission).to receive(:questionnaire).and_return(custom_questionnaire)
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+        ns = { "link" => "http://www.xbrl.org/2003/linkbase" }
+        schema_ref = doc.at_xpath("//link:schemaRef", ns)
+
+        expect(schema_ref["xlink:href"]).to eq("taxonomy.xsd")
+      end
+
       # T048: context ID includes entity_id for uniqueness
       it "generates context ID with entity_id for uniqueness" do
         submission = build_submission(tGATE: "Oui")

@@ -153,4 +153,56 @@ RSpec.describe "AmsfSurvey Registry" do
       }.to raise_error(AmsfSurvey::TaxonomyLoadError, /Invalid year.*positive integer/)
     end
   end
+
+  describe ".build_submission" do
+    let(:fixtures_path) { File.expand_path("../fixtures/taxonomies", __dir__) }
+    let(:taxonomy_path) { File.join(fixtures_path, "test_industry") }
+
+    before do
+      AmsfSurvey.register_plugin(industry: :test_industry, taxonomy_path: taxonomy_path)
+    end
+
+    it "returns a Submission object" do
+      submission = AmsfSurvey.build_submission(
+        industry: :test_industry,
+        year: 2025,
+        entity_id: "TEST_001",
+        period: Date.new(2025, 12, 31)
+      )
+      expect(submission).to be_a(AmsfSurvey::Submission)
+    end
+
+    it "sets the submission attributes" do
+      submission = AmsfSurvey.build_submission(
+        industry: :test_industry,
+        year: 2025,
+        entity_id: "TEST_001",
+        period: Date.new(2025, 12, 31)
+      )
+      expect(submission.entity_id).to eq("TEST_001")
+      expect(submission.period).to eq(Date.new(2025, 12, 31))
+    end
+
+    it "raises error for unregistered industry" do
+      expect {
+        AmsfSurvey.build_submission(
+          industry: :unknown,
+          year: 2025,
+          entity_id: "TEST_001",
+          period: Date.new(2025, 12, 31)
+        )
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not registered/)
+    end
+
+    it "raises error for unsupported year" do
+      expect {
+        AmsfSurvey.build_submission(
+          industry: :test_industry,
+          year: 1999,
+          entity_id: "TEST_001",
+          period: Date.new(1999, 12, 31)
+        )
+      }.to raise_error(AmsfSurvey::TaxonomyLoadError, /not supported/)
+    end
+  end
 end

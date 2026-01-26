@@ -30,16 +30,6 @@ module AmsfSurvey
     end
   end
 
-  # Raised when semantic_mappings.yml is missing
-  class MissingSemanticMappingError < TaxonomyLoadError
-    attr_reader :taxonomy_path
-
-    def initialize(taxonomy_path)
-      @taxonomy_path = taxonomy_path
-      super("Semantic mappings file not found in: #{taxonomy_path}")
-    end
-  end
-
   # Raised when attempting to access or set a field that doesn't exist in the questionnaire
   class UnknownFieldError < Error
     attr_reader :field_id

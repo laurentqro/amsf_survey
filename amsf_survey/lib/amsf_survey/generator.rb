@@ -183,9 +183,10 @@ module AmsfSurvey
       strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
 
       questionnaire.fields.each do |field|
-        next unless field.visible?(data)
+        next unless field.send(:visible?, data)
 
-        value = data[field.id]
+        # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
+        value = data[field.xbrl_id]
 
         # Skip nil values if include_empty is false
         next if value.nil? && !@include_empty
@@ -196,7 +197,7 @@ module AmsfSurvey
 
     # Build a single fact element
     def build_fact(doc, parent, strix_ns, field, value)
-      fact = Nokogiri::XML::Node.new(field.id.to_s, doc)
+      fact = Nokogiri::XML::Node.new(field.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
       fact["contextRef"] = context_id
 

@@ -68,23 +68,6 @@ RSpec.describe AmsfSurvey do
       end
     end
 
-    describe AmsfSurvey::MissingSemanticMappingError do
-      let(:taxonomy_path) { "/path/to/taxonomy/2025" }
-      let(:error) { described_class.new(taxonomy_path) }
-
-      it "inherits from TaxonomyLoadError" do
-        expect(described_class.superclass).to eq(AmsfSurvey::TaxonomyLoadError)
-      end
-
-      it "stores the taxonomy path" do
-        expect(error.taxonomy_path).to eq(taxonomy_path)
-      end
-
-      it "includes the taxonomy path in the message" do
-        expect(error.message).to eq("Semantic mappings file not found in: #{taxonomy_path}")
-      end
-    end
-
     describe AmsfSurvey::UnknownFieldError do
       let(:field_id) { :nonexistent_field }
       let(:error) { described_class.new(field_id) }

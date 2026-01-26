@@ -4,13 +4,10 @@ RSpec.describe AmsfSurvey::Field do
   let(:minimal_attrs) do
     {
       id: :t001,
-      name: :total_clients,
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
-      source_type: :computed,
       label: "Total number of clients",
       section_id: :general,
-      order: 1,
       gate: false
     }
   end
@@ -20,13 +17,11 @@ RSpec.describe AmsfSurvey::Field do
       field = described_class.new(**minimal_attrs)
 
       expect(field.id).to eq(:t001)
-      expect(field.name).to eq(:total_clients)
+      expect(field.xbrl_id).to eq(:t001)
       expect(field.type).to eq(:integer)
       expect(field.xbrl_type).to eq("xbrli:integerItemType")
-      expect(field.source_type).to eq(:computed)
       expect(field.label).to eq("Total number of clients")
       expect(field.section_id).to eq(:general)
-      expect(field.order).to eq(1)
       expect(field.gate).to eq(false)
     end
 
@@ -58,6 +53,24 @@ RSpec.describe AmsfSurvey::Field do
 
       expect(field.min).to eq(0)
       expect(field.max).to eq(100)
+    end
+  end
+
+  describe "#id and #xbrl_id" do
+    it "returns lowercase id for API usage" do
+      field = described_class.new(**minimal_attrs.merge(id: :aACTIVE))
+      expect(field.id).to eq(:aactive)
+    end
+
+    it "returns original casing in xbrl_id for XBRL generation" do
+      field = described_class.new(**minimal_attrs.merge(id: :aACTIVE))
+      expect(field.xbrl_id).to eq(:aACTIVE)
+    end
+
+    it "handles already lowercase IDs" do
+      field = described_class.new(**minimal_attrs.merge(id: :a1101))
+      expect(field.id).to eq(:a1101)
+      expect(field.xbrl_id).to eq(:a1101)
     end
   end
 
@@ -118,31 +131,12 @@ RSpec.describe AmsfSurvey::Field do
     end
   end
 
-  describe "source type predicates" do
-    it "#computed? returns true for computed source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :computed))
-      expect(field.computed?).to be true
-      expect(field.prefillable?).to be false
-      expect(field.entry_only?).to be false
-    end
-
-    it "#prefillable? returns true for prefillable source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :prefillable))
-      expect(field.prefillable?).to be true
-    end
-
-    it "#entry_only? returns true for entry_only source type" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only))
-      expect(field.entry_only?).to be true
-    end
-  end
-
-  describe "#visible?" do
+  describe "#visible? (private, tested via send)" do
     context "with no dependencies" do
       it "returns true regardless of data" do
         field = described_class.new(**minimal_attrs, depends_on: {})
-        expect(field.visible?({})).to be true
-        expect(field.visible?({ tGATE: "Non" })).to be true
+        expect(field.send(:visible?, {})).to be true
+        expect(field.send(:visible?, { tGATE: "Non" })).to be true
       end
     end
 
@@ -152,31 +146,33 @@ RSpec.describe AmsfSurvey::Field do
       end
 
       it "returns true when dependency is satisfied" do
-        expect(field.visible?({ tGATE: "Oui" })).to be true
+        expect(field.send(:visible?, { tGATE: "Oui" })).to be true
       end
 
       it "returns false when dependency is not satisfied" do
-        expect(field.visible?({ tGATE: "Non" })).to be false
+        expect(field.send(:visible?, { tGATE: "Non" })).to be false
       end
 
       it "returns false when gate field is missing from data" do
-        expect(field.visible?({})).to be false
+        expect(field.send(:visible?, {})).to be false
       end
 
       it "returns false when gate field value is nil" do
         # Explicit nil in data hash should not satisfy "Oui" requirement
-        expect(field.visible?({ tGATE: nil })).to be false
+        expect(field.send(:visible?, { tGATE: nil })).to be false
       end
 
       it "returns false when gate field value is empty string" do
         # Empty string should not satisfy "Oui" requirement
-        expect(field.visible?({ tGATE: "" })).to be false
+        expect(field.send(:visible?, { tGATE: "" })).to be false
       end
 
-      it "requires symbol keys (string keys do not match)" do
-        # Dependencies use symbol keys, so string keys won't match
-        # This documents the expected behavior - callers must use symbol keys
-        expect(field.visible?({ "tGATE" => "Oui" })).to be false
+      it "requires Symbol keys (String keys silently fail to match)" do
+        # IMPORTANT: depends_on uses Symbol keys, so String keys won't match.
+        # This is by design - Submission always uses Symbol keys internally.
+        # This test documents the behavior to prevent silent bugs if callers
+        # accidentally pass String keys.
+        expect(field.send(:visible?, { "tGATE" => "Oui" })).to be false
       end
     end
 
@@ -189,12 +185,12 @@ RSpec.describe AmsfSurvey::Field do
       end
 
       it "returns true when all dependencies are satisfied" do
-        expect(field.visible?({ tGATE: "Oui", tGATE2: "Oui" })).to be true
+        expect(field.send(:visible?, { tGATE: "Oui", tGATE2: "Oui" })).to be true
       end
 
       it "returns false when any dependency is not satisfied" do
-        expect(field.visible?({ tGATE: "Oui", tGATE2: "Non" })).to be false
-        expect(field.visible?({ tGATE: "Non", tGATE2: "Oui" })).to be false
+        expect(field.send(:visible?, { tGATE: "Oui", tGATE2: "Non" })).to be false
+        expect(field.send(:visible?, { tGATE: "Non", tGATE2: "Oui" })).to be false
       end
     end
   end
@@ -208,29 +204,6 @@ RSpec.describe AmsfSurvey::Field do
     it "returns false when field is not a gate" do
       field = described_class.new(**minimal_attrs, gate: false)
       expect(field.gate?).to be false
-    end
-  end
-
-  describe "#required?" do
-    it "returns false for computed fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :computed))
-      expect(field.required?).to be false
-    end
-
-    it "returns true for entry_only fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only))
-      expect(field.required?).to be true
-    end
-
-    it "returns true for prefillable fields" do
-      field = described_class.new(**minimal_attrs.merge(source_type: :prefillable))
-      expect(field.required?).to be true
-    end
-
-    it "returns true for fields with dependencies (when visible)" do
-      # Dependencies control visibility, not whether input is required
-      field = described_class.new(**minimal_attrs.merge(source_type: :entry_only), depends_on: { tGATE: "Oui" })
-      expect(field.required?).to be true
     end
   end
 

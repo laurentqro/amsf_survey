@@ -63,13 +63,6 @@ module AmsfSurvey
       )
     end
 
-    # Validate a submission and return structured results
-    # @param submission [Submission] the submission to validate
-    # @return [ValidationResult] validation outcome
-    def validate(submission)
-      Validator.validate(submission)
-    end
-
     # Generate XBRL instance XML from a submission
     # @param submission [Submission] the source submission
     # @param options [Hash] generation options

@@ -1,14 +1,14 @@
 # AmsfSurvey
 
-Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/CFT regulatory survey submissions. Generates and validates XBRL instance documents for the Strix portal.
+Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/CFT regulatory survey submissions. Generates XBRL instance documents for the Strix portal.
 
 ## Overview
 
 Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF via the Strix portal. This gem:
 
 1. **Parses XBRL taxonomy files** - Understands the 323-field questionnaire structure
-2. **Provides a semantic Ruby API** - No XBRL knowledge needed for consumers
-3. **Validates submissions** - Checks required fields, ranges, conditional logic
+2. **Provides direct XBRL ID access** - Use field IDs like `:aactive`, `:a1101` directly
+3. **Tracks submission completeness** - Checks which required fields are missing
 4. **Generates XBRL XML** - Output format the Strix portal accepts
 
 ## Architecture
@@ -23,9 +23,8 @@ Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF v
 │  • Questionnaire            │  • taxonomies/2025/               │
 │  • Section, Field           │    - *.xsd (schema)               │
 │  • Submission               │    - *_lab.xml (French labels)    │
-│  • Validator                │    - *_pre.xml (presentation)     │
-│  • Generator (XBRL output)  │    - *.xule (validation rules)    │
-│  • Registry                 │    - semantic_mappings.yml        │
+│  • Generator (XBRL output)  │    - *_pre.xml (presentation)     │
+│  • Registry                 │    - *.xule (validation rules)    │
 │  • Taxonomy Parsers         │                                   │
 └─────────────────────────────┴───────────────────────────────────┘
 ```
@@ -55,25 +54,24 @@ require 'amsf_survey/real_estate'  # Auto-registers the plugin
 # Load questionnaire
 q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
-# Build submission with semantic field names
+# Create submission using XBRL field IDs (lowercase)
 submission = AmsfSurvey.build_submission(
   industry: :real_estate,
   year: 2025,
   entity_id: "MY_AGENCY_001",
-  period: Date.new(2025, 12, 31),
-  data: {
-    has_activity: true,
-    has_activity_purchase_sale: true,
-    total_clients: 42,
-    clients_nationals: 10,
-    clients_foreign_residents: 20,
-    clients_non_residents: 12
-  }
+  period: Date.new(2025, 12, 31)
 )
 
-# Validate
-result = AmsfSurvey.validate(submission)
-puts result.valid? ? "Ready to submit!" : result.errors
+# Set values using lowercase field IDs
+submission[:aactive] = "Oui"           # Gate: Did you act as professional agent?
+submission[:a1101] = 42                # Total unique clients
+submission[:a1102] = 10                # National individuals
+submission[:a1103] = 20                # Foreign residents
+submission[:a1104] = 12                # Non-residents
+
+# Track completion
+puts "Complete: #{submission.complete?}"
+puts "Missing: #{submission.missing_fields}"
 
 # Generate XBRL for Strix portal
 xml = AmsfSurvey.to_xbrl(submission, pretty: true)
@@ -105,19 +103,23 @@ q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
 q.fields.count      # => 323
 q.sections          # => [Section, Section, ...]
-q.field(:has_pep_clients)  # => Field object (by semantic name)
-q.field(:a11301)    # => Field object (by XBRL code)
+q.field(:aactive)   # => Field object (lookup by lowercase ID)
+q.field(:a1101)     # => Field object (any casing works, normalized to lowercase)
 ```
 
 ### Field
 
-```ruby
-field = q.field(:total_clients)
+Fields use a dual-ID system:
+- `id` - Lowercase symbol for API access (`:aactive`, `:a1101`)
+- `xbrl_id` - Original casing for XBRL generation (`:aACTIVE`, `:a1101`)
 
-field.id          # => :total_clients (semantic) or :a1101 (XBRL code)
+```ruby
+field = q.field(:aactive)
+
+field.id          # => :aactive (lowercase for API)
+field.xbrl_id     # => :aACTIVE (original casing for XBRL)
 field.type        # => :integer, :boolean, :monetary, :string, :enum
 field.label       # => French question text
-field.required?   # => true/false
 field.gate?       # => true if this controls visibility of other fields
 field.visible?(data)  # => checks gate dependencies
 ```
@@ -129,28 +131,21 @@ submission = AmsfSurvey.build_submission(
   industry: :real_estate,
   year: 2025,
   entity_id: "MONACO_RE_001",
-  period: Date.new(2025, 12, 31),
-  data: { has_activity: true, total_clients: 150 }
+  period: Date.new(2025, 12, 31)
 )
+
+# Set values using any casing (normalized at public API boundary)
+submission[:aactive] = "Oui"
+submission[:a1101] = 150
 
 submission.complete?              # => false (not all fields filled)
 submission.completion_percentage  # => 0.6%
-submission.missing_fields         # => [:clients_nationals, ...]
-submission[:total_clients]        # => 150
-```
+submission.missing_fields         # => [:a1102, :a1103, ...] (lowercase IDs)
+submission.field_visible?(:a1101) # => true (check if field should be shown in UI)
+submission[:a1101]                # => 150
 
-### Validator
-
-```ruby
-result = AmsfSurvey.validate(submission)
-
-result.valid?     # => true/false
-result.complete?  # => true/false (all required fields present)
-result.errors     # => [{field: :total_clients, rule: :presence, message: "..."}]
-result.warnings   # => []
-
-# With locale (default is :fr for Monaco regulatory context)
-result = AmsfSurvey.validate(submission, locale: :en)
+# Internal data uses original XBRL IDs
+submission.data                   # => { aACTIVE: "Oui", a1101: 150 }
 ```
 
 ### Generator
@@ -169,30 +164,35 @@ xml = AmsfSurvey.to_xbrl(submission, include_empty: false)   # Omit nil fields
 Some fields only appear based on answers to "gate" questions:
 
 ```ruby
-# If has_activity = false, most fields become hidden/optional
-field = q.field(:has_activity)  # "Did you act as a professional agent?"
+# Check if a field is a gate question
+field = q.field(:aactive)  # "Did you act as a professional agent?"
 field.gate?  # => true
 
-# Dependent fields check visibility
-client_field = q.field(:total_clients)
-client_field.visible?({ has_activity: false })  # => false (hidden)
-client_field.visible?({ has_activity: true })   # => true (visible)
+# Check field visibility for UI rendering
+submission[:aactive] = "Non"
+submission.field_visible?(:a1101)  # => false (hidden because gate is "Non")
+
+submission[:aactive] = "Oui"
+submission.field_visible?(:a1101)  # => true (visible because gate is "Oui")
+
+# Completeness respects gate visibility
+submission.missing_fields  # Only includes fields visible given current gate values
 ```
 
-The validator respects gate visibility - hidden fields are not required.
+The submission respects gate visibility - hidden fields are not counted as missing.
 
-## Semantic Mappings
+## Field ID Access
 
-The gem maps cryptic XBRL codes to readable Ruby field names:
+The gem uses XBRL element IDs directly. There's no separate semantic mapping layer.
 
-| XBRL Code | Semantic Name | Description |
-|-----------|---------------|-------------|
-| `aACTIVE` | `has_activity` | Did you act as a professional agent? |
-| `a1101` | `total_clients` | Total unique clients during reporting period |
-| `a11301` | `has_pep_clients` | Do you have PEP clients? |
-| `a13501B` | `has_vasp_clients` | Do you have VASP clients? |
+| XBRL ID | Lowercase API ID | Description |
+|---------|------------------|-------------|
+| `aACTIVE` | `:aactive` | Did you act as a professional agent? |
+| `a1101` | `:a1101` | Total unique clients during reporting period |
+| `a11301` | `:a11301` | Do you have PEP clients? |
+| `a13501B` | `:a13501b` | Do you have VASP clients? |
 
-Mappings are defined in `semantic_mappings.yml` within each industry plugin.
+Field lookup normalizes any casing to lowercase internally.
 
 ## Field Types
 
@@ -214,7 +214,7 @@ The gem parses official AMSF XBRL taxonomy files:
 | `LabelParser` | `_lab.xml` | French question text |
 | `PresentationParser` | `_pre.xml` | Section structure, field ordering |
 | `XuleParser` | `.xule` | Gate question dependencies |
-| `Loader` | All + `semantic_mappings.yml` | Orchestrates into `Questionnaire` |
+| `Loader` | All files | Orchestrates into `Questionnaire` |
 
 ## Creating Industry Plugins
 
@@ -242,8 +242,7 @@ amsf_survey-yachting/
 │       ├── strix_*.xsd
 │       ├── strix_*_lab.xml
 │       ├── strix_*_pre.xml
-│       ├── strix_*.xule
-│       └── semantic_mappings.yml
+│       └── strix_*.xule
 └── amsf_survey-yachting.gemspec
 ```
 
@@ -254,7 +253,7 @@ bundle install
 bundle exec rspec
 ```
 
-Test coverage: 99.47% line coverage, 374 tests.
+Test coverage: 99.47% line coverage, 310 tests.
 
 ## License
 
