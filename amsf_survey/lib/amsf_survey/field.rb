@@ -67,7 +67,12 @@ module AmsfSurvey
 
     # Evaluates gate dependencies against internal submission data.
     # Used by Submission#visible_fields - not part of public API.
-    # Data hash must use original XBRL ID keys to match depends_on.
+    #
+    # IMPORTANT: Data hash MUST use Symbol keys (original XBRL IDs) to match
+    # depends_on. String keys will cause silent lookup failures.
+    #
+    # @param data [Hash<Symbol, Object>] submission data with Symbol keys
+    # @return [Boolean] true if all dependencies are satisfied or none exist
     def visible?(data)
       return true if depends_on.empty?
 

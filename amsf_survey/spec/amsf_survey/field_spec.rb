@@ -167,9 +167,11 @@ RSpec.describe AmsfSurvey::Field do
         expect(field.send(:visible?, { tGATE: "" })).to be false
       end
 
-      it "requires symbol keys (string keys do not match)" do
-        # Dependencies use symbol keys, so string keys won't match
-        # This documents the expected behavior - callers must use symbol keys
+      it "requires Symbol keys (String keys silently fail to match)" do
+        # IMPORTANT: depends_on uses Symbol keys, so String keys won't match.
+        # This is by design - Submission always uses Symbol keys internally.
+        # This test documents the behavior to prevent silent bugs if callers
+        # accidentally pass String keys.
         expect(field.send(:visible?, { "tGATE" => "Oui" })).to be false
       end
     end
