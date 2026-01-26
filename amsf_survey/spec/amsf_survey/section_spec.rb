@@ -8,7 +8,6 @@ RSpec.describe AmsfSurvey::Section do
       xbrl_type: "xbrli:integerItemType",
       label: "Total clients",
       section_id: :general,
-      order: 1,
       gate: false,
       depends_on: {}
     )
@@ -21,7 +20,6 @@ RSpec.describe AmsfSurvey::Section do
       xbrl_type: "xbrli:stringItemType",
       label: "Comments",
       section_id: :general,
-      order: 2,
       gate: false,
       depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
@@ -93,7 +91,6 @@ RSpec.describe AmsfSurvey::Section do
           xbrl_type: "xbrli:integerItemType",
           label: "Gated 1",
           section_id: :gated,
-          order: 1,
           gate: false,
           depends_on: { tGATE: "Oui" }  # Original XBRL casing
         )
@@ -106,7 +103,6 @@ RSpec.describe AmsfSurvey::Section do
           xbrl_type: "xbrli:integerItemType",
           label: "Gated 2",
           section_id: :gated,
-          order: 2,
           gate: false,
           depends_on: { tGATE: "Oui" }  # Original XBRL casing
         )

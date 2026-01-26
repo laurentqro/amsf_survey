@@ -74,9 +74,10 @@ module AmsfSurvey
       end
 
       def build_fields(section_data, schema_data, labels, xule_data)
+        field_orders = section_data[:field_orders]
         section_data[:field_ids].map do |field_id|
           build_field(field_id, section_data, schema_data, labels, xule_data)
-        end.compact
+        end.compact.sort_by { |field| field_orders[field.xbrl_id] || 0 }
       end
 
       # Translates XULE "Yes"/"No" literals to actual valid values from the schema.
@@ -144,7 +145,6 @@ module AmsfSurvey
           verbose_label: label_data[:verbose_label],
           valid_values: schema[:valid_values],
           section_id: section_data[:id],
-          order: section_data[:field_orders][field_id] || 0,
           depends_on: depends_on,
           gate: is_gate
         )

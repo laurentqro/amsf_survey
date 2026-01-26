@@ -12,7 +12,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:integerItemType",
         label: "Total Unique Clients",
         section_id: :section1,
-        order: 1,
         gate: false
       ),
       AmsfSurvey::Field.new(
@@ -21,7 +20,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:integerItemType",
         label: "National Individuals",
         section_id: :section1,
-        order: 2,
         gate: false
       ),
       AmsfSurvey::Field.new(
@@ -30,7 +28,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:monetaryItemType",
         label: "Transaction Amount",
         section_id: :section1,
-        order: 3,
         gate: false
       ),
       AmsfSurvey::Field.new(
@@ -39,7 +36,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:booleanItemType",
         label: "Acted as Professional Agent",
         section_id: :section2,
-        order: 1,
         gate: true,
         valid_values: %w[Oui Non]
       ),
@@ -49,7 +45,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:integerItemType",
         label: "Rental Transaction Count",
         section_id: :section2,
-        order: 2,
         gate: false,
         depends_on: { acted_as_professional_agent: "Oui" }
       ),
@@ -59,7 +54,6 @@ RSpec.describe "Submission Integration" do
         xbrl_type: "xbrli:integerItemType",
         label: "High Risk Percentage",
         section_id: :section3,
-        order: 1,
         gate: false
       )
     ]

@@ -8,7 +8,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
       xbrl_type: "xbrli:stringItemType",
       label: "Did you perform activities?",
       section_id: :general,
-      order: 1,
       gate: true,
       valid_values: %w[Oui Non],
       depends_on: {}
@@ -22,7 +21,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
       xbrl_type: "xbrli:integerItemType",
       label: "Total clients",
       section_id: :general,
-      order: 2,
       gate: false,
       depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
@@ -35,7 +33,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
       xbrl_type: "xbrli:stringItemType",
       label: "Comments",
       section_id: :general,
-      order: 3,
       gate: false,
       depends_on: {}
     )
@@ -48,7 +45,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
       xbrl_type: "xbrli:monetaryItemType",
       label: "Total amount",
       section_id: :details,
-      order: 1,
       gate: false,
       depends_on: { tGATE: "Oui" }  # Original XBRL casing in depends_on
     )
@@ -61,7 +57,6 @@ RSpec.describe AmsfSurvey::Questionnaire do
       xbrl_type: "xbrli:stringItemType",
       label: "Service type",
       section_id: :details,
-      order: 2,
       gate: false,
       valid_values: ["Option A", "Option B", "Option C"],
       depends_on: {}

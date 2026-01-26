@@ -14,7 +14,6 @@ module AmsfSurvey
       xbrl_type:,
       label:,
       section_id:,
-      order:,
       gate:,
       verbose_label: nil,
       valid_values: nil,
@@ -28,7 +27,6 @@ module AmsfSurvey
       @xbrl_type = xbrl_type
       @label = label
       @section_id = section_id
-      @order = order
       @gate = gate
       @verbose_label = verbose_label
       @valid_values = valid_values

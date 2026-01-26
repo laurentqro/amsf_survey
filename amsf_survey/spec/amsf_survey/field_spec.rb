@@ -8,7 +8,6 @@ RSpec.describe AmsfSurvey::Field do
       xbrl_type: "xbrli:integerItemType",
       label: "Total number of clients",
       section_id: :general,
-      order: 1,
       gate: false
     }
   end
