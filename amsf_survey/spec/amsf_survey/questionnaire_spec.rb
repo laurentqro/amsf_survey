@@ -63,23 +63,20 @@ RSpec.describe AmsfSurvey::Questionnaire do
     )
   end
 
-  let(:section1) do
-    AmsfSurvey::Section.new(
-      id: :general,
-      name: "Link_General",
-      order: 1,
-      fields: [gate_field, integer_field, string_field]
-    )
-  end
+  # Questions wrap fields with PDF-sourced metadata
+  let(:q1) { AmsfSurvey::Question.new(number: 1, field: gate_field, instructions: nil) }
+  let(:q2) { AmsfSurvey::Question.new(number: 2, field: integer_field, instructions: nil) }
+  let(:q3) { AmsfSurvey::Question.new(number: 3, field: string_field, instructions: nil) }
+  let(:q4) { AmsfSurvey::Question.new(number: 1, field: monetary_field, instructions: nil) }
+  let(:q5) { AmsfSurvey::Question.new(number: 2, field: enum_field, instructions: nil) }
 
-  let(:section2) do
-    AmsfSurvey::Section.new(
-      id: :details,
-      name: "Link_Details",
-      order: 2,
-      fields: [monetary_field, enum_field]
-    )
-  end
+  # Subsections group questions
+  let(:subsection1) { AmsfSurvey::Subsection.new(number: 1, title: "Activity", questions: [q1, q2, q3]) }
+  let(:subsection2) { AmsfSurvey::Subsection.new(number: 1, title: "Financial", questions: [q4, q5]) }
+
+  # Sections contain subsections
+  let(:section1) { AmsfSurvey::Section.new(number: 1, title: "General", subsections: [subsection1]) }
+  let(:section2) { AmsfSurvey::Section.new(number: 2, title: "Details", subsections: [subsection2]) }
 
   let(:questionnaire) do
     described_class.new(

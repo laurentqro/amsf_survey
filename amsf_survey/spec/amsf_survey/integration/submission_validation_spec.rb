@@ -59,30 +59,52 @@ RSpec.describe "Submission Integration" do
     ]
   end
 
+  # Create questions for each field
+  let(:questions_section1) do
+    fields.select { |f| f.section_id == :section1 }.each_with_index.map do |field, idx|
+      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
+    end
+  end
+
+  let(:questions_section2) do
+    fields.select { |f| f.section_id == :section2 }.each_with_index.map do |field, idx|
+      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
+    end
+  end
+
+  let(:questions_section3) do
+    fields.select { |f| f.section_id == :section3 }.each_with_index.map do |field, idx|
+      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
+    end
+  end
+
+  # Create subsections
+  let(:subsection1) { AmsfSurvey::Subsection.new(number: 1, title: "Clients", questions: questions_section1) }
+  let(:subsection2) { AmsfSurvey::Subsection.new(number: 1, title: "Activities", questions: questions_section2) }
+  let(:subsection3) { AmsfSurvey::Subsection.new(number: 1, title: "Assessment", questions: questions_section3) }
+
+  # Create sections
   let(:section1) do
     AmsfSurvey::Section.new(
-      id: :section1,
-      name: "Client Information",
-      order: 1,
-      fields: fields.select { |f| f.section_id == :section1 }
+      number: 1,
+      title: "Client Information",
+      subsections: [subsection1]
     )
   end
 
   let(:section2) do
     AmsfSurvey::Section.new(
-      id: :section2,
-      name: "Professional Activities",
-      order: 2,
-      fields: fields.select { |f| f.section_id == :section2 }
+      number: 2,
+      title: "Professional Activities",
+      subsections: [subsection2]
     )
   end
 
   let(:section3) do
     AmsfSurvey::Section.new(
-      id: :section3,
-      name: "Risk Assessment",
-      order: 3,
-      fields: fields.select { |f| f.section_id == :section3 }
+      number: 3,
+      title: "Risk Assessment",
+      subsections: [subsection3]
     )
   end
 

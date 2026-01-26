@@ -15,8 +15,9 @@ module AmsfSurvey
     end
 
     # Returns all fields across all sections in order
+    # Extracts the Field from each Question in the hierarchy
     def fields
-      sections.flat_map(&:fields)
+      sections.flat_map(&:questions).map(&:field)
     end
 
     # Lookup field by lowercase ID

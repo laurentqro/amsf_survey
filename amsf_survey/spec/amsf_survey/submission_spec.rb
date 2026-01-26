@@ -61,12 +61,27 @@ RSpec.describe AmsfSurvey::Submission do
     )
   end
 
+  # Wrap fields in Questions
+  let(:q1) { AmsfSurvey::Question.new(number: 1, field: integer_field, instructions: nil) }
+  let(:q2) { AmsfSurvey::Question.new(number: 2, field: monetary_field, instructions: nil) }
+  let(:q3) { AmsfSurvey::Question.new(number: 3, field: boolean_field, instructions: nil) }
+  let(:q4) { AmsfSurvey::Question.new(number: 4, field: dependent_field, instructions: nil) }
+  let(:q5) { AmsfSurvey::Question.new(number: 5, field: computed_field, instructions: nil) }
+
+  # Create subsection and section
+  let(:subsection) do
+    AmsfSurvey::Subsection.new(
+      number: 1,
+      title: "General Info",
+      questions: [q1, q2, q3, q4, q5]
+    )
+  end
+
   let(:section) do
     AmsfSurvey::Section.new(
-      id: :general,
-      name: "General Information",
-      order: 1,
-      fields: [integer_field, monetary_field, boolean_field, dependent_field, computed_field]
+      number: 1,
+      title: "General Information",
+      subsections: [subsection]
     )
   end
 

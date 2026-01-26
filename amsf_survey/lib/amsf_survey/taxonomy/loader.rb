@@ -3,21 +3,28 @@
 module AmsfSurvey
   module Taxonomy
     # Orchestrates parsing of all taxonomy files and builds a Questionnaire.
+    # Uses StructureParser for PDF-based section/subsection/question hierarchy.
     class Loader
       def initialize(taxonomy_path)
         @taxonomy_path = taxonomy_path
       end
 
       def load(industry, year)
+        # Parse XBRL files for field data
         schema_parser = build_schema_parser
         schema_data = schema_parser.parse
         labels = parse_labels
-        sections_data = parse_presentation
         xule_data = parse_xule
 
-        sections = build_sections(sections_data, schema_data, labels, xule_data)
+        # Build field index from XBRL data
+        fields = build_fields(schema_data, labels, xule_data)
+        field_index = fields.each_with_object({}) { |f, h| h[f.id] = f }
 
-        Questionnaire.new(
+        # Parse structure file and assemble sections
+        structure_data = parse_structure
+        sections = build_sections(structure_data[:sections], field_index)
+
+        AmsfSurvey::Questionnaire.new(
           industry: industry,
           year: year,
           sections: sections,
@@ -26,6 +33,10 @@ module AmsfSurvey
       end
 
       private
+
+      def structure_file_path
+        File.join(@taxonomy_path, "questionnaire_structure.yml")
+      end
 
       def build_schema_parser
         xsd_files = Dir.glob(File.join(@taxonomy_path, "*.xsd"))
@@ -46,13 +57,6 @@ module AmsfSurvey
         LabelParser.new(lab_files.first).parse
       end
 
-      def parse_presentation
-        pre_files = Dir.glob(File.join(@taxonomy_path, "*_pre.xml"))
-        return [] if pre_files.empty?
-
-        PresentationParser.new(pre_files.first).parse
-      end
-
       def parse_xule
         xule_files = Dir.glob(File.join(@taxonomy_path, "*.xule"))
         return { gate_rules: {}, gate_fields: [] } if xule_files.empty?
@@ -60,24 +64,32 @@ module AmsfSurvey
         XuleParser.new(xule_files.first).parse
       end
 
-      def build_sections(sections_data, schema_data, labels, xule_data)
-        sections_data.map do |section_data|
-          fields = build_fields(section_data, schema_data, labels, xule_data)
-
-          Section.new(
-            id: section_data[:id],
-            name: section_data[:name],
-            order: section_data[:order],
-            fields: fields
-          )
-        end
+      def parse_structure
+        StructureParser.new(structure_file_path).parse
       end
 
-      def build_fields(section_data, schema_data, labels, xule_data)
-        field_orders = section_data[:field_orders]
-        section_data[:field_ids].map do |field_id|
-          build_field(field_id, section_data, schema_data, labels, xule_data)
-        end.compact.sort_by { |field| field_orders[field.xbrl_id] || 0 }
+      def build_fields(schema_data, labels, xule_data)
+        schema_data.map do |field_id, schema|
+          build_field(field_id, schema, labels, xule_data, schema_data)
+        end.compact
+      end
+
+      def build_field(field_id, schema, labels, xule_data, schema_data)
+        label_data = labels[field_id] || {}
+        is_gate = xule_data[:gate_fields].include?(field_id)
+        depends_on = resolve_gate_dependencies(xule_data[:gate_rules][field_id], schema_data)
+
+        AmsfSurvey::Field.new(
+          id: field_id,
+          type: schema[:type],
+          xbrl_type: schema[:xbrl_type],
+          label: label_data[:label] || field_id.to_s,
+          verbose_label: label_data[:verbose_label],
+          valid_values: schema[:valid_values],
+          section_id: nil, # No longer used - hierarchy is via Question/Subsection/Section
+          depends_on: depends_on,
+          gate: is_gate
+        )
       end
 
       # Translates XULE "Yes"/"No" literals to actual valid values from the schema.
@@ -91,7 +103,6 @@ module AmsfSurvey
         return {} if xule_deps.nil? || xule_deps.empty?
 
         xule_deps.each_with_object({}) do |(gate_id, xule_value), result|
-          # Preserve original XBRL ID casing for internal logic
           result[gate_id] = translate_gate_value(xule_value, schema_data[gate_id])
         end
       end
@@ -104,49 +115,59 @@ module AmsfSurvey
         valid_values = gate_schema[:valid_values]
         return xule_value unless valid_values.size == 2
 
-        # Find the positive value (Oui/Yes/etc.) based on XULE "Yes"
         if xule_value == "Yes"
-          find_positive_value(valid_values)
+          valid_values.find { |v| v.downcase == "yes" || v.downcase == "oui" } || valid_values.first
         else
-          find_negative_value(valid_values)
+          valid_values.find { |v| v.downcase == "no" || v.downcase == "non" } || valid_values.last
         end
       end
 
-      # Finds the "positive" value (Yes, Oui, etc.) from valid_values
-      def find_positive_value(valid_values)
-        valid_values.find { |v| v.downcase == "yes" || v.downcase == "oui" } || valid_values.first
+      def build_sections(sections_data, field_index)
+        seen_fields = {}
+
+        sections_data.map do |section_data|
+          subsections = section_data[:subsections].map do |sub_data|
+            build_subsection(sub_data, field_index, seen_fields, section_data[:title])
+          end
+
+          AmsfSurvey::Section.new(
+            number: section_data[:number],
+            title: section_data[:title],
+            subsections: subsections
+          )
+        end
       end
 
-      # Finds the "negative" value (No, Non, etc.) from valid_values
-      def find_negative_value(valid_values)
-        valid_values.find { |v| v.downcase == "no" || v.downcase == "non" } || valid_values.last
-      end
+      def build_subsection(sub_data, field_index, seen_fields, section_title)
+        questions = sub_data[:questions].map do |q_data|
+          build_question(q_data, field_index, seen_fields, section_title, sub_data[:title])
+        end
 
-      def build_field(field_id, section_data, schema_data, labels, xule_data)
-        schema = schema_data[field_id]
-        return nil unless schema
-
-        label_data = labels[field_id] || {}
-
-        # Determine if this is a gate field
-        is_gate = xule_data[:gate_fields].include?(field_id)
-
-        # Get dependencies from xule rules, translating XULE "Yes" to actual valid values
-        depends_on = resolve_gate_dependencies(
-          xule_data[:gate_rules][field_id],
-          schema_data
+        AmsfSurvey::Subsection.new(
+          number: sub_data[:number],
+          title: sub_data[:title],
+          questions: questions
         )
+      end
 
-        Field.new(
-          id: field_id,
-          type: schema[:type],
-          xbrl_type: schema[:xbrl_type],
-          label: label_data[:label] || field_id.to_s,
-          verbose_label: label_data[:verbose_label],
-          valid_values: schema[:valid_values],
-          section_id: section_data[:id],
-          depends_on: depends_on,
-          gate: is_gate
+      def build_question(q_data, field_index, seen_fields, section_title, subsection_title)
+        field_id = q_data[:field_id]
+        location = "#{section_title}, #{subsection_title}"
+
+        # Check for duplicates
+        if seen_fields[field_id]
+          raise DuplicateFieldError.new(field_id, location)
+        end
+        seen_fields[field_id] = true
+
+        # Lookup field
+        field = field_index[field_id]
+        raise UnknownFieldError, field_id unless field
+
+        AmsfSurvey::Question.new(
+          number: q_data[:number],
+          field: field,
+          instructions: q_data[:instructions]
         )
       end
     end
