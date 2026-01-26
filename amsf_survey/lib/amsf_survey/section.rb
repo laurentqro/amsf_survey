@@ -1,36 +1,36 @@
 # frozen_string_literal: true
 
 module AmsfSurvey
-  # Represents a logical grouping of fields from a presentation link.
+  # Represents a top-level section from the PDF structure (e.g., "Inherent Risk").
+  # Contains subsections which contain questions.
   # Immutable value object built by the taxonomy loader.
   class Section
-    attr_reader :id, :name, :order, :fields
+    attr_reader :number, :title, :subsections
 
-    def initialize(id:, name:, order:, fields:)
-      @id = id
-      @name = name
-      @order = order
-      @fields = fields
+    def initialize(number:, title:, subsections:)
+      @number = number
+      @title = title
+      @subsections = subsections
     end
 
-    # Returns the number of fields in this section
-    def field_count
-      fields.length
+    # Returns all questions from all subsections in order
+    def questions
+      subsections.flat_map(&:questions)
     end
 
-    # Returns true if section has no fields
+    # Total number of questions across all subsections
+    def question_count
+      questions.length
+    end
+
+    # Number of subsections
+    def subsection_count
+      subsections.length
+    end
+
+    # Returns true if section has no subsections
     def empty?
-      fields.empty?
+      subsections.empty?
     end
-
-    # Returns true if any field in the section is visible given the data.
-    # Used internally - not part of public API.
-    def visible?(data)
-      return false if empty?
-
-      fields.any? { |field| field.send(:visible?, data) }
-    end
-
-    private :visible?
   end
 end
