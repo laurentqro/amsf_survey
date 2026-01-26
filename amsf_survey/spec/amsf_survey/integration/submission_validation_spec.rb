@@ -3,79 +3,91 @@
 require "bigdecimal"
 
 RSpec.describe "Submission Integration" do
-  # Create a realistic questionnaire structure
-  let(:fields) do
+  # Create fields for Section 1 (Client Information)
+  let(:total_unique_clients_field) do
+    AmsfSurvey::Field.new(
+      id: :total_unique_clients,
+      type: :integer,
+      xbrl_type: "xbrli:integerItemType",
+      label: "Total Unique Clients",
+      gate: false
+    )
+  end
+
+  let(:national_individuals_field) do
+    AmsfSurvey::Field.new(
+      id: :national_individuals,
+      type: :integer,
+      xbrl_type: "xbrli:integerItemType",
+      label: "National Individuals",
+      gate: false
+    )
+  end
+
+  let(:transaction_amount_field) do
+    AmsfSurvey::Field.new(
+      id: :transaction_amount,
+      type: :monetary,
+      xbrl_type: "xbrli:monetaryItemType",
+      label: "Transaction Amount",
+      gate: false
+    )
+  end
+
+  # Create fields for Section 2 (Professional Activities)
+  let(:acted_as_professional_agent_field) do
+    AmsfSurvey::Field.new(
+      id: :acted_as_professional_agent,
+      type: :boolean,
+      xbrl_type: "xbrli:booleanItemType",
+      label: "Acted as Professional Agent",
+      gate: true,
+      valid_values: %w[Oui Non]
+    )
+  end
+
+  let(:rental_transaction_count_field) do
+    AmsfSurvey::Field.new(
+      id: :rental_transaction_count,
+      type: :integer,
+      xbrl_type: "xbrli:integerItemType",
+      label: "Rental Transaction Count",
+      gate: false,
+      depends_on: { acted_as_professional_agent: "Oui" }
+    )
+  end
+
+  # Create field for Section 3 (Risk Assessment)
+  let(:high_risk_percentage_field) do
+    AmsfSurvey::Field.new(
+      id: :high_risk_percentage,
+      type: :integer,
+      xbrl_type: "xbrli:integerItemType",
+      label: "High Risk Percentage",
+      gate: false
+    )
+  end
+
+  # Create questions for each section
+  let(:questions_section1) do
     [
-      AmsfSurvey::Field.new(
-        id: :total_unique_clients,
-        type: :integer,
-        xbrl_type: "xbrli:integerItemType",
-        label: "Total Unique Clients",
-        section_id: :section1,
-        gate: false
-      ),
-      AmsfSurvey::Field.new(
-        id: :national_individuals,
-        type: :integer,
-        xbrl_type: "xbrli:integerItemType",
-        label: "National Individuals",
-        section_id: :section1,
-        gate: false
-      ),
-      AmsfSurvey::Field.new(
-        id: :transaction_amount,
-        type: :monetary,
-        xbrl_type: "xbrli:monetaryItemType",
-        label: "Transaction Amount",
-        section_id: :section1,
-        gate: false
-      ),
-      AmsfSurvey::Field.new(
-        id: :acted_as_professional_agent,
-        type: :boolean,
-        xbrl_type: "xbrli:booleanItemType",
-        label: "Acted as Professional Agent",
-        section_id: :section2,
-        gate: true,
-        valid_values: %w[Oui Non]
-      ),
-      AmsfSurvey::Field.new(
-        id: :rental_transaction_count,
-        type: :integer,
-        xbrl_type: "xbrli:integerItemType",
-        label: "Rental Transaction Count",
-        section_id: :section2,
-        gate: false,
-        depends_on: { acted_as_professional_agent: "Oui" }
-      ),
-      AmsfSurvey::Field.new(
-        id: :high_risk_percentage,
-        type: :integer,
-        xbrl_type: "xbrli:integerItemType",
-        label: "High Risk Percentage",
-        section_id: :section3,
-        gate: false
-      )
+      AmsfSurvey::Question.new(number: 1, field: total_unique_clients_field, instructions: nil),
+      AmsfSurvey::Question.new(number: 2, field: national_individuals_field, instructions: nil),
+      AmsfSurvey::Question.new(number: 3, field: transaction_amount_field, instructions: nil)
     ]
   end
 
-  # Create questions for each field
-  let(:questions_section1) do
-    fields.select { |f| f.section_id == :section1 }.each_with_index.map do |field, idx|
-      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
-    end
-  end
-
   let(:questions_section2) do
-    fields.select { |f| f.section_id == :section2 }.each_with_index.map do |field, idx|
-      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
-    end
+    [
+      AmsfSurvey::Question.new(number: 1, field: acted_as_professional_agent_field, instructions: nil),
+      AmsfSurvey::Question.new(number: 2, field: rental_transaction_count_field, instructions: nil)
+    ]
   end
 
   let(:questions_section3) do
-    fields.select { |f| f.section_id == :section3 }.each_with_index.map do |field, idx|
-      AmsfSurvey::Question.new(number: idx + 1, field: field, instructions: nil)
-    end
+    [
+      AmsfSurvey::Question.new(number: 1, field: high_risk_percentage_field, instructions: nil)
+    ]
   end
 
   # Create subsections

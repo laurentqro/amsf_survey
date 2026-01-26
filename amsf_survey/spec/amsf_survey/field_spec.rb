@@ -7,8 +7,7 @@ RSpec.describe AmsfSurvey::Field do
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
       label: "Total number of clients",
-      section_id: :general,
-      gate: false
+            gate: false
     }
   end
 
@@ -21,7 +20,6 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.type).to eq(:integer)
       expect(field.xbrl_type).to eq("xbrli:integerItemType")
       expect(field.label).to eq("Total number of clients")
-      expect(field.section_id).to eq(:general)
       expect(field.gate).to eq(false)
     end
 

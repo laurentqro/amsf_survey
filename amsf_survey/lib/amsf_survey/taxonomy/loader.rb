@@ -86,7 +86,6 @@ module AmsfSurvey
           label: label_data[:label] || field_id.to_s,
           verbose_label: label_data[:verbose_label],
           valid_values: schema[:valid_values],
-          section_id: nil, # No longer used - hierarchy is via Question/Subsection/Section
           depends_on: depends_on,
           gate: is_gate
         )

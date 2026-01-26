@@ -7,7 +7,6 @@ RSpec.describe AmsfSurvey::Question do
       type: :boolean,
       xbrl_type: "test:booleanItemType",
       label: "Are you active?",
-      section_id: :test,
       gate: true,
       verbose_label: "Extended label",
       valid_values: %w[Oui Non],
@@ -73,8 +72,7 @@ RSpec.describe AmsfSurvey::Question do
         type: :integer,
         xbrl_type: "xbrli:integerItemType",
         label: "Count",
-        section_id: :test,
-        gate: false,
+          gate: false,
         depends_on: { tGATE: "Oui" }
       )
     end

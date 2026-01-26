@@ -10,7 +10,6 @@ RSpec.describe AmsfSurvey::Submission do
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
       label: "Total Clients",
-      section_id: :general,
       gate: false
     )
   end
@@ -21,7 +20,6 @@ RSpec.describe AmsfSurvey::Submission do
       type: :monetary,
       xbrl_type: "xbrli:monetaryItemType",
       label: "Total Amount",
-      section_id: :general,
       gate: false
     )
   end
@@ -32,7 +30,6 @@ RSpec.describe AmsfSurvey::Submission do
       type: :boolean,
       xbrl_type: "xbrli:booleanItemType",
       label: "Is Agent",
-      section_id: :general,
       gate: true,
       valid_values: %w[Oui Non]
     )
@@ -44,7 +41,6 @@ RSpec.describe AmsfSurvey::Submission do
       type: :string,
       xbrl_type: "xbrli:stringItemType",
       label: "Agent Details",
-      section_id: :general,
       gate: false,
       depends_on: { is_agent: "Oui" }
     )
@@ -56,7 +52,6 @@ RSpec.describe AmsfSurvey::Submission do
       type: :integer,
       xbrl_type: "xbrli:integerItemType",
       label: "Computed Total",
-      section_id: :general,
       gate: false
     )
   end

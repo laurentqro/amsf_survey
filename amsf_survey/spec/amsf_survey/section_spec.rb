@@ -4,14 +4,14 @@ RSpec.describe AmsfSurvey::Section do
   let(:field1) do
     AmsfSurvey::Field.new(
       id: :t001, type: :integer, xbrl_type: "xbrli:integerItemType",
-      label: "Field 1", section_id: :test, gate: false
+      label: "Field 1", gate: false
     )
   end
 
   let(:field2) do
     AmsfSurvey::Field.new(
       id: :t002, type: :string, xbrl_type: "xbrli:stringItemType",
-      label: "Field 2", section_id: :test, gate: false
+      label: "Field 2", gate: false
     )
   end
 
@@ -54,7 +54,7 @@ RSpec.describe AmsfSurvey::Section do
     it "returns questions in order across multiple subsections" do
       field3 = AmsfSurvey::Field.new(
         id: :t003, type: :boolean, xbrl_type: "xbrli:booleanItemType",
-        label: "Field 3", section_id: :test, gate: false
+        label: "Field 3", gate: false
       )
       q3 = AmsfSurvey::Question.new(number: 3, field: field3, instructions: nil)
       subsection2 = AmsfSurvey::Subsection.new(number: 2, title: "Sub 2", questions: [q3])
