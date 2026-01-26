@@ -5,7 +5,7 @@ module AmsfSurvey
   # Immutable value object built by the taxonomy loader.
   class Field
     attr_reader :xbrl_id, :type, :xbrl_type, :label,
-                :verbose_label, :valid_values, :section_id, :order,
+                :verbose_label, :valid_values, :section_id,
                 :depends_on, :gate, :min, :max
 
     def initialize(

@@ -23,7 +23,6 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.xbrl_type).to eq("xbrli:integerItemType")
       expect(field.label).to eq("Total number of clients")
       expect(field.section_id).to eq(:general)
-      expect(field.order).to eq(1)
       expect(field.gate).to eq(false)
     end
 

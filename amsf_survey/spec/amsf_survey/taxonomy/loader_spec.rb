@@ -140,6 +140,16 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       end
     end
 
+    describe "field ordering" do
+      it "sorts fields by presentation order attribute, not document order" do
+        # The standard fixture has arcs in document order matching presentation order
+        # Verify fields are returned in presentation order (by order attribute)
+        general_section = questionnaire.sections.find { |s| s.name == "Link_General" }
+        field_ids = general_section.fields.map(&:id)
+        expect(field_ids).to eq(%i[tgate t001 t002])
+      end
+    end
+
     describe "valid_values" do
       it "sets valid_values for boolean fields" do
         field = questionnaire.field(:tgate)
