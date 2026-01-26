@@ -1,0 +1,19 @@
+sections:
+  - title: "General"
+    subsections:
+      - title: "Activity Status"
+        questions:
+          - field_id: tgate
+            instructions: |
+              Answer Yes if you performed any regulated activities.
+          - field_id: t001
+          - field_id: t002
+
+  - title: "Details"
+    subsections:
+      - title: "Financial Details"
+        questions:
+          - field_id: t003
+            instructions: |
+              Enter total monetary value.
+          - field_id: t004
