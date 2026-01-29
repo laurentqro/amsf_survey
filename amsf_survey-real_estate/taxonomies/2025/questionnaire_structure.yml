@@ -115,14 +115,12 @@ sections:
             instructions: "Purchases and Sales."
           - field_id: "a155"
             instructions: ~
-          - field_id: "a11206B"
+          - field_id: "aMLES"
             instructions: "Purchases and Sales. Only clients that are active for the reporting period."
-          - field_id: "a112012B"
+          - field_id: "a11206B"
             instructions: "Purchases and Sales. For HNWI (EUR 5 million+)."
-          - field_id: "a1808"
-            instructions: "Purchases and Sales."
-          - field_id: "a1809"
-            instructions: "Purchases and Sales."
+          - field_id: "a112012B"
+            instructions: "Purchases and Sales. For UHNWI (EUR 50 million+)."
 
       # ------------------------------------------------------------------------
       # 1.7 Clients - Trusts and Other Legal Arrangements
@@ -135,14 +133,18 @@ sections:
             instructions: "Purchases, Sales, and Rentals."
           - field_id: "a1807ATOLA"
             instructions: "Purchases, Sales, and Rentals."
+          - field_id: "a1808"
+            instructions: "Purchases, Sales, and Rentals."
+          - field_id: "a1809"
+            instructions: "Purchases, Sales, and Rentals."
           - field_id: "a11001BTOLA"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1806TOLA"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1807TOLA"
             instructions: ~
-          - field_id: "a11006"
+          - field_id: "a1806TOLA"
             instructions: "Purchases and Sales."
+          - field_id: "a1807TOLA"
+            instructions: "Purchases and Sales."
+          - field_id: "a11006"
+            instructions: ~
 
       # ------------------------------------------------------------------------
       # 1.8 PEPs
@@ -289,19 +291,15 @@ sections:
             instructions: "Purchases and Sales."
           - field_id: "a14702B"
             instructions: "Purchases and Sales."
-          - field_id: "a14801"
-            instructions: "Purchases and Sales."
-          - field_id: "a14001"
-            instructions: "Purchases and Sales."
 
       # ------------------------------------------------------------------------
       # 1.12 Comments & Feedback
       # ------------------------------------------------------------------------
       - title: "Comments & Feedback"
         questions:
-          - field_id: "aIR233"
+          - field_id: "a14801"
             instructions: ~
-          - field_id: "aMLES"
+          - field_id: "a14001"
             instructions: ~
 
   # ============================================================================
