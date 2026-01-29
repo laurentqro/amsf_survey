@@ -6,9 +6,9 @@ Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/
 
 Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF via the Strix portal. This gem:
 
-1. **Parses XBRL taxonomy files** - Understands the 323-field questionnaire structure
-2. **Provides direct XBRL ID access** - Use field IDs like `:aactive`, `:a1101` directly
-3. **Tracks submission completeness** - Checks which required fields are missing
+1. **Parses XBRL taxonomy files** - Understands the 323-question questionnaire structure
+2. **Provides direct XBRL ID access** - Use question IDs like `:aactive`, `:a1101` directly
+3. **Tracks submission completeness** - Checks which required questions are unanswered
 4. **Generates XBRL XML** - Output format the Strix portal accepts
 
 ## Architecture
@@ -77,6 +77,64 @@ puts "Unanswered: #{submission.unanswered_questions.map(&:id)}"
 # Generate XBRL for Strix portal
 xml = AmsfSurvey.to_xbrl(submission, pretty: true)
 File.write("submission_2025.xml", xml)
+```
+
+## Object Hierarchy
+
+The questionnaire follows a hierarchical structure that mirrors the official PDF:
+
+```
+Questionnaire
+├── industry            # :real_estate
+├── year                # 2025
+├── taxonomy_namespace  # "https://amlcft.amsf.mc/..."
+│
+└── sections[]
+    ├── number          # 1 (auto-numbered)
+    ├── title           # "Risque client" (from YAML)
+    │
+    └── subsections[]
+        ├── number      # 1 (auto-numbered within section)
+        ├── title       # "Activité au cours de la période" (from YAML)
+        │
+        └── questions[]
+            ├── number        # 1 (auto-numbered within section)
+            ├── instructions  # "Activities subject to law..." (from YAML)
+            │
+            │ # XBRL attributes (from taxonomy files):
+            ├── id            # :aactive (lowercase for API)
+            ├── xbrl_id       # :aACTIVE (original casing)
+            ├── label         # "Avez-vous exercé..." (French text)
+            ├── verbose_label # Extended help text
+            ├── type          # :boolean, :integer, :monetary, :string, :enum
+            ├── valid_values  # ["Oui", "Non"] for boolean/enum
+            ├── gate?         # true if controls other questions
+            └── depends_on    # { aACTIVE: "Oui" } gate dependencies
+```
+
+### Traversing the Hierarchy
+
+```ruby
+q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
+
+# Iterate all sections
+q.sections.each do |section|
+  puts "Section #{section.number}: #{section.title}"
+
+  section.subsections.each do |subsection|
+    puts "  #{subsection.number}. #{subsection.title}"
+
+    subsection.questions.each do |question|
+      puts "    Q#{question.number}: #{question.label}"
+      puts "      ID: #{question.id}, Type: #{question.type}"
+      puts "      Instructions: #{question.instructions}" if question.instructions
+    end
+  end
+end
+
+# Direct question lookup (skips hierarchy)
+question = q.question(:a1101)
+puts question.label  # => French question text
 ```
 
 ## Core API
@@ -297,7 +355,7 @@ bundle install
 bundle exec rspec
 ```
 
-Test coverage: 100% line coverage, 357 tests.
+Test coverage: 100% line coverage, 353 tests.
 
 ## License
 
