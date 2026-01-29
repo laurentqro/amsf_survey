@@ -21,10 +21,11 @@ Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF v
 │      (Core Gem)             │    (Industry Plugin)              │
 │                             │                                   │
 │  • Questionnaire            │  • taxonomies/2025/               │
-│  • Section, Field           │    - *.xsd (schema)               │
-│  • Submission               │    - *_lab.xml (French labels)    │
-│  • Generator (XBRL output)  │    - *_pre.xml (presentation)     │
-│  • Registry                 │    - *.xule (validation rules)    │
+│  • Section, Subsection      │    - *.xsd (schema)               │
+│  • Question, Field          │    - *_lab.xml (French labels)    │
+│  • Submission               │    - questionnaire_structure.yml  │
+│  • Generator (XBRL output)  │    - *.xule (validation rules)    │
+│  • Registry                 │                                   │
 │  • Taxonomy Parsers         │                                   │
 └─────────────────────────────┴───────────────────────────────────┘
 ```
@@ -102,9 +103,48 @@ AmsfSurvey.supported_years(:real_estate)
 q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
 q.fields.count      # => 323
+q.questions         # => [Question, Question, ...] all questions in order
 q.sections          # => [Section, Section, ...]
 q.field(:aactive)   # => Field object (lookup by lowercase ID)
 q.field(:a1101)     # => Field object (any casing works, normalized to lowercase)
+```
+
+### Section & Subsection
+
+The questionnaire uses a hierarchical structure matching the PDF:
+
+```ruby
+section = q.sections.first
+section.title              # => "Customer Risk"
+section.number             # => 1
+section.subsections        # => [Subsection, Subsection, ...]
+section.questions          # => All questions across all subsections
+section.question_count     # => Total questions in section
+
+subsection = section.subsections.first
+subsection.title           # => "Active in Reporting Cycle"
+subsection.number          # => 1
+subsection.questions       # => [Question, Question, ...]
+subsection.question_count  # => 3
+```
+
+### Question
+
+Questions wrap Fields with PDF-sourced metadata:
+
+```ruby
+question = q.questions.first
+question.number            # => 1 (from PDF)
+question.instructions      # => "Activities subject to law..." (from PDF)
+question.field             # => Field object
+
+# Delegates to underlying field:
+question.id                # => :aactive (lowercase)
+question.xbrl_id           # => :aACTIVE (original casing)
+question.label             # => French question text
+question.type              # => :boolean
+question.gate?             # => true
+question.visible?(data)    # => checks gate dependencies
 ```
 
 ### Field
@@ -141,6 +181,7 @@ submission[:a1101] = 150
 submission.complete?              # => false (not all fields filled)
 submission.completion_percentage  # => 0.6%
 submission.missing_fields         # => [:a1102, :a1103, ...] (lowercase IDs)
+submission.unanswered_questions   # => [Question, Question, ...] (visible questions without values)
 submission.field_visible?(:a1101) # => true (check if field should be shown in UI)
 submission[:a1101]                # => 150
 
@@ -212,7 +253,7 @@ The gem parses official AMSF XBRL taxonomy files:
 |--------|------|------------------|
 | `SchemaParser` | `.xsd` | Field IDs, types, valid enum values |
 | `LabelParser` | `_lab.xml` | French question text |
-| `PresentationParser` | `_pre.xml` | Section structure, field ordering |
+| `StructureParser` | `questionnaire_structure.yml` | Section/subsection hierarchy, question numbers, instructions |
 | `XuleParser` | `.xule` | Gate question dependencies |
 | `Loader` | All files | Orchestrates into `Questionnaire` |
 
@@ -241,9 +282,23 @@ amsf_survey-yachting/
 │   └── 2025/
 │       ├── strix_*.xsd
 │       ├── strix_*_lab.xml
-│       ├── strix_*_pre.xml
+│       ├── questionnaire_structure.yml
 │       └── strix_*.xule
 └── amsf_survey-yachting.gemspec
+```
+
+The `questionnaire_structure.yml` file maps the PDF structure to XBRL field IDs:
+
+```yaml
+sections:
+  - title: "Customer Risk"
+    subsections:
+      - title: "Active in Reporting Cycle"
+        questions:
+          - field_id: "aACTIVE"
+            instructions: "Activities subject to the law..."
+          - field_id: "aACTIVEPS"
+            instructions: "Purchases and Sales."
 ```
 
 ## Development
@@ -253,7 +308,7 @@ bundle install
 bundle exec rspec
 ```
 
-Test coverage: 99.47% line coverage, 310 tests.
+Test coverage: 100% line coverage, 360 tests.
 
 ## License
 
