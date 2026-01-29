@@ -153,19 +153,18 @@ sections:
         questions:
           - field_id: "a11301"
             instructions: ~
-          - field_id: "a11304B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a11305B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a11309B"
-            instructions: "Purchases and Sales."
           - field_id: "a11302RES"
             instructions: "Purchases and Sales."
           - field_id: "a11302"
             instructions: "Purchases and Sales."
+          - field_id: "a11304B"
+            instructions: "Purchases, Sales, and Rentals."
+          - field_id: "a11305B"
+            instructions: "Purchases, Sales, and Rentals."
           - field_id: "a11307"
             instructions: "For the purpose of this question, Beneficial Owner should mean any Natural Person who owns or exercises effective ultimate control, directly or indirectly, over a client."
-
+          - field_id: "a11309B"
+            instructions: "Purchases and Sales."
       # ------------------------------------------------------------------------
       # 1.9 Virtual Asset Service Providers
       # ------------------------------------------------------------------------
@@ -205,8 +204,6 @@ sections:
             instructions: "Other Services. Purchases, Sales, and Rentals."
           - field_id: "a13604DB"
             instructions: "Other Services. Purchases, Sales, and Rentals."
-          - field_id: "a13604E"
-            instructions: "Other Services"
           - field_id: "a13602B"
             instructions: ~
           - field_id: "a13602A"
@@ -215,6 +212,8 @@ sections:
             instructions: ~
           - field_id: "a13602D"
             instructions: ~
+          - field_id: "a13604E"
+            instructions: "Other Services"
 
       # ------------------------------------------------------------------------
       # 1.10 2nd Nationalities
@@ -222,8 +221,6 @@ sections:
       - title: "2nd Nationalities"
         questions:
           - field_id: "a1203"
-            instructions: ~
-          - field_id: "aC171"
             instructions: ~
           - field_id: "a1402"
             instructions: ~
@@ -233,8 +230,10 @@ sections:
       # ------------------------------------------------------------------------
       - title: "Monegasque Client Types - Purchases and Sales"
         questions:
-          - field_id: "a11502B"
+          - field_id: "aC171"
             instructions: "Purchases and Sales. For persons with Monegasque nationality."
+          - field_id: "a11502B"
+            instructions: "Purchases and Sales."
           - field_id: "a11602B"
             instructions: "Purchases and Sales."
           - field_id: "a11702B"
