@@ -22,7 +22,7 @@ Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF v
 │                             │                                   │
 │  • Questionnaire            │  • taxonomies/2025/               │
 │  • Section, Subsection      │    - *.xsd (schema)               │
-│  • Question, Field          │    - *_lab.xml (French labels)    │
+│  • Question                 │    - *_lab.xml (French labels)    │
 │  • Submission               │    - questionnaire_structure.yml  │
 │  • Generator (XBRL output)  │    - *.xule (validation rules)    │
 │  • Registry                 │                                   │
@@ -72,7 +72,7 @@ submission[:a1104] = 12                # Non-residents
 
 # Track completion
 puts "Complete: #{submission.complete?}"
-puts "Missing: #{submission.missing_fields}"
+puts "Unanswered: #{submission.unanswered_questions.map(&:id)}"
 
 # Generate XBRL for Strix portal
 xml = AmsfSurvey.to_xbrl(submission, pretty: true)
@@ -102,11 +102,12 @@ AmsfSurvey.supported_years(:real_estate)
 ```ruby
 q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
-q.fields.count      # => 323
-q.questions         # => [Question, Question, ...] all questions in order
-q.sections          # => [Section, Section, ...]
-q.field(:aactive)   # => Field object (lookup by lowercase ID)
-q.field(:a1101)     # => Field object (any casing works, normalized to lowercase)
+q.questions           # => [Question, Question, ...] all questions in order
+q.question_count      # => 323
+q.sections            # => [Section, Section, ...]
+q.question(:aactive)  # => Question object (lookup by lowercase ID)
+q.question(:a1101)    # => Question object (any casing works, normalized to lowercase)
+q.gate_questions      # => Questions that control visibility of others
 ```
 
 ### Section & Subsection
@@ -130,39 +131,28 @@ subsection.question_count  # => 3
 
 ### Question
 
-Questions wrap Fields with PDF-sourced metadata:
+Questions are the primary unit of the questionnaire, combining XBRL metadata with PDF-sourced structure:
 
 ```ruby
 question = q.questions.first
 question.number            # => 1 (from PDF)
 question.instructions      # => "Activities subject to law..." (from PDF)
-question.field             # => Field object
 
-# Delegates to underlying field:
-question.id                # => :aactive (lowercase)
-question.xbrl_id           # => :aACTIVE (original casing)
+# XBRL attributes:
+question.id                # => :aactive (lowercase for API)
+question.xbrl_id           # => :aACTIVE (original casing for XBRL)
 question.label             # => French question text
-question.type              # => :boolean
-question.gate?             # => true
+question.verbose_label     # => Extended help text (if available)
+question.type              # => :boolean, :integer, :monetary, :string, :enum
+question.valid_values      # => ["Oui", "Non"] for boolean/enum types
+question.gate?             # => true if this controls visibility of others
+question.depends_on        # => { aACTIVE: "Oui" } gate dependencies
 question.visible?(data)    # => checks gate dependencies
 ```
 
-### Field
-
-Fields use a dual-ID system:
+Questions use a dual-ID system:
 - `id` - Lowercase symbol for API access (`:aactive`, `:a1101`)
 - `xbrl_id` - Original casing for XBRL generation (`:aACTIVE`, `:a1101`)
-
-```ruby
-field = q.field(:aactive)
-
-field.id          # => :aactive (lowercase for API)
-field.xbrl_id     # => :aACTIVE (original casing for XBRL)
-field.type        # => :integer, :boolean, :monetary, :string, :enum
-field.label       # => French question text
-field.gate?       # => true if this controls visibility of other fields
-field.visible?(data)  # => checks gate dependencies
-```
 
 ### Submission
 
@@ -178,11 +168,10 @@ submission = AmsfSurvey.build_submission(
 submission[:aactive] = "Oui"
 submission[:a1101] = 150
 
-submission.complete?              # => false (not all fields filled)
+submission.complete?              # => false (not all questions filled)
 submission.completion_percentage  # => 0.6%
-submission.missing_fields         # => [:a1102, :a1103, ...] (lowercase IDs)
 submission.unanswered_questions   # => [Question, Question, ...] (visible questions without values)
-submission.field_visible?(:a1101) # => true (check if field should be shown in UI)
+submission.question_visible?(:a1101) # => true (check if question should be shown in UI)
 submission[:a1101]                # => 150
 
 # Internal data uses original XBRL IDs
@@ -202,27 +191,27 @@ xml = AmsfSurvey.to_xbrl(submission, include_empty: false)   # Omit nil fields
 
 ## Gate Questions (Conditional Logic)
 
-Some fields only appear based on answers to "gate" questions:
+Some questions only appear based on answers to "gate" questions:
 
 ```ruby
-# Check if a field is a gate question
-field = q.field(:aactive)  # "Did you act as a professional agent?"
-field.gate?  # => true
+# Check if a question is a gate
+question = q.question(:aactive)  # "Did you act as a professional agent?"
+question.gate?  # => true
 
-# Check field visibility for UI rendering
+# Check question visibility for UI rendering
 submission[:aactive] = "Non"
-submission.field_visible?(:a1101)  # => false (hidden because gate is "Non")
+submission.question_visible?(:a1101)  # => false (hidden because gate is "Non")
 
 submission[:aactive] = "Oui"
-submission.field_visible?(:a1101)  # => true (visible because gate is "Oui")
+submission.question_visible?(:a1101)  # => true (visible because gate is "Oui")
 
 # Completeness respects gate visibility
-submission.missing_fields  # Only includes fields visible given current gate values
+submission.unanswered_questions  # Only includes questions visible given current gate values
 ```
 
-The submission respects gate visibility - hidden fields are not counted as missing.
+The submission respects gate visibility - hidden questions are not counted as missing.
 
-## Field ID Access
+## Question ID Access
 
 The gem uses XBRL element IDs directly. There's no separate semantic mapping layer.
 
@@ -233,9 +222,9 @@ The gem uses XBRL element IDs directly. There's no separate semantic mapping lay
 | `a11301` | `:a11301` | Do you have PEP clients? |
 | `a13501B` | `:a13501b` | Do you have VASP clients? |
 
-Field lookup normalizes any casing to lowercase internally.
+Question lookup normalizes any casing to lowercase internally.
 
-## Field Types
+## Question Types
 
 | Type | Ruby Type | Example |
 |------|-----------|---------|
@@ -308,7 +297,7 @@ bundle install
 bundle exec rspec
 ```
 
-Test coverage: 100% line coverage, 360 tests.
+Test coverage: 100% line coverage, 357 tests.
 
 ## License
 

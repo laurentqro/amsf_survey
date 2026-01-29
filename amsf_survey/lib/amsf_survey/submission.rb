@@ -2,10 +2,10 @@
 
 module AmsfSurvey
   # Container for survey response data.
-  # Holds entity_id, period, industry, year, and a hash of field values.
+  # Holds entity_id, period, industry, year, and a hash of question values.
   # Provides access to the questionnaire and tracks completeness.
   #
-  # Public API uses lowercase field IDs for convenience.
+  # Public API uses lowercase question IDs for convenience.
   # Internal storage uses original XBRL IDs for consistency with taxonomy.
   class Submission
     attr_reader :industry, :year, :entity_id, :period
@@ -32,43 +32,43 @@ module AmsfSurvey
       @questionnaire ||= AmsfSurvey.questionnaire(industry: industry, year: year)
     end
 
-    # Get a field value by field ID.
+    # Get a question value by question ID.
     # Input is normalized to lowercase for public API convenience.
     #
-    # @param field_id [Symbol, String] the field identifier (any casing)
+    # @param question_id [Symbol, String] the question identifier (any casing)
     # @return [Object, nil] the stored value or nil
-    # @raise [UnknownFieldError] if field doesn't exist in questionnaire
-    def [](field_id)
-      field = lookup_field(field_id)
-      @data[field.xbrl_id]
+    # @raise [UnknownFieldError] if question doesn't exist in questionnaire
+    def [](question_id)
+      question = lookup_question(question_id)
+      @data[question.xbrl_id]
     end
 
-    # Set a field value by field ID.
+    # Set a question value by question ID.
     # Input is normalized to lowercase for public API convenience.
     # Value is automatically type-cast and stored with original XBRL ID.
     #
-    # @param field_id [Symbol, String] the field identifier (any casing)
+    # @param question_id [Symbol, String] the question identifier (any casing)
     # @param value [Object] the value to set (will be type-cast)
-    # @raise [UnknownFieldError] if field doesn't exist in questionnaire
-    def []=(field_id, value)
-      field = lookup_field(field_id)
-      @data[field.xbrl_id] = field.cast(value)
+    # @raise [UnknownFieldError] if question doesn't exist in questionnaire
+    def []=(question_id, value)
+      question = lookup_question(question_id)
+      @data[question.xbrl_id] = question.cast(value)
     end
 
     # Get a frozen copy of the data hash (for inspection/serialization).
     # Returns a defensive copy to prevent external mutation.
     # Keys are original XBRL IDs.
     #
-    # @return [Hash{Symbol => Object}] frozen field values keyed by XBRL ID
+    # @return [Hash{Symbol => Object}] frozen question values keyed by XBRL ID
     def data
       @data.dup.freeze
     end
 
-    # Check if all required visible fields are filled.
+    # Check if all required visible questions are filled.
     #
     # @return [Boolean] true if submission is complete
     def complete?
-      missing_fields.empty?
+      unanswered_questions.empty?
     end
 
     # Get list of visible questions that are not answered.
@@ -79,50 +79,40 @@ module AmsfSurvey
       visible_questions.select { |question| question_unanswered?(question) }
     end
 
-    # Get list of required visible fields that are not filled.
-    # Respects gate visibility - hidden fields are not considered missing.
-    # Returns lowercase field IDs for public API consistency.
-    # Kept for backwards compatibility - prefer unanswered_questions.
-    #
-    # @return [Array<Symbol>] missing field IDs (lowercase)
-    def missing_fields
-      unanswered_questions.map(&:id)
-    end
-
-    # Calculate completion percentage based on visible fields.
+    # Calculate completion percentage based on visible questions.
     #
     # @return [Float] percentage from 0.0 to 100.0
     def completion_percentage
-      visible = visible_fields
+      visible = visible_questions
       return 100.0 if visible.empty?
 
-      filled = visible.count { |field| !field_missing?(field) }
+      filled = visible.count { |question| !question_unanswered?(question) }
       (filled.to_f / visible.size * 100).round(1)
     end
 
-    # Check if a field is visible given current gate values.
-    # Use this to determine which fields to show in a UI.
+    # Check if a question is visible given current gate values.
+    # Use this to determine which questions to show in a UI.
     #
-    # @param field_id [Symbol, String] the field identifier (any casing)
-    # @return [Boolean] true if field should be visible
-    # @raise [UnknownFieldError] if field doesn't exist in questionnaire
-    def field_visible?(field_id)
-      field = lookup_field(field_id)
-      field.send(:visible?, @data)
+    # @param question_id [Symbol, String] the question identifier (any casing)
+    # @return [Boolean] true if question should be visible
+    # @raise [UnknownFieldError] if question doesn't exist in questionnaire
+    def question_visible?(question_id)
+      question = lookup_question(question_id)
+      question.visible?(@data)
     end
 
     private
 
-    # Lookup field by any casing, normalize via public API.
-    # @param field_id [Symbol, String] the field identifier
-    # @return [Field] the field if found
-    # @raise [UnknownFieldError] if field doesn't exist
-    def lookup_field(field_id)
-      normalized_id = field_id.to_s.downcase.to_sym
-      field = questionnaire.field(normalized_id)
-      raise UnknownFieldError, field_id unless field
+    # Lookup question by any casing, normalize via public API.
+    # @param question_id [Symbol, String] the question identifier
+    # @return [Question] the question if found
+    # @raise [UnknownFieldError] if question doesn't exist
+    def lookup_question(question_id)
+      normalized_id = question_id.to_s.downcase.to_sym
+      question = questionnaire.question(normalized_id)
+      raise UnknownFieldError, question_id unless question
 
-      field
+      question
     end
 
     # Get all visible questions (gate dependencies satisfied).
@@ -131,22 +121,10 @@ module AmsfSurvey
       questionnaire.questions.select { |question| question.visible?(@data) }
     end
 
-    # Get all visible fields (gate dependencies satisfied).
-    # Kept for backwards compatibility with completion_percentage.
-    def visible_fields
-      visible_questions.map(&:field)
-    end
-
     # Check if a question is unanswered (nil or not set).
     # Uses xbrl_id for internal lookup since @data uses XBRL IDs.
     def question_unanswered?(question)
       !@data.key?(question.xbrl_id) || @data[question.xbrl_id].nil?
-    end
-
-    # Check if a field value is missing (nil or not set).
-    # Kept for backwards compatibility with completion_percentage.
-    def field_missing?(field)
-      !@data.key?(field.xbrl_id) || @data[field.xbrl_id].nil?
     end
   end
 end

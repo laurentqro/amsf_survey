@@ -120,42 +120,25 @@ RSpec.describe AmsfSurvey::Questionnaire do
     end
   end
 
-  describe "#fields" do
-    it "returns all fields across all sections" do
-      expect(questionnaire.fields).to eq([gate_field, integer_field, string_field, monetary_field, enum_field])
-    end
-
-    it "returns fields in section order then field order" do
-      ids = questionnaire.fields.map(&:id)
-      expect(ids).to eq(%i[tgate t001 t002 t003 t004])
-    end
-  end
-
-  describe "#field" do
-    it "finds field by lowercase ID" do
-      expect(questionnaire.field(:t001)).to eq(integer_field)
-      expect(questionnaire.field(:t003)).to eq(monetary_field)
+  describe "#question" do
+    it "finds question by lowercase ID" do
+      expect(questionnaire.question(:t001)).to eq(q2)
+      expect(questionnaire.question(:t003)).to eq(q4)
     end
 
     it "normalizes mixed-case input to lowercase" do
-      expect(questionnaire.field(:T001)).to eq(integer_field)
-      expect(questionnaire.field(:tGATE)).to eq(gate_field)
-      expect(questionnaire.field("T003")).to eq(monetary_field)
+      expect(questionnaire.question(:T001)).to eq(q2)
+      expect(questionnaire.question(:tGATE)).to eq(q1)
+      expect(questionnaire.question("T003")).to eq(q4)
     end
 
-    it "returns nil for unknown field" do
-      expect(questionnaire.field(:unknown)).to be_nil
+    it "returns nil for unknown question" do
+      expect(questionnaire.question(:unknown)).to be_nil
     end
 
-    it "finds fields by lowercase ID regardless of original casing" do
-      expect(questionnaire.field(:tgate)).to eq(gate_field)
-      expect(questionnaire.field(:t002)).to eq(string_field)
-    end
-  end
-
-  describe "#field_count" do
-    it "returns total number of fields" do
-      expect(questionnaire.field_count).to eq(5)
+    it "finds questions by lowercase ID regardless of original casing" do
+      expect(questionnaire.question(:tgate)).to eq(q1)
+      expect(questionnaire.question(:t002)).to eq(q3)
     end
   end
 
@@ -165,9 +148,9 @@ RSpec.describe AmsfSurvey::Questionnaire do
     end
   end
 
-  describe "#gate_fields" do
-    it "returns fields where gate is true" do
-      expect(questionnaire.gate_fields).to eq([gate_field])
+  describe "#gate_questions" do
+    it "returns questions where gate is true" do
+      expect(questionnaire.gate_questions).to eq([q1])
     end
   end
 end

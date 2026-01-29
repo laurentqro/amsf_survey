@@ -177,35 +177,35 @@ module AmsfSurvey
       parent.add_child(context)
     end
 
-    # Build fact elements for all visible fields
+    # Build fact elements for all visible questions
     def build_facts(doc, parent)
       data = submission.data
       strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
 
-      questionnaire.fields.each do |field|
-        next unless field.send(:visible?, data)
+      questionnaire.questions.each do |question|
+        next unless question.visible?(data)
 
         # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
-        value = data[field.xbrl_id]
+        value = data[question.xbrl_id]
 
         # Skip nil values if include_empty is false
         next if value.nil? && !@include_empty
 
-        build_fact(doc, parent, strix_ns, field, value)
+        build_fact(doc, parent, strix_ns, question, value)
       end
     end
 
     # Build a single fact element
-    def build_fact(doc, parent, strix_ns, field, value)
-      fact = Nokogiri::XML::Node.new(field.xbrl_id.to_s, doc)
+    def build_fact(doc, parent, strix_ns, question, value)
+      fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
       fact["contextRef"] = context_id
 
       # Add decimals attribute for numeric types
-      decimals = decimals_for(field.type)
+      decimals = decimals_for(question.type)
       fact["decimals"] = decimals if decimals
 
-      fact.content = format_value(value, field.type)
+      fact.content = format_value(value, question.type)
 
       parent.add_child(fact)
     end

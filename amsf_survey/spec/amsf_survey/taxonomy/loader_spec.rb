@@ -73,14 +73,13 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       end
     end
 
-    describe "fields wrapped in questions" do
-      it "wraps Field with correct XBRL data" do
+    describe "questions" do
+      it "exposes XBRL attributes through Question" do
         question = questionnaire.sections.first.questions.first
-        field = question.field
 
-        expect(field.id).to eq(:tgate)
-        expect(field.type).to eq(:boolean)
-        expect(field.label).to eq("Avez-vous effectue des activites?")
+        expect(question.id).to eq(:tgate)
+        expect(question.type).to eq(:boolean)
+        expect(question.label).to eq("Avez-vous effectue des activites?")
       end
 
       it "delegates XBRL attributes through Question" do
@@ -91,9 +90,9 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         expect(question.label).to eq("Avez-vous effectue des activites?")
       end
 
-      it "preserves XBRL types" do
+      it "exposes xbrl_type through Question" do
         t001_question = questionnaire.sections.first.questions[1]
-        expect(t001_question.field.xbrl_type).to eq("xbrli:integerItemType")
+        expect(t001_question.xbrl_type).to eq("xbrli:integerItemType")
       end
 
       it "preserves original casing in xbrl_id" do
@@ -102,69 +101,69 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       end
     end
 
-    describe "field lookup" do
-      it "supports direct field lookup by lowercase ID" do
-        field = questionnaire.field(:tgate)
-        expect(field).not_to be_nil
-        expect(field.id).to eq(:tgate)
+    describe "question lookup" do
+      it "supports direct question lookup by lowercase ID" do
+        question = questionnaire.question(:tgate)
+        expect(question).not_to be_nil
+        expect(question.id).to eq(:tgate)
       end
 
       it "normalizes uppercase to lowercase for lookup" do
-        expect(questionnaire.field(:TGATE).id).to eq(:tgate)
-        expect(questionnaire.field(:TgAtE).id).to eq(:tgate)
+        expect(questionnaire.question(:TGATE).id).to eq(:tgate)
+        expect(questionnaire.question(:TgAtE).id).to eq(:tgate)
       end
     end
 
     describe "gate dependencies" do
-      it "marks gate fields" do
-        gate_field = questionnaire.field(:tgate)
-        expect(gate_field.gate?).to be true
+      it "marks gate questions" do
+        gate_question = questionnaire.question(:tgate)
+        expect(gate_question.gate?).to be true
       end
 
-      it "sets depends_on for controlled fields with translated values" do
-        controlled = questionnaire.field(:t001)
+      it "sets depends_on for controlled questions with translated values" do
+        controlled = questionnaire.question(:t001)
         # XULE uses "Yes" but it gets translated to the schema's actual value ("Oui")
         expect(controlled.depends_on).to eq({ tGATE: "Oui" })
       end
 
-      it "leaves non-gated fields without dependencies" do
-        independent = questionnaire.field(:t002)
+      it "leaves non-gated questions without dependencies" do
+        independent = questionnaire.question(:t002)
         expect(independent.depends_on).to eq({})
       end
     end
 
     describe "valid_values" do
-      it "sets valid_values for boolean fields" do
-        field = questionnaire.field(:tgate)
-        expect(field.valid_values).to eq(%w[Oui Non])
+      it "sets valid_values for boolean questions" do
+        question = questionnaire.question(:tgate)
+        expect(question.valid_values).to eq(%w[Oui Non])
       end
 
-      it "sets valid_values for enum fields" do
-        field = questionnaire.field(:t004)
-        expect(field.valid_values).to eq(["Option A", "Option B", "Option C"])
+      it "sets valid_values for enum questions" do
+        question = questionnaire.question(:t004)
+        expect(question.valid_values).to eq(["Option A", "Option B", "Option C"])
       end
 
       it "leaves valid_values nil for other types" do
-        field = questionnaire.field(:t001)
-        expect(field.valid_values).to be_nil
+        question = questionnaire.question(:t001)
+        expect(question.valid_values).to be_nil
       end
     end
 
     describe "labels" do
       it "strips HTML from labels" do
-        field = questionnaire.field(:tgate)
-        expect(field.label).to eq("Avez-vous effectue des activites?")
+        question = questionnaire.question(:tgate)
+        expect(question.label).to eq("Avez-vous effectue des activites?")
       end
 
       it "includes verbose labels when present" do
-        field = questionnaire.field(:tgate)
-        expect(field.verbose_label).to include("Si non, veuillez expliquer pourquoi")
+        question = questionnaire.question(:tgate)
+        expect(question.verbose_label).to include("Si non, veuillez expliquer pourquoi")
       end
     end
 
-    describe "field_count" do
-      it "returns total fields across all sections" do
-        expect(questionnaire.field_count).to eq(5)
+    describe "question_count" do
+      it "returns total questions across all sections" do
+        expect(questionnaire.question_count).to eq(5)
       end
     end
   end

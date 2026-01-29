@@ -158,7 +158,7 @@ RSpec.describe "Submission Integration" do
 
       # Verify completeness
       expect(submission.complete?).to be true
-      expect(submission.missing_fields).to be_empty
+      expect(submission.unanswered_questions.map(&:id)).to be_empty
       expect(submission.completion_percentage).to eq(100.0)
     end
 
@@ -177,7 +177,7 @@ RSpec.describe "Submission Integration" do
       submission[:high_risk_percentage] = 150
 
       expect(submission.complete?).to be false
-      expect(submission.missing_fields).to include(
+      expect(submission.unanswered_questions.map(&:id)).to include(
         :national_individuals, :transaction_amount, :rental_transaction_count
       )
     end
@@ -198,7 +198,7 @@ RSpec.describe "Submission Integration" do
       submission[:total_unique_clients] = nil
 
       expect(submission[:total_unique_clients]).to be_nil
-      expect(submission.missing_fields).to include(:total_unique_clients)
+      expect(submission.unanswered_questions.map(&:id)).to include(:total_unique_clients)
     end
 
     it "handles empty strings for integer fields" do
@@ -216,12 +216,12 @@ RSpec.describe "Submission Integration" do
       # Gate closed - rental_transaction_count should not be required
       submission[:acted_as_professional_agent] = "Non"
 
-      expect(submission.missing_fields).not_to include(:rental_transaction_count)
+      expect(submission.unanswered_questions.map(&:id)).not_to include(:rental_transaction_count)
 
       # Gate open - rental_transaction_count is now required
       submission[:acted_as_professional_agent] = "Oui"
 
-      expect(submission.missing_fields).to include(:rental_transaction_count)
+      expect(submission.unanswered_questions.map(&:id)).to include(:rental_transaction_count)
     end
   end
 

@@ -20,5 +20,5 @@ require_relative "amsf_survey/registry"
 module AmsfSurvey
   # Core gem for AMSF regulatory survey submissions.
   # Validation is delegated to Arelle (external XBRL validator).
-  # The gem provides completeness tracking via submission.complete? and submission.missing_fields.
+  # The gem provides completeness tracking via submission.complete? and submission.unanswered_questions.
 end

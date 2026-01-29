@@ -11,7 +11,7 @@ module AmsfSurvey
       @year = year
       @sections = sections
       @taxonomy_namespace = taxonomy_namespace
-      @field_index = build_field_index
+      @question_index = build_question_index
     end
 
     # Returns all questions from all sections in order
@@ -19,16 +19,13 @@ module AmsfSurvey
       sections.flat_map(&:questions)
     end
 
-    # Returns all fields across all sections in order
-    # Extracts the Field from each Question in the hierarchy
-    def fields
-      questions.map(&:field)
-    end
-
-    # Lookup field by lowercase ID
+    # Lookup question by lowercase ID
     # Input is normalized to lowercase for consistent lookup
-    def field(id)
-      @field_index[id.to_s.downcase.to_sym]
+    #
+    # @param id [Symbol, String] the field identifier (any casing)
+    # @return [Question, nil] the question or nil if not found
+    def question(id)
+      @question_index[id.to_s.downcase.to_sym]
     end
 
     # Total number of questions
@@ -36,26 +33,21 @@ module AmsfSurvey
       questions.length
     end
 
-    # Total number of fields (alias for question_count)
-    def field_count
-      question_count
-    end
-
     # Number of sections
     def section_count
       sections.length
     end
 
-    # Fields where gate is true
-    def gate_fields
-      fields.select(&:gate?)
+    # Questions where gate is true
+    def gate_questions
+      questions.select(&:gate?)
     end
 
     private
 
-    def build_field_index
-      fields.each_with_object({}) do |field, index|
-        index[field.id] = field
+    def build_question_index
+      questions.each_with_object({}) do |question, index|
+        index[question.id] = question
       end
     end
   end

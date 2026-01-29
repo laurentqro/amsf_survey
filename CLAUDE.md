@@ -36,30 +36,32 @@ gem build amsf_survey.gemspec
 - `AmsfSurvey.to_xbrl(submission)` - Generate XBRL XML
 
 Key classes:
-- `Questionnaire` - Container for sections/fields, supports field lookup by lowercase ID, exposes `taxonomy_namespace`
-- `Section` - Logical grouping of fields with visibility rules
-- `Field` - Metadata (type, labels, visibility rules, gate dependencies). Has `id` (lowercase for API) and `xbrl_id` (original casing for XBRL)
+- `Questionnaire` - Container for sections/questions, supports question lookup by lowercase ID, exposes `taxonomy_namespace`
+- `Section` - Logical grouping of subsections
+- `Subsection` - Groups questions within a section
+- `Question` - Primary unit combining XBRL metadata with PDF structure. Has `id` (lowercase for API) and `xbrl_id` (original casing for XBRL)
+- `Field` - Internal XBRL metadata (type, labels, visibility rules). Not part of public API.
 - `Submission` - Holds entity data with type casting, tracks completeness
 - `Generator` - XBRL instance XML output with proper namespaces, context, and facts
 
-### Field ID Handling
+### Question ID Handling
 
-Fields use a dual-ID system:
-- `field.id` - Lowercase symbol for consistent API access (e.g., `:aactive`)
-- `field.xbrl_id` - Original casing preserved for XBRL generation (e.g., `:aACTIVE`)
+Questions use a dual-ID system:
+- `question.id` - Lowercase symbol for consistent API access (e.g., `:aactive`)
+- `question.xbrl_id` - Original casing preserved for XBRL generation (e.g., `:aACTIVE`)
 
-Field lookup normalizes input to lowercase:
+Question lookup normalizes input to lowercase:
 ```ruby
-questionnaire.field(:aACTIVE)  # Returns field with id: :aactive
-questionnaire.field(:AACTIVE)  # Same field
-questionnaire.field(:aactive)  # Same field
+questionnaire.question(:aACTIVE)  # Returns question with id: :aactive
+questionnaire.question(:AACTIVE)  # Same question
+questionnaire.question(:aactive)  # Same question
 ```
 
 ### Taxonomy Parsers (`lib/amsf_survey/taxonomy/`)
 
 - `SchemaParser` - Parses `.xsd` files for field types, valid values, and `targetNamespace`
 - `LabelParser` - Parses `_lab.xml` files for French labels with HTML stripping
-- `PresentationParser` - Parses `_pre.xml` files for section structure and ordering
+- `StructureParser` - Parses `questionnaire_structure.yml` for section/subsection hierarchy and question metadata
 - `XuleParser` - Parses `.xule` files for gate question dependencies
 - `Loader` - Orchestrates all parsers to build a `Questionnaire`
 
@@ -85,9 +87,10 @@ Taxonomy files per year: `.xsd`, `_lab.xml`, `_def.xml`, `_pre.xml`, `_cal.xml`,
 ### Validation
 
 Validation is delegated to Arelle (external XBRL validator) which uses the authoritative XULE rules from the taxonomy. The gem provides:
-- `submission.complete?` - Check if all visible fields are filled
-- `submission.missing_fields` - List unfilled visible fields
+- `submission.complete?` - Check if all visible questions are filled
+- `submission.unanswered_questions` - List unfilled visible Question objects
 - `submission.completion_percentage` - Progress indicator
+- `submission.question_visible?(:id)` - Check if question should be shown in UI
 
 ### XBRL Generation
 
@@ -105,9 +108,9 @@ Options:
 
 ## Domain Context
 
-XBRL taxonomy files in `docs/real_estate_taxonomy/` are the source of truth for field definitions. Fields are accessed using their XBRL element IDs (lowercase for API, original casing for XBRL output).
+XBRL taxonomy files in `docs/real_estate_taxonomy/` are the source of truth for question definitions. Questions are accessed using their XBRL element IDs (lowercase for API, original casing for XBRL output).
 
-Gate questions control field visibility: if a gate field is set to "Non", dependent fields become invisible and are not included in completeness checks.
+Gate questions control visibility: if a gate question is set to "Non", dependent questions become invisible and are not included in completeness checks.
 
 ## Speckit Workflow
 

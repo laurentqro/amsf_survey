@@ -406,50 +406,11 @@ RSpec.describe AmsfSurvey::Submission do
       unanswered = submission.unanswered_questions
       expect(unanswered.map(&:id)).to include(:agent_details)
     end
-  end
 
-  describe "#missing_fields" do
-    let(:submission) do
-      described_class.new(
-        industry: :real_estate,
-        year: 2025,
-        entity_id: "ENTITY_001",
-        period: Date.new(2025, 12, 31)
-      )
-    end
-
-    it "returns all visible fields when empty" do
-      # With is_agent not set, agent_details is hidden
-      expect(submission.missing_fields).to contain_exactly(
-        :total_clients, :total_amount, :is_agent, :computed_total
-      )
-    end
-
-    it "excludes filled fields" do
-      submission[:total_clients] = 50
-      submission[:is_agent] = "Non"
-
-      expect(submission.missing_fields).to contain_exactly(:total_amount, :computed_total)
-    end
-
-    it "excludes hidden fields when gate is not satisfied" do
-      submission[:is_agent] = "Non"
-      # agent_details is hidden, should not appear in missing
-
-      expect(submission.missing_fields).not_to include(:agent_details)
-    end
-
-    it "includes dependent fields when gate is satisfied" do
-      submission[:is_agent] = "Oui"
-      # agent_details is now visible
-
-      expect(submission.missing_fields).to include(:agent_details)
-    end
-
-    it "returns lowercase field IDs" do
-      # All missing field IDs should be lowercase symbols
-      submission.missing_fields.each do |field_id|
-        expect(field_id).to eq(field_id.to_s.downcase.to_sym)
+    it "returns questions with lowercase IDs" do
+      # All unanswered question IDs should be lowercase symbols
+      submission.unanswered_questions.each do |question|
+        expect(question.id).to eq(question.id.to_s.downcase.to_sym)
       end
     end
   end
@@ -492,7 +453,7 @@ RSpec.describe AmsfSurvey::Submission do
     end
   end
 
-  describe "#field_visible?" do
+  describe "#question_visible?" do
     let(:submission) do
       described_class.new(
         industry: :real_estate,
@@ -502,39 +463,39 @@ RSpec.describe AmsfSurvey::Submission do
       )
     end
 
-    context "field with no dependencies" do
+    context "question with no dependencies" do
       it "returns true" do
-        expect(submission.field_visible?(:total_clients)).to be true
+        expect(submission.question_visible?(:total_clients)).to be true
       end
     end
 
-    context "field with gate dependency" do
+    context "question with gate dependency" do
       it "returns false when gate is not satisfied" do
         submission[:is_agent] = "Non"
-        expect(submission.field_visible?(:agent_details)).to be false
+        expect(submission.question_visible?(:agent_details)).to be false
       end
 
       it "returns true when gate is satisfied" do
         submission[:is_agent] = "Oui"
-        expect(submission.field_visible?(:agent_details)).to be true
+        expect(submission.question_visible?(:agent_details)).to be true
       end
 
       it "returns false when gate is not answered" do
-        expect(submission.field_visible?(:agent_details)).to be false
+        expect(submission.question_visible?(:agent_details)).to be false
       end
     end
 
     context "case normalization" do
-      it "accepts any casing for field ID" do
-        expect(submission.field_visible?(:TOTAL_CLIENTS)).to be true
-        expect(submission.field_visible?("Total_Clients")).to be true
+      it "accepts any casing for question ID" do
+        expect(submission.question_visible?(:TOTAL_CLIENTS)).to be true
+        expect(submission.question_visible?("Total_Clients")).to be true
       end
     end
 
-    context "unknown field" do
+    context "unknown question" do
       it "raises UnknownFieldError" do
         expect {
-          submission.field_visible?(:nonexistent)
+          submission.question_visible?(:nonexistent)
         }.to raise_error(AmsfSurvey::UnknownFieldError)
       end
     end

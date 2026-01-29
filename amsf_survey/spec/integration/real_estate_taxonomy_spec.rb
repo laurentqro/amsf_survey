@@ -31,59 +31,59 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
       expect(questionnaire.section_count).to be > 0
     end
 
-    it "loads all fields from the taxonomy" do
-      expect(questionnaire.field_count).to be > 0
+    it "loads all questions from the taxonomy" do
+      expect(questionnaire.question_count).to be > 0
     end
 
     it "uses lowercase IDs for API access" do
-      # Field IDs should be lowercase for consistent API usage
-      questionnaire.fields.each do |field|
-        expect(field.id.to_s).to eq(field.id.to_s.downcase)
+      # Question IDs should be lowercase for consistent API usage
+      questionnaire.questions.each do |question|
+        expect(question.id.to_s).to eq(question.id.to_s.downcase)
       end
     end
 
     it "preserves original casing in xbrl_id for XBRL generation" do
-      # Find a field with mixed case in XBRL
-      aactive_field = questionnaire.field(:aactive)
-      if aactive_field
-        expect(aactive_field.xbrl_id).to eq(:aACTIVE)
+      # Find a question with mixed case in XBRL
+      aactive_question = questionnaire.question(:aactive)
+      if aactive_question
+        expect(aactive_question.xbrl_id).to eq(:aACTIVE)
       end
     end
 
-    it "populates field labels from lab.xml" do
-      # Find any field with a label
-      field_with_label = questionnaire.fields.find { |f| f.label && !f.label.empty? }
-      expect(field_with_label).not_to be_nil
+    it "populates question labels from lab.xml" do
+      # Find any question with a label
+      question_with_label = questionnaire.questions.find { |q| q.label && !q.label.empty? }
+      expect(question_with_label).not_to be_nil
 
-      expect(field_with_label.label).to be_a(String)
-      expect(field_with_label.label.length).to be > 0
+      expect(question_with_label.label).to be_a(String)
+      expect(question_with_label.label.length).to be > 0
       # Labels should have HTML stripped
-      expect(field_with_label.label).not_to include("<p>")
-      expect(field_with_label.label).not_to include("<b>")
+      expect(question_with_label.label).not_to include("<p>")
+      expect(question_with_label.label).not_to include("<b>")
     end
 
-    it "identifies gate fields" do
-      gate_fields = questionnaire.gate_fields
-      expect(gate_fields).not_to be_empty
+    it "identifies gate questions" do
+      gate_questions = questionnaire.gate_questions
+      expect(gate_questions).not_to be_empty
       # aACTIVE should be identified as a gate (accessible as :aactive)
-      aactive = questionnaire.field(:aactive)
+      aactive = questionnaire.question(:aactive)
       expect(aactive&.gate?).to be true if aactive
     end
 
-    it "supports field lookup by lowercase ID" do
-      # Look up by lowercase field ID
-      field_by_id = questionnaire.field(:aactive)
-      expect(field_by_id).not_to be_nil
+    it "supports question lookup by lowercase ID" do
+      # Look up by lowercase question ID
+      question_by_id = questionnaire.question(:aactive)
+      expect(question_by_id).not_to be_nil
     end
 
     it "normalizes mixed-case lookups to lowercase" do
-      # Should find field regardless of input casing
-      field_mixed = questionnaire.field(:aACTIVE)
-      field_lower = questionnaire.field(:aactive)
-      field_upper = questionnaire.field(:AACTIVE)
+      # Should find question regardless of input casing
+      question_mixed = questionnaire.question(:aACTIVE)
+      question_lower = questionnaire.question(:aactive)
+      question_upper = questionnaire.question(:AACTIVE)
 
-      expect(field_mixed).to eq(field_lower)
-      expect(field_upper).to eq(field_lower)
+      expect(question_mixed).to eq(question_lower)
+      expect(question_upper).to eq(question_lower)
     end
   end
 
@@ -114,23 +114,23 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
   describe "gate visibility" do
     subject(:questionnaire) { AmsfSurvey.questionnaire(industry: :real_estate, year: 2025) }
 
-    it "hides dependent fields when gate is closed" do
-      # Find a field that depends on aACTIVE (original XBRL casing in depends_on)
-      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
-      skip("No field depends on aACTIVE") unless dependent_field
+    it "hides dependent questions when gate is closed" do
+      # Find a question that depends on aACTIVE (original XBRL casing in depends_on)
+      dependent_question = questionnaire.questions.find { |q| q.depends_on[:aACTIVE] }
+      skip("No question depends on aACTIVE") unless dependent_question
 
-      # When gate is "Non" (French for No), dependent fields should be hidden
-      # visible? is private, tested via send; data uses original XBRL ID keys
-      expect(dependent_field.send(:visible?, { aACTIVE: "Non" })).to be false
+      # When gate is "Non" (French for No), dependent questions should be hidden
+      # visible? uses data keyed by original XBRL IDs
+      expect(dependent_question.visible?({ aACTIVE: "Non" })).to be false
     end
 
-    it "shows dependent fields when gate is open" do
-      dependent_field = questionnaire.fields.find { |f| f.depends_on[:aACTIVE] }
-      skip("No field depends on aACTIVE") unless dependent_field
+    it "shows dependent questions when gate is open" do
+      dependent_question = questionnaire.questions.find { |q| q.depends_on[:aACTIVE] }
+      skip("No question depends on aACTIVE") unless dependent_question
 
       # Taxonomy uses French "Oui"/"Non" - XULE's "Yes" is translated to schema values
-      # visible? is private, tested via send; data uses original XBRL ID keys
-      expect(dependent_field.send(:visible?, { aACTIVE: "Oui" })).to be true
+      # visible? uses data keyed by original XBRL IDs
+      expect(dependent_question.visible?({ aACTIVE: "Oui" })).to be true
     end
   end
 end

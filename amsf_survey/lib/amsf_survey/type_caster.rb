@@ -3,21 +3,21 @@
 require "bigdecimal"
 
 module AmsfSurvey
-  # Converts string inputs to appropriate Ruby types based on field type.
-  # Used by Submission when setting field values to ensure data integrity.
+  # Converts string inputs to appropriate Ruby types based on question type.
+  # Used by Submission when setting question values to ensure data integrity.
   #
   # ## Error Handling Strategy
   #
   # Invalid inputs return nil rather than raising exceptions. This design choice:
   # - Enables graceful handling of user input errors
-  # - Allows Submission#missing_fields to identify unfilled fields
+  # - Allows Submission#unanswered_questions to identify unfilled questions
   # - Prevents data entry from failing catastrophically
   #
   # For regulatory compliance, validation is delegated to Arelle (external XBRL validator).
-  # The gem tracks completeness via Submission#complete? and Submission#missing_fields.
+  # The gem tracks completeness via Submission#complete? and Submission#unanswered_questions.
   #
-  # @see Submission#complete? For checking if all visible fields are filled
-  # @see Submission#missing_fields For listing unfilled visible fields
+  # @see Submission#complete? For checking if all visible questions are filled
+  # @see Submission#unanswered_questions For listing unfilled visible questions
   module TypeCaster
     # Maximum input length for defense-in-depth against DoS.
     # Regulatory monetary values rarely exceed 20 digits.
