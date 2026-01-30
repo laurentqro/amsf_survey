@@ -145,6 +145,7 @@ module AmsfSurvey
         AmsfSurvey::Subsection.new(
           number: sub_data[:number],
           title: sub_data[:title],
+          instructions: sub_data[:instructions],
           questions: questions
         )
       end

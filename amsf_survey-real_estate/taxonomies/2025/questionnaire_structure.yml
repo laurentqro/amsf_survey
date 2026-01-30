@@ -24,9 +24,23 @@ sections:
       # 1.2 Clients Summary
       # ------------------------------------------------------------------------
       - title: "Clients Summary"
+        instructions: |
+          Report only information where you or your entity acted as a professional representative within the meaning of law n° 1.362 for Real Estate purchases, sales, or rentals, within the reporting period.
+
+          For example, rental clients that have monthly rent of < 10,000 Euro should be excluded from this total.
+
+          If multiple primary nationalities, enter the one most commonly used.
+
+          Report only information for activities which are not being claimed by another entity which you represented and who is also responding to this SICCFIN Real Estate AML/CFT Survey.
+
+          For questions referring to 'unique client', please consider:
+
+          - If the same client has several transactions, then it is considered one client
+          - If the entity provides multiple services or has multiple contracts with the same client, then it is considered one client
+          - Any other situation where the same client would be double counted, please consider as one client
         questions:
           - field_id: "a1101"
-            instructions: "Report only information where you or your entity acted as a professional representative within the meaning of law n 1.362 for Real Estate purchases, sales, or rentals, within the reporting period."
+            instructions: ~
           - field_id: "a1105B"
             instructions: "Purchases, Sales, and Rentals. Count transactions as the number of sides of a transaction which were represented."
           - field_id: "a1106B"

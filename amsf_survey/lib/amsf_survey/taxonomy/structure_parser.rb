@@ -58,9 +58,13 @@ module AmsfSurvey
           parse_question(q_data, question_counter)
         end
 
+        instructions = sub_data["instructions"]&.strip
+        instructions = nil if instructions&.empty?
+
         subsection = {
           number: subsection_number,
           title: sub_data["title"],
+          instructions: instructions,
           questions: questions
         }
 
