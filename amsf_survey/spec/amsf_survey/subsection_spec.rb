@@ -54,4 +54,16 @@ RSpec.describe AmsfSurvey::Subsection do
       expect(subsection.empty?).to be true
     end
   end
+
+  describe "#number" do
+    it "accepts string numbers like '1.1'" do
+      subsection = described_class.new(number: "1.1", title: "Test", questions: [])
+      expect(subsection.number).to eq("1.1")
+    end
+
+    it "accepts integer numbers" do
+      subsection = described_class.new(number: 1, title: "Test", questions: [])
+      expect(subsection.number).to eq(1)
+    end
+  end
 end
