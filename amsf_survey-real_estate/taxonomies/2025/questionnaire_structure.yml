@@ -2,943 +2,1330 @@
 # Maps PDF question structure to XBRL field IDs
 # Field IDs match exactly those in the XBRL taxonomy
 
-sections:
+parts:
   # ============================================================================
-  # SECTION 1: CUSTOMER RISK (Inherent Risk)
+  # PART: INHERENT RISK (Sections 1-3, Q1-Q215)
   # ============================================================================
-  - title: "Customer Risk"
-    subsections:
-      # ------------------------------------------------------------------------
-      # 1.1 Active in Reporting Cycle
-      # ------------------------------------------------------------------------
-      - title: "Active in Reporting Cycle"
-        questions:
-          - field_id: "aACTIVE"
-            instructions: "Activities subject to the law: Purchases, Sales, and Rentals. For rental, only monthly rents of 10,000 EUR or more."
-          - field_id: "aACTIVEPS"
-            instructions: "Purchases and Sales."
-          - field_id: "aACTIVERENTALS"
-            instructions: "Rental of property for a monthly rent of 10,000 EUR or more."
+  - name: "Inherent Risk"
+    sections:
+      # ========================================================================
+      # SECTION 1: CUSTOMER RISK
+      # ========================================================================
+      - number: 1
+        title: "Customer Risk"
+        subsections:
+          # --------------------------------------------------------------------
+          # 1.1 Active in Reporting Cycle
+          # --------------------------------------------------------------------
+          - number: "1.1"
+            title: "Active in Reporting Cycle"
+            questions:
+              - field_id: "aACTIVE"
+                question_number: 1
+                instructions: "Activities subject to the law: Purchases, Sales, and Rentals. For rental, only monthly rents of 10,000 EUR or more."
+              - field_id: "aACTIVEPS"
+                question_number: 2
+                instructions: "Purchases and Sales."
+              - field_id: "aACTIVERENTALS"
+                question_number: 3
+                instructions: "Rental of property for a monthly rent of 10,000 EUR or more."
 
-      # ------------------------------------------------------------------------
-      # 1.2 Clients Summary
-      # ------------------------------------------------------------------------
-      - title: "Clients Summary"
-        instructions: |
-          Report only information where you or your entity acted as a professional representative within the meaning of law n° 1.362 for Real Estate purchases, sales, or rentals, within the reporting period.
+          # --------------------------------------------------------------------
+          # 1.2 Clients Summary
+          # --------------------------------------------------------------------
+          - number: "1.2"
+            title: "Clients Summary"
+            instructions: |
+              Report only information where you or your entity acted as a professional representative within the meaning of law n° 1.362 for Real Estate purchases, sales, or rentals, within the reporting period.
 
-          For example, rental clients that have monthly rent of < 10,000 Euro should be excluded from this total.
+              For example, rental clients that have monthly rent of < 10,000 Euro should be excluded from this total.
 
-          If multiple primary nationalities, enter the one most commonly used.
+              If multiple primary nationalities, enter the one most commonly used.
 
-          Report only information for activities which are not being claimed by another entity which you represented and who is also responding to this SICCFIN Real Estate AML/CFT Survey.
+              Report only information for activities which are not being claimed by another entity which you represented and who is also responding to this SICCFIN Real Estate AML/CFT Survey.
 
-          For questions referring to 'unique client', please consider:
+              For questions referring to 'unique client', please consider:
 
-          - If the same client has several transactions, then it is considered one client
-          - If the entity provides multiple services or has multiple contracts with the same client, then it is considered one client
-          - Any other situation where the same client would be double counted, please consider as one client
-        questions:
-          - field_id: "a1101"
-            instructions: ~
-          - field_id: "a1105B"
-            instructions: "Purchases, Sales, and Rentals. Count transactions as the number of sides of a transaction which were represented."
-          - field_id: "a1106B"
-            instructions: "Purchases, Sales, and Rentals. Please provide the total of the purchase/sale contract amounts."
-          - field_id: "a1106BRENTALS"
-            instructions: "Rentals. Please provide the total of the rental contract amount."
-          - field_id: "a1105W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1106W"
-            instructions: "Purchases, Sales, and Rentals."
+              - If the same client has several transactions, then it is considered one client
+              - If the entity provides multiple services or has multiple contracts with the same client, then it is considered one client
+              - Any other situation where the same client would be double counted, please consider as one client
+            questions:
+              - field_id: "a1101"
+                question_number: 4
+                instructions: ~
+              - field_id: "a1105B"
+                question_number: 5
+                instructions: |
+                  For clarity:
 
-      # ------------------------------------------------------------------------
-      # 1.3 Beneficial Owners
-      # ------------------------------------------------------------------------
-      - title: "Beneficial Owners"
-        questions:
-          - field_id: "a1204S"
-            instructions: ~
-          - field_id: "a1204S1"
-            instructions: "Provide the percentage breakdown of all clients' beneficial owner's primary nationalities."
-          - field_id: "a1202O"
-            instructions: "Number of Beneficial Owners which have direct or indirect control of clients that are legal persons."
-          - field_id: "a1202OB"
-            instructions: "Number of Beneficial Owners which represent clients that are legal persons."
-          - field_id: "a1204O"
-            instructions: ~
-          - field_id: "a120425O"
-            instructions: ~
-          - field_id: "a1203D"
-            instructions: ~
-          - field_id: "a1207O"
-            instructions: ~
-          - field_id: "a1210O"
-            instructions: ~
+                  If a client purchases one property but makes 2 transfers to achieve full payment of the property, this shall be counted as 1 property transaction.
 
-      # ------------------------------------------------------------------------
-      # 1.4 Distinguishing Client Types
-      # ------------------------------------------------------------------------
-      - title: "Distinguishing Client Types"
-        questions:
-          - field_id: "a11201BCD"
-            instructions: "For the purposes of this survey, a HNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 5 million."
-          - field_id: "a11201BCDU"
-            instructions: "For the purposes of this survey, an UHNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 50 million."
-          - field_id: "a1801"
-            instructions: ~
-          - field_id: "a13601"
-            instructions: ~
+                  The purchase of units or shares of a real estate company constitutes as many transactions as there are purchases or sales (e.g. purchase of 10 shares = 1 transaction; a purchase of 10 shares then a another purchase of 15 shares = 2 transactions; sale of 100% of the shares of an SCI = 1 transaction).
 
-      # ------------------------------------------------------------------------
-      # 1.5 Clients - Natural Persons
-      # ------------------------------------------------------------------------
-      - title: "Clients - Natural Persons"
-        questions:
-          - field_id: "a1102"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1103"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1104"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1401"
-            instructions: "Purchases and Sales."
-          - field_id: "a1403B"
-            instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
-          - field_id: "a1404B"
-            instructions: "Purchases and Sales."
-          - field_id: "a1401R"
-            instructions: "Rentals."
-          - field_id: "a1403R"
-            instructions: "Rentals. For rentals, one transaction shall mean one month-rent equivalent (>= 10,000 Euros)."
-          - field_id: "aIR129"
-            instructions: ~
-          - field_id: "aIR1210"
-            instructions: ~
+                  For rentals, one transaction shall mean one month- rent equivalent ( >= 10,000 Euros). A rental client making monthly payments for one full year would be 12 transactions. A rental client making one payment covering 12 months' rent shall be counted as 12 transactions.
+              - field_id: "a1106B"
+                question_number: 6
+                instructions: "Purchases, Sales, and Rentals. Please provide the total of the purchase/sale contract amounts."
+              - field_id: "a1106BRENTALS"
+                question_number: 7
+                instructions: "Rentals. Please provide the total of the rental contract amount."
+              - field_id: "a1105W"
+                question_number: 8
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1106W"
+                question_number: 9
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 1.6 Clients - Legal Persons
-      # ------------------------------------------------------------------------
-      - title: "Clients - Legal Persons"
-        questions:
-          - field_id: "a1501"
-            instructions: "Purchases and Sales."
-          - field_id: "a1502B"
-            instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
-          - field_id: "a1503B"
-            instructions: "Purchases and Sales."
-          - field_id: "a155"
-            instructions: ~
-          - field_id: "aMLES"
-            instructions: "Purchases and Sales. Only clients that are active for the reporting period."
-          - field_id: "a11206B"
-            instructions: "Purchases and Sales. For HNWI (EUR 5 million+)."
-          - field_id: "a112012B"
-            instructions: "Purchases and Sales. For UHNWI (EUR 50 million+)."
+          # --------------------------------------------------------------------
+          # 1.3 Beneficial Owners
+          # --------------------------------------------------------------------
+          - number: "1.3"
+            title: "Beneficial Owners"
+            questions:
+              - field_id: "a1204S"
+                question_number: 10
+                instructions: ~
+              - field_id: "a1204S1"
+                question_number: 11
+                instructions: "Provide the percentage breakdown of all clients' beneficial owner's primary nationalities."
+              - field_id: "a1202O"
+                question_number: 12
+                instructions: "Number of Beneficial Owners which have direct or indirect control of clients that are legal persons."
+              - field_id: "a1202OB"
+                question_number: 13
+                instructions: "Number of Beneficial Owners which represent clients that are legal persons."
+              - field_id: "a1204O"
+                question_number: 14
+                instructions: ~
+              - field_id: "a120425O"
+                question_number: 15
+                instructions: ~
+              - field_id: "a1203D"
+                question_number: 16
+                instructions: ~
+              - field_id: "a1207O"
+                question_number: 17
+                instructions: ~
+              - field_id: "a1210O"
+                question_number: 18
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.7 Clients - Trusts and Other Legal Arrangements
-      # ------------------------------------------------------------------------
-      - title: "Clients - Trusts and Other Legal Arrangements"
-        questions:
-          - field_id: "a1802BTOLA"
-            instructions: ~
-          - field_id: "a1802TOLA"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1807ATOLA"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1808"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a1809"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a11001BTOLA"
-            instructions: ~
-          - field_id: "a1806TOLA"
-            instructions: "Purchases and Sales."
-          - field_id: "a1807TOLA"
-            instructions: "Purchases and Sales."
-          - field_id: "a11006"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 1.4 Distinguishing Client Types
+          # --------------------------------------------------------------------
+          - number: "1.4"
+            title: "Distinguishing Client Types"
+            questions:
+              - field_id: "a11201BCD"
+                question_number: 19
+                instructions: "For the purposes of this survey, a HNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 5 million."
+              - field_id: "a11201BCDU"
+                question_number: 20
+                instructions: "For the purposes of this survey, an UHNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 50 million."
+              - field_id: "a1801"
+                question_number: 21
+                instructions: ~
+              - field_id: "a13601"
+                question_number: 22
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.8 PEPs
-      # ------------------------------------------------------------------------
-      - title: "PEPs"
-        questions:
-          - field_id: "a11301"
-            instructions: ~
-          - field_id: "a11302RES"
-            instructions: "Purchases and Sales."
-          - field_id: "a11302"
-            instructions: "Purchases and Sales."
-          - field_id: "a11304B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a11305B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a11307"
-            instructions: "For the purpose of this question, Beneficial Owner should mean any Natural Person who owns or exercises effective ultimate control, directly or indirectly, over a client."
-          - field_id: "a11309B"
-            instructions: "Purchases and Sales."
-      # ------------------------------------------------------------------------
-      # 1.9 Virtual Asset Service Providers
-      # ------------------------------------------------------------------------
-      - title: "Virtual Asset Service Providers"
-        questions:
-          - field_id: "a13501B"
-            instructions: ~
-          - field_id: "a13601A"
-            instructions: "Custodian Wallet Providers"
-          - field_id: "a13601CW"
-            instructions: "Custodian Wallet Providers"
-          - field_id: "a13603BB"
-            instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
-          - field_id: "a13604BB"
-            instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
-          - field_id: "a13601B"
-            instructions: "Virtual Currency Exchange Providers"
-          - field_id: "a13601EP"
-            instructions: "Virtual Currency Exchange Providers"
-          - field_id: "a13603AB"
-            instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
-          - field_id: "a13604AB"
-            instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
-          - field_id: "a13601C"
-            instructions: "ICO"
-          - field_id: "a13601ICO"
-            instructions: "ICO"
-          - field_id: "a13603CACB"
-            instructions: "ICO. Purchases, Sales, and Rentals."
-          - field_id: "a13604CB"
-            instructions: "ICO. Purchases, Sales, and Rentals."
-          - field_id: "a13601C2"
-            instructions: "Other Services"
-          - field_id: "a13601OTHER"
-            instructions: "Other Services"
-          - field_id: "a13603DB"
-            instructions: "Other Services. Purchases, Sales, and Rentals."
-          - field_id: "a13604DB"
-            instructions: "Other Services. Purchases, Sales, and Rentals."
-          - field_id: "a13602B"
-            instructions: ~
-          - field_id: "a13602A"
-            instructions: ~
-          - field_id: "a13602C"
-            instructions: ~
-          - field_id: "a13602D"
-            instructions: ~
-          - field_id: "a13604E"
-            instructions: "Other Services"
+          # --------------------------------------------------------------------
+          # 1.5 Clients - Natural Persons
+          # --------------------------------------------------------------------
+          - number: "1.5"
+            title: "Clients - Natural Persons"
+            questions:
+              - field_id: "a1102"
+                question_number: 23
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1103"
+                question_number: 24
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1104"
+                question_number: 25
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1401"
+                question_number: 26
+                instructions: "Purchases and Sales."
+              - field_id: "a1403B"
+                question_number: 27
+                instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
+              - field_id: "a1404B"
+                question_number: 28
+                instructions: "Purchases and Sales."
+              - field_id: "a1401R"
+                question_number: 29
+                instructions: "Rentals."
+              - field_id: "a1403R"
+                question_number: 30
+                instructions: "Rentals. For rentals, one transaction shall mean one month-rent equivalent (>= 10,000 Euros)."
+              - field_id: "aIR129"
+                question_number: 31
+                instructions: ~
+              - field_id: "aIR1210"
+                question_number: 32
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.10 2nd Nationalities
-      # ------------------------------------------------------------------------
-      - title: "2nd Nationalities"
-        questions:
-          - field_id: "a1203"
-            instructions: ~
-          - field_id: "a1402"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 1.6 Clients - Legal Persons
+          # --------------------------------------------------------------------
+          - number: "1.6"
+            title: "Clients - Legal Persons"
+            questions:
+              - field_id: "a1501"
+                question_number: 33
+                instructions: "Purchases and Sales."
+              - field_id: "a1502B"
+                question_number: 34
+                instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
+              - field_id: "a1503B"
+                question_number: 35
+                instructions: "Purchases and Sales."
+              - field_id: "a155"
+                question_number: 36
+                instructions: ~
+              - field_id: "aMLES"
+                question_number: 37
+                instructions: "Purchases and Sales. Only clients that are active for the reporting period."
+              - field_id: "a11206B"
+                question_number: 38
+                instructions: "Purchases and Sales. For HNWI (EUR 5 million+)."
+              - field_id: "a112012B"
+                question_number: 39
+                instructions: "Purchases and Sales. For UHNWI (EUR 50 million+)."
 
-      # ------------------------------------------------------------------------
-      # 1.11 Monegasque Client Types - Purchases and Sales (Country Breakdown)
-      # ------------------------------------------------------------------------
-      - title: "Monegasque Client Types - Purchases and Sales"
-        questions:
-          - field_id: "aC171"
-            instructions: "Purchases and Sales. For persons with Monegasque nationality."
-          - field_id: "a11502B"
-            instructions: "Purchases and Sales."
-          - field_id: "a11602B"
-            instructions: "Purchases and Sales."
-          - field_id: "a11702B"
-            instructions: "Purchases and Sales."
-          - field_id: "a11802B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12002B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12102B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12202B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12302B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12302C"
-            instructions: "Purchases and Sales."
-          - field_id: "a12402B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12502B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12602B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12702B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12802B"
-            instructions: "Purchases and Sales."
-          - field_id: "a12902B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13002B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13202B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13302B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13402B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13702B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13802B"
-            instructions: "Purchases and Sales."
-          - field_id: "a13902B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14102B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14202B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14302B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14402B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14502B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14602B"
-            instructions: "Purchases and Sales."
-          - field_id: "a14702B"
-            instructions: "Purchases and Sales."
+          # --------------------------------------------------------------------
+          # 1.7 Clients - Trusts and Other Legal Arrangements
+          # --------------------------------------------------------------------
+          - number: "1.7"
+            title: "Clients - Trusts and Other Legal Arrangements"
+            questions:
+              - field_id: "a1802BTOLA"
+                question_number: 40
+                instructions: ~
+              - field_id: "a1802TOLA"
+                question_number: 41
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1807ATOLA"
+                question_number: 42
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1808"
+                question_number: 43
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a1809"
+                question_number: 44
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a11001BTOLA"
+                question_number: 45
+                instructions: ~
+              - field_id: "a1806TOLA"
+                question_number: 46
+                instructions: "Purchases and Sales."
+              - field_id: "a1807TOLA"
+                question_number: 47
+                instructions: "Purchases and Sales."
+              - field_id: "a11006"
+                question_number: 48
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.12 Comments & Feedback
-      # ------------------------------------------------------------------------
-      - title: "Comments & Feedback"
-        questions:
-          - field_id: "a14801"
-            instructions: ~
-          - field_id: "a14001"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 1.8 PEPs
+          # --------------------------------------------------------------------
+          - number: "1.8"
+            title: "PEPs"
+            questions:
+              - field_id: "a11301"
+                question_number: 49
+                instructions: ~
+              - field_id: "a11302RES"
+                question_number: 50
+                instructions: "Purchases and Sales."
+              - field_id: "a11302"
+                question_number: 51
+                instructions: "Purchases and Sales."
+              - field_id: "a11304B"
+                question_number: 52
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a11305B"
+                question_number: 53
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a11307"
+                question_number: 54
+                instructions: "For the purpose of this question, Beneficial Owner should mean any Natural Person who owns or exercises effective ultimate control, directly or indirectly, over a client."
+              - field_id: "a11309B"
+                question_number: 55
+                instructions: "Purchases and Sales."
 
-  # ============================================================================
-  # SECTION 2: PRODUCTS & SERVICES RISK
-  # ============================================================================
-  - title: "Products & Services Risk"
-    subsections:
-      # ------------------------------------------------------------------------
-      # 2.1 Payment Types with Clients - Cheques
-      # ------------------------------------------------------------------------
-      - title: "Payment Types with Clients - Cheques"
-        questions:
-          - field_id: "a2101W"
-            instructions: "Payments with clients are transactions between the reporting entity and its clients for products or services offered by the entity."
-          - field_id: "a2101WRP"
-            instructions: ~
-          - field_id: "a2102W"
-            instructions: ~
-          - field_id: "a2102BW"
-            instructions: "Purchases, Sales, and Rentals."
+          # --------------------------------------------------------------------
+          # 1.9 Virtual Asset Service Providers
+          # --------------------------------------------------------------------
+          - number: "1.9"
+            title: "Virtual Asset Service Providers"
+            questions:
+              - field_id: "a13501B"
+                question_number: 56
+                instructions: ~
+              - field_id: "a13601A"
+                question_number: 57
+                instructions: "Custodian Wallet Providers"
+              - field_id: "a13601CW"
+                question_number: 58
+                instructions: "Custodian Wallet Providers"
+              - field_id: "a13603BB"
+                question_number: 59
+                instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
+              - field_id: "a13604BB"
+                question_number: 60
+                instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
+              - field_id: "a13601B"
+                question_number: 61
+                instructions: "Virtual Currency Exchange Providers"
+              - field_id: "a13601EP"
+                question_number: 62
+                instructions: "Virtual Currency Exchange Providers"
+              - field_id: "a13603AB"
+                question_number: 63
+                instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
+              - field_id: "a13604AB"
+                question_number: 64
+                instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
+              - field_id: "a13601C"
+                question_number: 65
+                instructions: "ICO"
+              - field_id: "a13601ICO"
+                question_number: 66
+                instructions: "ICO"
+              - field_id: "a13603CACB"
+                question_number: 67
+                instructions: "ICO. Purchases, Sales, and Rentals."
+              - field_id: "a13604CB"
+                question_number: 68
+                instructions: "ICO. Purchases, Sales, and Rentals."
+              - field_id: "a13601C2"
+                question_number: 69
+                instructions: "Other Services"
+              - field_id: "a13601OTHER"
+                question_number: 70
+                instructions: "Other Services"
+              - field_id: "a13603DB"
+                question_number: 71
+                instructions: "Other Services. Purchases, Sales, and Rentals."
+              - field_id: "a13604DB"
+                question_number: 72
+                instructions: "Other Services. Purchases, Sales, and Rentals."
+              - field_id: "a13602B"
+                question_number: 73
+                instructions: ~
+              - field_id: "a13602A"
+                question_number: 74
+                instructions: ~
+              - field_id: "a13602C"
+                question_number: 75
+                instructions: ~
+              - field_id: "a13602D"
+                question_number: 76
+                instructions: ~
+              - field_id: "a13604E"
+                question_number: 77
+                instructions: "Other Services"
 
-      # ------------------------------------------------------------------------
-      # 2.2 Payment Types by Clients - Cheques
-      # ------------------------------------------------------------------------
-      - title: "Payment Types by Clients - Cheques"
-        questions:
-          - field_id: "a2101B"
-            instructions: "Payments by clients are transactions initiated and performed by the client."
-          - field_id: "a2102B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2102BB"
-            instructions: "Purchases, Sales, and Rentals."
+          # --------------------------------------------------------------------
+          # 1.10 2nd Nationalities
+          # --------------------------------------------------------------------
+          - number: "1.10"
+            title: "2nd Nationalities"
+            questions:
+              - field_id: "a1203"
+                question_number: 78
+                instructions: ~
+              - field_id: "a1402"
+                question_number: 79
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 2.3 Payment Types with Clients - Electronic Transfers
-      # ------------------------------------------------------------------------
-      - title: "Payment Types with Clients - Electronic Transfers"
-        questions:
-          - field_id: "a2104W"
-            instructions: "Electronic transfers include payments originating in an electronic form, such as wire transfers, payment service provider (PSP) such as PayPal, debit cards, credit cards, virtual currency payments, etc."
-          - field_id: "a2104WRP"
-            instructions: ~
-          - field_id: "a2105W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2105BW"
-            instructions: "Purchases, Sales, and Rentals."
+          # --------------------------------------------------------------------
+          # 1.11 Monegasque Client Types - Purchases and Sales
+          # --------------------------------------------------------------------
+          - number: "1.11"
+            title: "Monegasque Client Types - Purchases and Sales"
+            questions:
+              - field_id: "aC171"
+                question_number: 80
+                instructions: "Purchases and Sales. For persons with Monegasque nationality."
+              - field_id: "a11502B"
+                question_number: 81
+                instructions: "Purchases and Sales."
+              - field_id: "a11602B"
+                question_number: 82
+                instructions: "Purchases and Sales."
+              - field_id: "a11702B"
+                question_number: 83
+                instructions: "Purchases and Sales."
+              - field_id: "a11802B"
+                question_number: 84
+                instructions: "Purchases and Sales."
+              - field_id: "a12002B"
+                question_number: 85
+                instructions: "Purchases and Sales."
+              - field_id: "a12102B"
+                question_number: 86
+                instructions: "Purchases and Sales."
+              - field_id: "a12202B"
+                question_number: 87
+                instructions: "Purchases and Sales."
+              - field_id: "a12302B"
+                question_number: 88
+                instructions: "Purchases and Sales."
+              - field_id: "a12302C"
+                question_number: 89
+                instructions: "Purchases and Sales."
+              - field_id: "a12402B"
+                question_number: 90
+                instructions: "Purchases and Sales."
+              - field_id: "a12502B"
+                question_number: 91
+                instructions: "Purchases and Sales."
+              - field_id: "a12602B"
+                question_number: 92
+                instructions: "Purchases and Sales."
+              - field_id: "a12702B"
+                question_number: 93
+                instructions: "Purchases and Sales."
+              - field_id: "a12802B"
+                question_number: 94
+                instructions: "Purchases and Sales."
+              - field_id: "a12902B"
+                question_number: 95
+                instructions: "Purchases and Sales."
+              - field_id: "a13002B"
+                question_number: 96
+                instructions: "Purchases and Sales."
+              - field_id: "a13202B"
+                question_number: 97
+                instructions: "Purchases and Sales."
+              - field_id: "a13302B"
+                question_number: 98
+                instructions: "Purchases and Sales."
+              - field_id: "a13402B"
+                question_number: 99
+                instructions: "Purchases and Sales."
+              - field_id: "a13702B"
+                question_number: 100
+                instructions: "Purchases and Sales."
+              - field_id: "a13802B"
+                question_number: 101
+                instructions: "Purchases and Sales."
+              - field_id: "a13902B"
+                question_number: 102
+                instructions: "Purchases and Sales."
+              - field_id: "a14102B"
+                question_number: 103
+                instructions: "Purchases and Sales."
+              - field_id: "a14202B"
+                question_number: 104
+                instructions: "Purchases and Sales."
+              - field_id: "a14302B"
+                question_number: 105
+                instructions: "Purchases and Sales."
+              - field_id: "a14402B"
+                question_number: 106
+                instructions: "Purchases and Sales."
+              - field_id: "a14502B"
+                question_number: 107
+                instructions: "Purchases and Sales."
+              - field_id: "a14602B"
+                question_number: 108
+                instructions: "Purchases and Sales."
+              - field_id: "a14702B"
+                question_number: 109
+                instructions: "Purchases and Sales."
 
-      # ------------------------------------------------------------------------
-      # 2.4 Payment Types by Clients - Electronic Transfers
-      # ------------------------------------------------------------------------
-      - title: "Payment Types by Clients - Electronic Transfers"
-        questions:
-          - field_id: "a2104B"
-            instructions: "Electronic transfers include payments originating in an electronic form."
-          - field_id: "a2105B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2105BB"
-            instructions: "Purchases, Sales, and Rentals."
+          # --------------------------------------------------------------------
+          # 1.12 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "1.12"
+            title: "Comments & Feedback"
+            questions:
+              - field_id: "a14801"
+                question_number: 110
+                instructions: ~
+              - field_id: "a14001"
+                question_number: 111
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 2.5 Payment Types with Clients - Cash
-      # ------------------------------------------------------------------------
-      - title: "Payment Types with Clients - Cash"
-        questions:
-          - field_id: "a2107W"
-            instructions: "Payments with clients are transactions between the reporting entity and its clients for products or services offered by the entity."
-          - field_id: "a2107WRP"
-            instructions: ~
-          - field_id: "a2108W"
-            instructions: ~
-          - field_id: "a2109W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "aG24010W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2110W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2113W"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2113AW"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2114A"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2115AW"
-            instructions: "Purchases, Sales, and Rentals."
+      # ========================================================================
+      # SECTION 2: PRODUCTS & SERVICES RISK
+      # ========================================================================
+      - number: 2
+        title: "Products & Services Risk"
+        subsections:
+          # --------------------------------------------------------------------
+          # 2.1 Payment Types with Clients - Cheques
+          # --------------------------------------------------------------------
+          - number: "2.1"
+            title: "Payment Types with Clients - Cheques"
+            questions:
+              - field_id: "a2101W"
+                question_number: 112
+                instructions: "Payments with clients are transactions between the reporting entity and its clients for products or services offered by the entity."
+              - field_id: "a2101WRP"
+                question_number: 113
+                instructions: ~
+              - field_id: "a2102W"
+                question_number: 114
+                instructions: ~
+              - field_id: "a2102BW"
+                question_number: 115
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 2.6 Payment Types by Clients - Cash
-      # ------------------------------------------------------------------------
-      - title: "Payment Types by Clients - Cash"
-        questions:
-          - field_id: "a2107B"
-            instructions: "Payments by clients are transactions initiated and performed by the client."
-          - field_id: "a2108B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2109B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "aG24010B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2110B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2113B"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2113AB"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2114AB"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2115AB"
-            instructions: "Purchases, Sales, and Rentals."
+          # --------------------------------------------------------------------
+          # 2.2 Payment Types by Clients - Cheques
+          # --------------------------------------------------------------------
+          - number: "2.2"
+            title: "Payment Types by Clients - Cheques"
+            questions:
+              - field_id: "a2101B"
+                question_number: 116
+                instructions: "Payments by clients are transactions initiated and performed by the client."
+              - field_id: "a2102B"
+                question_number: 117
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2102BB"
+                question_number: 118
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 2.7 Virtual Currencies
-      # ------------------------------------------------------------------------
-      - title: "Virtual Currencies"
-        questions:
-          - field_id: "a2201A"
-            instructions: "Purchases, Sales, and Rentals."
-          - field_id: "a2201D"
-            instructions: ~
-          - field_id: "a2202"
-            instructions: ~
-          - field_id: "a2203"
-            instructions: "This should include not only virtual assets related payments received or investments directly, but also payments involving third parties."
+          # --------------------------------------------------------------------
+          # 2.3 Payment Types with Clients - Electronic Transfers
+          # --------------------------------------------------------------------
+          - number: "2.3"
+            title: "Payment Types with Clients - Electronic Transfers"
+            questions:
+              - field_id: "a2104W"
+                question_number: 119
+                instructions: "Electronic transfers include payments originating in an electronic form, such as wire transfers, payment service provider (PSP) such as PayPal, debit cards, credit cards, virtual currency payments, etc."
+              - field_id: "a2104WRP"
+                question_number: 120
+                instructions: ~
+              - field_id: "a2105W"
+                question_number: 121
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2105BW"
+                question_number: 122
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 2.8 Services Offered, Agent for Purchases & Sales
-      # ------------------------------------------------------------------------
-      - title: "Services Offered, Agent for Purchases & Sales"
-        questions:
-          - field_id: "a2501A"
-            instructions: "Purchases and Sales."
-          - field_id: "a2501"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR233B"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR233S"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR235B_1"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR235B_2"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR235S"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR117"
-            instructions: "Purchases and Sales."
-          - field_id: "aIR2391"
-            instructions: "Purchases, Sales, and Rentals. A related person should be considered a family relation."
-          - field_id: "aIR2392"
-            instructions: ~
-          - field_id: "aIR2393"
-            instructions: ~
-          - field_id: "aIR234"
-            instructions: ~
-          - field_id: "aIR236"
-            instructions: ~
-          - field_id: "aIR2313"
-            instructions: ~
-          - field_id: "aIR2316"
-            instructions: ~
-          - field_id: "aIR237B"
-            instructions: ~
-          - field_id: "aIR238B"
-            instructions: ~
-          - field_id: "aIR239B"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.4 Payment Types by Clients - Electronic Transfers
+          # --------------------------------------------------------------------
+          - number: "2.4"
+            title: "Payment Types by Clients - Electronic Transfers"
+            questions:
+              - field_id: "a2104B"
+                question_number: 123
+                instructions: "Electronic transfers include payments originating in an electronic form."
+              - field_id: "a2105B"
+                question_number: 124
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2105BB"
+                question_number: 125
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 2.9 Comments & Feedback
-      # ------------------------------------------------------------------------
-      - title: "Comments & Feedback"
-        questions:
-          - field_id: "aIR33LF"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.5 Payment Types with Clients - Cash
+          # --------------------------------------------------------------------
+          - number: "2.5"
+            title: "Payment Types with Clients - Cash"
+            questions:
+              - field_id: "a2107W"
+                question_number: 126
+                instructions: "Payments with clients are transactions between the reporting entity and its clients for products or services offered by the entity."
+              - field_id: "a2107WRP"
+                question_number: 127
+                instructions: ~
+              - field_id: "a2108W"
+                question_number: 128
+                instructions: ~
+              - field_id: "a2109W"
+                question_number: 129
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "aG24010W"
+                question_number: 130
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2110W"
+                question_number: 131
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2113W"
+                question_number: 132
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2113AW"
+                question_number: 133
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2114A"
+                question_number: 134
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2115AW"
+                question_number: 135
+                instructions: "Purchases, Sales, and Rentals."
 
-  # ============================================================================
-  # SECTION 3: DISTRIBUTION RISK
-  # ============================================================================
-  - title: "Distribution Risk"
-    subsections:
-      # ------------------------------------------------------------------------
-      # 3.1 Identification
-      # ------------------------------------------------------------------------
-      - title: "Identification"
-        questions:
-          - field_id: "a3101"
-            instructions: "Financial Institutions / Designated Non-Financial Businesses and Professions may permit reliance on third parties to perform elements of the CDD."
-          - field_id: "a3102"
-            instructions: ~
-          - field_id: "a3103"
-            instructions: "Financial Institutions / Designated Non-Financial Businesses and Professions may permit reliance on third parties to perform elements of the CDD."
-          - field_id: "a3104"
-            instructions: ~
-          - field_id: "a3105"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.6 Payment Types by Clients - Cash
+          # --------------------------------------------------------------------
+          - number: "2.6"
+            title: "Payment Types by Clients - Cash"
+            questions:
+              - field_id: "a2107B"
+                question_number: 136
+                instructions: "Payments by clients are transactions initiated and performed by the client."
+              - field_id: "a2108B"
+                question_number: 137
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2109B"
+                question_number: 138
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "aG24010B"
+                question_number: 139
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2110B"
+                question_number: 140
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2113B"
+                question_number: 141
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2113AB"
+                question_number: 142
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2114AB"
+                question_number: 143
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2115AB"
+                question_number: 144
+                instructions: "Purchases, Sales, and Rentals."
 
-      # ------------------------------------------------------------------------
-      # 3.2 Onboarding
-      # ------------------------------------------------------------------------
-      - title: "Onboarding"
-        questions:
-          - field_id: "a3201"
-            instructions: ~
-          - field_id: "a3202"
-            instructions: ~
-          - field_id: "a3203"
-            instructions: ~
-          - field_id: "a3204"
-            instructions: ~
-          - field_id: "a3205"
-            instructions: "The reporting entity should disclose whether clients are onboarded (for CDD purposes) on a non-face-to-face basis."
-          - field_id: "aB3206"
-            instructions: ~
-          - field_id: "aB3207"
-            instructions: ~
-          - field_id: "a3208TOLA"
-            instructions: "An introducer is a Financial Institution / Designated Non-Financial Businesses and Professions who has a direct relationship with a client."
-          - field_id: "a3209"
-            instructions: ~
-          - field_id: "a3210"
-            instructions: ~
-          - field_id: "a3210B"
-            instructions: ~
-          - field_id: "a3210C"
-            instructions: ~
-          - field_id: "a3211"
-            instructions: ~
-          - field_id: "a3211B"
-            instructions: ~
-          - field_id: "a3211C"
-            instructions: ~
-          - field_id: "a3212CTOLA"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.7 Virtual Currencies
+          # --------------------------------------------------------------------
+          - number: "2.7"
+            title: "Virtual Currencies"
+            questions:
+              - field_id: "a2201A"
+                question_number: 145
+                instructions: "Purchases, Sales, and Rentals."
+              - field_id: "a2201D"
+                question_number: 146
+                instructions: ~
+              - field_id: "a2202"
+                question_number: 147
+                instructions: ~
+              - field_id: "a2203"
+                question_number: 148
+                instructions: "This should include not only virtual assets related payments received or investments directly, but also payments involving third parties."
 
-      # ------------------------------------------------------------------------
-      # 3.3 Structure
-      # ------------------------------------------------------------------------
-      - title: "Structure"
-        questions:
-          - field_id: "a3301"
-            instructions: ~
-          - field_id: "aIR328"
-            instructions: "The reporting entity has to disclose the number of all personnel employed: employees, associates and owners, regardless of their function."
-          - field_id: "a3302"
-            instructions: ~
-          - field_id: "a3303"
-            instructions: ~
-          - field_id: "a3304"
-            instructions: ~
-          - field_id: "a3304C"
-            instructions: ~
-          - field_id: "a3305"
-            instructions: ~
-          - field_id: "a3306"
-            instructions: "For the purpose of this question, branch should be understood as a secondary establishment of the parent company."
-          - field_id: "a3306A"
-            instructions: ~
-          - field_id: "a3306B"
-            instructions: ~
-          - field_id: "a3307"
-            instructions: ~
-          - field_id: "a3308"
-            instructions: ~
-          - field_id: "a381"
-            instructions: ~
-          - field_id: "a3802"
-            instructions: ~
-          - field_id: "a3803"
-            instructions: ~
-          - field_id: "a3804"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.8 Services Offered, Agent for Purchases & Sales
+          # --------------------------------------------------------------------
+          - number: "2.8"
+            title: "Services Offered, Agent for Purchases & Sales"
+            questions:
+              - field_id: "a2501A"
+                question_number: 149
+                instructions: "Purchases and Sales."
+              - field_id: "a2501"
+                question_number: 150
+                instructions: "Purchases and Sales."
+              - field_id: "aIR233B"
+                question_number: 151
+                instructions: "Purchases and Sales."
+              - field_id: "aIR233S"
+                question_number: 152
+                instructions: "Purchases and Sales."
+              - field_id: "aIR235B_1"
+                question_number: 153
+                instructions: "Purchases and Sales."
+              - field_id: "aIR235B_2"
+                question_number: 154
+                instructions: "Purchases and Sales."
+              - field_id: "aIR235S"
+                question_number: 155
+                instructions: "Purchases and Sales."
+              - field_id: "aIR117"
+                question_number: 156
+                instructions: "Purchases and Sales."
+              - field_id: "aIR2391"
+                question_number: 157
+                instructions: "Purchases, Sales, and Rentals. A related person should be considered a family relation."
+              - field_id: "aIR2392"
+                question_number: 158
+                instructions: ~
+              - field_id: "aIR2393"
+                question_number: 159
+                instructions: ~
+              - field_id: "aIR234"
+                question_number: 160
+                instructions: ~
+              - field_id: "aIR236"
+                question_number: 161
+                instructions: ~
+              - field_id: "aIR2313"
+                question_number: 162
+                instructions: ~
+              - field_id: "aIR2316"
+                question_number: 163
+                instructions: ~
+              - field_id: "aIR237B"
+                question_number: 164
+                instructions: ~
+              - field_id: "aIR238B"
+                question_number: 165
+                instructions: ~
+              - field_id: "aIR239B"
+                question_number: 166
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 3.4 Entity Finances
-      # ------------------------------------------------------------------------
-      - title: "Entity Finances"
-        questions:
-          - field_id: "a3401"
-            instructions: ~
-          - field_id: "a3402"
-            instructions: ~
-          - field_id: "a3403"
-            instructions: ~
-          - field_id: "a3414"
-            instructions: "Total of twelve monthly payments. In case of negative VAT, provide details in the next comment box."
-          - field_id: "a3415"
-            instructions: ~
-          - field_id: "a3416"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 2.9 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "2.9"
+            title: "Comments & Feedback"
+            questions:
+              - field_id: "aIR33LF"
+                question_number: 167
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 3.5 Rejected Relationships
-      # ------------------------------------------------------------------------
-      - title: "Rejected Relationships"
-        questions:
-          - field_id: "a3501B"
-            instructions: ~
-          - field_id: "a3501C"
-            instructions: ~
+      # ========================================================================
+      # SECTION 3: DISTRIBUTION RISK
+      # ========================================================================
+      - number: 3
+        title: "Distribution Risk"
+        subsections:
+          # --------------------------------------------------------------------
+          # 3.1 Identification
+          # --------------------------------------------------------------------
+          - number: "3.1"
+            title: "Identification"
+            questions:
+              - field_id: "a3101"
+                question_number: 168
+                instructions: "Financial Institutions / Designated Non-Financial Businesses and Professions may permit reliance on third parties to perform elements of the CDD."
+              - field_id: "a3102"
+                question_number: 169
+                instructions: ~
+              - field_id: "a3103"
+                question_number: 170
+                instructions: "Financial Institutions / Designated Non-Financial Businesses and Professions may permit reliance on third parties to perform elements of the CDD."
+              - field_id: "a3104"
+                question_number: 171
+                instructions: ~
+              - field_id: "a3105"
+                question_number: 172
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 3.6 Comments & Feedback
-      # ------------------------------------------------------------------------
-      - title: "Comments & Feedback"
-        questions:
-          - field_id: "a3701"
-            instructions: ~
-          - field_id: "a3701A"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 3.2 Onboarding
+          # --------------------------------------------------------------------
+          - number: "3.2"
+            title: "Onboarding"
+            questions:
+              - field_id: "a3201"
+                question_number: 173
+                instructions: ~
+              - field_id: "a3202"
+                question_number: 174
+                instructions: ~
+              - field_id: "a3203"
+                question_number: 175
+                instructions: ~
+              - field_id: "a3204"
+                question_number: 176
+                instructions: ~
+              - field_id: "a3205"
+                question_number: 177
+                instructions: "The reporting entity should disclose whether clients are onboarded (for CDD purposes) on a non-face-to-face basis."
+              - field_id: "aB3206"
+                question_number: 178
+                instructions: ~
+              - field_id: "aB3207"
+                question_number: 179
+                instructions: ~
+              - field_id: "a3208TOLA"
+                question_number: 180
+                instructions: "An introducer is a Financial Institution / Designated Non-Financial Businesses and Professions who has a direct relationship with a client."
+              - field_id: "a3209"
+                question_number: 181
+                instructions: ~
+              - field_id: "a3210"
+                question_number: 182
+                instructions: ~
+              - field_id: "a3210B"
+                question_number: 183
+                instructions: ~
+              - field_id: "a3210C"
+                question_number: 184
+                instructions: ~
+              - field_id: "a3211"
+                question_number: 185
+                instructions: ~
+              - field_id: "a3211B"
+                question_number: 186
+                instructions: ~
+              - field_id: "a3211C"
+                question_number: 187
+                instructions: ~
+              - field_id: "a3212CTOLA"
+                question_number: 188
+                instructions: ~
 
-  # ============================================================================
-  # SECTION 4: CONTROLS AND QUALITY OF RISK MITIGATION
-  # ============================================================================
-  - title: "Controls"
-    subsections:
-      # ------------------------------------------------------------------------
-      # 1.1 Structure
-      # ------------------------------------------------------------------------
-      - title: "Structure"
-        questions:
-          - field_id: "aC1102A"
-            instructions: "Reuse the response from Q188. The reporting entity has to disclose the number of all personnel employed."
-          - field_id: "aC1102"
-            instructions: "Provide the estimate as a decimal of FTE time. 1 full-time employee = 1 FTE."
-          - field_id: "aC1101Z"
-            instructions: ~
-          - field_id: "aC114"
-            instructions: "This question distinguishes if the entity is of a sufficient size to have separated either governance or functions of responsibility."
-          - field_id: "aC1106"
-            instructions: ~
-          - field_id: "aC1518A"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 3.3 Structure
+          # --------------------------------------------------------------------
+          - number: "3.3"
+            title: "Structure"
+            questions:
+              - field_id: "a3301"
+                question_number: 189
+                instructions: ~
+              - field_id: "aIR328"
+                question_number: 190
+                instructions: "The reporting entity has to disclose the number of all personnel employed: employees, associates and owners, regardless of their function."
+              - field_id: "a3302"
+                question_number: 191
+                instructions: ~
+              - field_id: "a3303"
+                question_number: 192
+                instructions: ~
+              - field_id: "a3304"
+                question_number: 193
+                instructions: ~
+              - field_id: "a3304C"
+                question_number: 194
+                instructions: ~
+              - field_id: "a3305"
+                question_number: 195
+                instructions: ~
+              - field_id: "a3306"
+                question_number: 196
+                instructions: "For the purpose of this question, branch should be understood as a secondary establishment of the parent company."
+              - field_id: "a3306A"
+                question_number: 197
+                instructions: ~
+              - field_id: "a3306B"
+                question_number: 198
+                instructions: ~
+              - field_id: "a3307"
+                question_number: 199
+                instructions: ~
+              - field_id: "a3308"
+                question_number: 200
+                instructions: ~
+              - field_id: "a381"
+                question_number: 201
+                instructions: ~
+              - field_id: "a3802"
+                question_number: 202
+                instructions: ~
+              - field_id: "a3803"
+                question_number: 203
+                instructions: ~
+              - field_id: "a3804"
+                question_number: 204
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.2 Policies & Procedures
-      # ------------------------------------------------------------------------
-      - title: "Policies & Procedures"
-        questions:
-          - field_id: "aC1201"
-            instructions: "The reporting entity should disclose whether it has written policies and procedures in place."
-          - field_id: "aC1202"
-            instructions: "The reporting entity should disclose whether its written AML/CFT policies and procedures have been formally approved by senior management."
-          - field_id: "aC1203"
-            instructions: "If only one employee, answer Yes."
-          - field_id: "aC1204"
-            instructions: "If only one employee, answer Yes."
-          - field_id: "aC1205"
-            instructions: ~
-          - field_id: "aC1206"
-            instructions: ~
-          - field_id: "aC1207"
-            instructions: "Such as version control, or a log/list which allows someone to see the frequency of updates and review processes."
-          - field_id: "aC1209B"
-            instructions: ~
-          - field_id: "aC1209C"
-            instructions: ~
-          - field_id: "aC1208"
-            instructions: ~
-          - field_id: "aC1209"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 3.4 Entity Finances
+          # --------------------------------------------------------------------
+          - number: "3.4"
+            title: "Entity Finances"
+            questions:
+              - field_id: "a3401"
+                question_number: 205
+                instructions: ~
+              - field_id: "a3402"
+                question_number: 206
+                instructions: ~
+              - field_id: "a3403"
+                question_number: 207
+                instructions: ~
+              - field_id: "a3414"
+                question_number: 208
+                instructions: "Total of twelve monthly payments. In case of negative VAT, provide details in the next comment box."
+              - field_id: "a3415"
+                question_number: 209
+                instructions: ~
+              - field_id: "a3416"
+                question_number: 210
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.3 Governance
-      # ------------------------------------------------------------------------
-      - title: "Governance"
-        questions:
-          - field_id: "aC1301"
-            instructions: ~
-          - field_id: "aC1302"
-            instructions: ~
-          - field_id: "aC1303"
-            instructions: ~
-          - field_id: "aC1304"
-            instructions: "In the case of Enhanced Due Diligence, the senior management might be required to approve the business relationships with the higher risk clients."
+          # --------------------------------------------------------------------
+          # 3.5 Rejected Relationships
+          # --------------------------------------------------------------------
+          - number: "3.5"
+            title: "Rejected Relationships"
+            questions:
+              - field_id: "a3501B"
+                question_number: 211
+                instructions: ~
+              - field_id: "a3501C"
+                question_number: 212
+                instructions: ~
 
-      # ------------------------------------------------------------------------
-      # 1.4 Compliance & Violations
-      # ------------------------------------------------------------------------
-      - title: "Compliance & Violations"
-        questions:
-          - field_id: "aC1401"
-            instructions: "The reporting entity should disclose whether it had any AML/CFT related compliance failures, including minor shortcomings, within the past 5 years."
-          - field_id: "aC1402"
-            instructions: ~
-          - field_id: "aC1403"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.5 Training
-      # ------------------------------------------------------------------------
-      - title: "Training"
-        questions:
-          - field_id: "aC1501"
-            instructions: ~
-          - field_id: "aC1503B"
-            instructions: ~
-          - field_id: "aC1506"
-            instructions: "Employees, inclusive Directors / Management."
-
-      # ------------------------------------------------------------------------
-      # 1.6 CDD
-      # ------------------------------------------------------------------------
-      - title: "CDD"
-        questions:
-          - field_id: "aC1625"
-            instructions: ~
-          - field_id: "aC1626"
-            instructions: ~
-          - field_id: "aC1627"
-            instructions: ~
-          - field_id: "aC168"
-            instructions: ~
-          - field_id: "aC1629"
-            instructions: ~
-          - field_id: "aC1630"
-            instructions: ~
-          - field_id: "aC1601"
-            instructions: ~
-          - field_id: "aC1602"
-            instructions: ~
-          - field_id: "aC1631"
-            instructions: ~
-          - field_id: "aC1633"
-            instructions: ~
-          - field_id: "aC1634"
-            instructions: ~
-          - field_id: "aC1635"
-            instructions: "If any of these items are not kept on file, answer No."
-          - field_id: "aC1636"
-            instructions: ~
-          - field_id: "aC1637"
-            instructions: ~
-          - field_id: "aC1608"
-            instructions: ~
-          - field_id: "aC1635A"
-            instructions: ~
-          - field_id: "aC1638A"
-            instructions: ~
-          - field_id: "aC1639A"
-            instructions: ~
-          - field_id: "aC1641A"
-            instructions: ~
-          - field_id: "aC1640A"
-            instructions: ~
-          - field_id: "aC1642A"
-            instructions: ~
-          - field_id: "aC1609"
-            instructions: ~
-          - field_id: "aC1610"
-            instructions: ~
-          - field_id: "aC1611"
-            instructions: ~
-          - field_id: "aC1612A"
-            instructions: ~
-          - field_id: "aC1612"
-            instructions: ~
-          - field_id: "aC1614"
-            instructions: ~
-          - field_id: "aC1615"
-            instructions: ~
-          - field_id: "aC1622F"
-            instructions: "This question relates to the license holder having an organized system to retain records."
-          - field_id: "aC1622A"
-            instructions: ~
-          - field_id: "aC1622B"
-            instructions: ~
-          - field_id: "aC1620"
-            instructions: ~
-          - field_id: "aC1617"
-            instructions: ~
-          - field_id: "aC1616B"
-            instructions: ~
-          - field_id: "aC1616A"
-            instructions: ~
-          - field_id: "aC1618"
-            instructions: ~
-          - field_id: "aC1619"
-            instructions: ~
-          - field_id: "aC1616C"
-            instructions: "e.g. simplified, standard and enhanced due diligence"
-          - field_id: "aC1621"
-            instructions: "Please repeat the answer provided in Q4."
-
-      # ------------------------------------------------------------------------
-      # 1.7 EDD
-      # ------------------------------------------------------------------------
-      - title: "EDD"
-        questions:
-          - field_id: "aC1701"
-            instructions: ~
-          - field_id: "aC1702"
-            instructions: "Within the reporting period."
-          - field_id: "aC1703"
-            instructions: "i.e. number of enhanced due diligence clients / total number of clients."
-
-      # ------------------------------------------------------------------------
-      # 1.8 Risk Assessments
-      # ------------------------------------------------------------------------
-      - title: "Risk Assessments"
-        questions:
-          - field_id: "aB1801B"
-            instructions: ~
-          - field_id: "aC1801"
-            instructions: ~
-          - field_id: "aC1802"
-            instructions: ~
-          - field_id: "aC1806"
-            instructions: "If any of these items are not included, answer No."
-          - field_id: "aC1807"
-            instructions: ~
-          - field_id: "aC1811"
-            instructions: "(client assessments)"
-          - field_id: "aC1812"
-            instructions: "(client assessments)"
-          - field_id: "aC1813"
-            instructions: "(For reference, consider the client types of section 1.11)"
-          - field_id: "aC1814W"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.9 Audit / Controls
-      # ------------------------------------------------------------------------
-      - title: "Audit / Controls"
-        questions:
-          - field_id: "aC1904"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.10 Record Keeping
-      # ------------------------------------------------------------------------
-      - title: "Record Keeping"
-        questions:
-          - field_id: "aC11101"
-            instructions: ~
-          - field_id: "aC11102"
-            instructions: ~
-          - field_id: "aC11103"
-            instructions: ~
-          - field_id: "aC11104"
-            instructions: ~
-          - field_id: "aC11105"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.11 Targeted Financial Sanctions (TFS)
-      # ------------------------------------------------------------------------
-      - title: "Targeted Financial Sanctions (TFS)"
-        questions:
-          - field_id: "aC11201"
-            instructions: "The reporting entity should disclose whether its policies and procedures adequately cover TFS screening and alert elements."
-          - field_id: "aC1125A"
-            instructions: ~
-          - field_id: "aC12333"
-            instructions: ~
-          - field_id: "aC12236"
-            instructions: ~
-          - field_id: "aC12237"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.12 PEPs
-      # ------------------------------------------------------------------------
-      - title: "PEPs"
-        questions:
-          - field_id: "aC11301"
-            instructions: ~
-          - field_id: "aC11302"
-            instructions: ~
-          - field_id: "aC11303"
-            instructions: ~
-          - field_id: "aC11304"
-            instructions: ~
-          - field_id: "aC11305"
-            instructions: ~
-          - field_id: "aC11306"
-            instructions: ~
-          - field_id: "aC11307"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.13 Cash Transactions
-      # ------------------------------------------------------------------------
-      - title: "Cash Transactions"
-        questions:
-          - field_id: "aC11401"
-            instructions: "Incoming or outgoing."
-          - field_id: "aC11402"
-            instructions: ~
-          - field_id: "aC11403"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.14 Suspicious Transaction Reporting
-      # ------------------------------------------------------------------------
-      - title: "Suspicious Transaction Reporting"
-        questions:
-          - field_id: "aC11501B"
-            instructions: "(not necessarily filed to the FIU)"
-          - field_id: "aC11502"
-            instructions: ~
-          - field_id: "aC11504"
-            instructions: ~
-          - field_id: "aC11508"
-            instructions: ~
-
-      # ------------------------------------------------------------------------
-      # 1.15 Comments & Feedback
-      # ------------------------------------------------------------------------
-      - title: "Comments & Feedback"
-        questions:
-          - field_id: "aC116A"
-            instructions: ~
-          - field_id: "aC11601"
-            instructions: ~
+          # --------------------------------------------------------------------
+          # 3.6 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "3.6"
+            title: "Comments & Feedback"
+            questions:
+              - field_id: "a3701"
+                question_number: 213
+                instructions: ~
+              - field_id: "a3701A"
+                question_number: 214
+                instructions: ~
 
   # ============================================================================
-  # SECTION 5: SIGNATORIES
+  # PART: CONTROLS (Section 4, Q1-Q105)
   # ============================================================================
-  - title: "Signatories"
-    subsections:
-      # ------------------------------------------------------------------------
-      # Attestation
-      # ------------------------------------------------------------------------
-      - title: "Attestation"
-        questions:
-          - field_id: "aS1"
-            instructions: ~
-          - field_id: "aS2"
-            instructions: ~
-          - field_id: "aINCOMPLETE"
-            instructions: "If no, please write 'Complete'. If yes, provide the reason for submitting incomplete."
+  - name: "Controls"
+    sections:
+      - number: 4
+        title: "Controls"
+        subsections:
+          # --------------------------------------------------------------------
+          # 4.1 Structure
+          # --------------------------------------------------------------------
+          - number: "4.1"
+            title: "Structure"
+            questions:
+              - field_id: "aC1102A"
+                question_number: 1
+                instructions: "Reuse the response from Q188. The reporting entity has to disclose the number of all personnel employed."
+              - field_id: "aC1102"
+                question_number: 2
+                instructions: "Provide the estimate as a decimal of FTE time. 1 full-time employee = 1 FTE."
+              - field_id: "aC1101Z"
+                question_number: 3
+                instructions: ~
+              - field_id: "aC114"
+                question_number: 4
+                instructions: "This question distinguishes if the entity is of a sufficient size to have separated either governance or functions of responsibility."
+              - field_id: "aC1106"
+                question_number: 5
+                instructions: ~
+              - field_id: "aC1518A"
+                question_number: 6
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.2 Policies & Procedures
+          # --------------------------------------------------------------------
+          - number: "4.2"
+            title: "Policies & Procedures"
+            questions:
+              - field_id: "aC1201"
+                question_number: 7
+                instructions: "The reporting entity should disclose whether it has written policies and procedures in place."
+              - field_id: "aC1202"
+                question_number: 8
+                instructions: "The reporting entity should disclose whether its written AML/CFT policies and procedures have been formally approved by senior management."
+              - field_id: "aC1203"
+                question_number: 9
+                instructions: "If only one employee, answer Yes."
+              - field_id: "aC1204"
+                question_number: 10
+                instructions: "If only one employee, answer Yes."
+              - field_id: "aC1205"
+                question_number: 11
+                instructions: ~
+              - field_id: "aC1206"
+                question_number: 12
+                instructions: ~
+              - field_id: "aC1207"
+                question_number: 13
+                instructions: "Such as version control, or a log/list which allows someone to see the frequency of updates and review processes."
+              - field_id: "aC1209B"
+                question_number: 14
+                instructions: ~
+              - field_id: "aC1209C"
+                question_number: 15
+                instructions: ~
+              - field_id: "aC1208"
+                question_number: 16
+                instructions: ~
+              - field_id: "aC1209"
+                question_number: 17
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.3 Governance
+          # --------------------------------------------------------------------
+          - number: "4.3"
+            title: "Governance"
+            questions:
+              - field_id: "aC1301"
+                question_number: 18
+                instructions: ~
+              - field_id: "aC1302"
+                question_number: 19
+                instructions: ~
+              - field_id: "aC1303"
+                question_number: 20
+                instructions: ~
+              - field_id: "aC1304"
+                question_number: 21
+                instructions: "In the case of Enhanced Due Diligence, the senior management might be required to approve the business relationships with the higher risk clients."
+
+          # --------------------------------------------------------------------
+          # 4.4 Compliance & Violations
+          # --------------------------------------------------------------------
+          - number: "4.4"
+            title: "Compliance & Violations"
+            questions:
+              - field_id: "aC1401"
+                question_number: 22
+                instructions: "The reporting entity should disclose whether it had any AML/CFT related compliance failures, including minor shortcomings, within the past 5 years."
+              - field_id: "aC1402"
+                question_number: 23
+                instructions: ~
+              - field_id: "aC1403"
+                question_number: 24
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.5 Training
+          # --------------------------------------------------------------------
+          - number: "4.5"
+            title: "Training"
+            questions:
+              - field_id: "aC1501"
+                question_number: 25
+                instructions: ~
+              - field_id: "aC1503B"
+                question_number: 26
+                instructions: ~
+              - field_id: "aC1506"
+                question_number: 27
+                instructions: "Employees, inclusive Directors / Management."
+
+          # --------------------------------------------------------------------
+          # 4.6 CDD
+          # --------------------------------------------------------------------
+          - number: "4.6"
+            title: "CDD"
+            questions:
+              - field_id: "aC1625"
+                question_number: 28
+                instructions: ~
+              - field_id: "aC1626"
+                question_number: 29
+                instructions: ~
+              - field_id: "aC1627"
+                question_number: 30
+                instructions: ~
+              - field_id: "aC168"
+                question_number: 31
+                instructions: ~
+              - field_id: "aC1629"
+                question_number: 32
+                instructions: ~
+              - field_id: "aC1630"
+                question_number: 33
+                instructions: ~
+              - field_id: "aC1601"
+                question_number: 34
+                instructions: ~
+              - field_id: "aC1602"
+                question_number: 35
+                instructions: ~
+              - field_id: "aC1631"
+                question_number: 36
+                instructions: ~
+              - field_id: "aC1633"
+                question_number: 37
+                instructions: ~
+              - field_id: "aC1634"
+                question_number: 38
+                instructions: ~
+              - field_id: "aC1635"
+                question_number: 39
+                instructions: "If any of these items are not kept on file, answer No."
+              - field_id: "aC1636"
+                question_number: 40
+                instructions: ~
+              - field_id: "aC1637"
+                question_number: 41
+                instructions: ~
+              - field_id: "aC1608"
+                question_number: 42
+                instructions: ~
+              - field_id: "aC1635A"
+                question_number: 43
+                instructions: ~
+              - field_id: "aC1638A"
+                question_number: 44
+                instructions: ~
+              - field_id: "aC1639A"
+                question_number: 45
+                instructions: ~
+              - field_id: "aC1641A"
+                question_number: 46
+                instructions: ~
+              - field_id: "aC1640A"
+                question_number: 47
+                instructions: ~
+              - field_id: "aC1642A"
+                question_number: 48
+                instructions: ~
+              - field_id: "aC1609"
+                question_number: 49
+                instructions: ~
+              - field_id: "aC1610"
+                question_number: 50
+                instructions: ~
+              - field_id: "aC1611"
+                question_number: 51
+                instructions: ~
+              - field_id: "aC1612A"
+                question_number: 52
+                instructions: ~
+              - field_id: "aC1612"
+                question_number: 53
+                instructions: ~
+              - field_id: "aC1614"
+                question_number: 54
+                instructions: ~
+              - field_id: "aC1615"
+                question_number: 55
+                instructions: ~
+              - field_id: "aC1622F"
+                question_number: 56
+                instructions: "This question relates to the license holder having an organized system to retain records."
+              - field_id: "aC1622A"
+                question_number: 57
+                instructions: ~
+              - field_id: "aC1622B"
+                question_number: 58
+                instructions: ~
+              - field_id: "aC1620"
+                question_number: 59
+                instructions: ~
+              - field_id: "aC1617"
+                question_number: 60
+                instructions: ~
+              - field_id: "aC1616B"
+                question_number: 61
+                instructions: ~
+              - field_id: "aC1616A"
+                question_number: 62
+                instructions: ~
+              - field_id: "aC1618"
+                question_number: 63
+                instructions: ~
+              - field_id: "aC1619"
+                question_number: 64
+                instructions: ~
+              - field_id: "aC1616C"
+                question_number: 65
+                instructions: "e.g. simplified, standard and enhanced due diligence"
+              - field_id: "aC1621"
+                question_number: 66
+                instructions: "Please repeat the answer provided in Q4."
+
+          # --------------------------------------------------------------------
+          # 4.7 EDD
+          # --------------------------------------------------------------------
+          - number: "4.7"
+            title: "EDD"
+            questions:
+              - field_id: "aC1701"
+                question_number: 67
+                instructions: ~
+              - field_id: "aC1702"
+                question_number: 68
+                instructions: "Within the reporting period."
+              - field_id: "aC1703"
+                question_number: 69
+                instructions: "i.e. number of enhanced due diligence clients / total number of clients."
+
+          # --------------------------------------------------------------------
+          # 4.8 Risk Assessments
+          # --------------------------------------------------------------------
+          - number: "4.8"
+            title: "Risk Assessments"
+            questions:
+              - field_id: "aB1801B"
+                question_number: 70
+                instructions: ~
+              - field_id: "aC1801"
+                question_number: 71
+                instructions: ~
+              - field_id: "aC1802"
+                question_number: 72
+                instructions: ~
+              - field_id: "aC1806"
+                question_number: 73
+                instructions: "If any of these items are not included, answer No."
+              - field_id: "aC1807"
+                question_number: 74
+                instructions: ~
+              - field_id: "aC1811"
+                question_number: 75
+                instructions: "(client assessments)"
+              - field_id: "aC1812"
+                question_number: 76
+                instructions: "(client assessments)"
+              - field_id: "aC1813"
+                question_number: 77
+                instructions: "(For reference, consider the client types of section 1.11)"
+              - field_id: "aC1814W"
+                question_number: 78
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.9 Audit / Controls
+          # --------------------------------------------------------------------
+          - number: "4.9"
+            title: "Audit / Controls"
+            questions:
+              - field_id: "aC1904"
+                question_number: 79
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.10 Record Keeping
+          # --------------------------------------------------------------------
+          - number: "4.10"
+            title: "Record Keeping"
+            questions:
+              - field_id: "aC11101"
+                question_number: 80
+                instructions: ~
+              - field_id: "aC11102"
+                question_number: 81
+                instructions: ~
+              - field_id: "aC11103"
+                question_number: 82
+                instructions: ~
+              - field_id: "aC11104"
+                question_number: 83
+                instructions: ~
+              - field_id: "aC11105"
+                question_number: 84
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.11 Targeted Financial Sanctions (TFS)
+          # --------------------------------------------------------------------
+          - number: "4.11"
+            title: "Targeted Financial Sanctions (TFS)"
+            questions:
+              - field_id: "aC11201"
+                question_number: 85
+                instructions: "The reporting entity should disclose whether its policies and procedures adequately cover TFS screening and alert elements."
+              - field_id: "aC1125A"
+                question_number: 86
+                instructions: ~
+              - field_id: "aC12333"
+                question_number: 87
+                instructions: ~
+              - field_id: "aC12236"
+                question_number: 88
+                instructions: ~
+              - field_id: "aC12237"
+                question_number: 89
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.12 PEPs
+          # --------------------------------------------------------------------
+          - number: "4.12"
+            title: "PEPs"
+            questions:
+              - field_id: "aC11301"
+                question_number: 90
+                instructions: ~
+              - field_id: "aC11302"
+                question_number: 91
+                instructions: ~
+              - field_id: "aC11303"
+                question_number: 92
+                instructions: ~
+              - field_id: "aC11304"
+                question_number: 93
+                instructions: ~
+              - field_id: "aC11305"
+                question_number: 94
+                instructions: ~
+              - field_id: "aC11306"
+                question_number: 95
+                instructions: ~
+              - field_id: "aC11307"
+                question_number: 96
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.13 Cash Transactions
+          # --------------------------------------------------------------------
+          - number: "4.13"
+            title: "Cash Transactions"
+            questions:
+              - field_id: "aC11401"
+                question_number: 97
+                instructions: "Incoming or outgoing."
+              - field_id: "aC11402"
+                question_number: 98
+                instructions: ~
+              - field_id: "aC11403"
+                question_number: 99
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.14 Suspicious Transaction Reporting
+          # --------------------------------------------------------------------
+          - number: "4.14"
+            title: "Suspicious Transaction Reporting"
+            questions:
+              - field_id: "aC11501B"
+                question_number: 100
+                instructions: "(not necessarily filed to the FIU)"
+              - field_id: "aC11502"
+                question_number: 101
+                instructions: ~
+              - field_id: "aC11504"
+                question_number: 102
+                instructions: ~
+              - field_id: "aC11508"
+                question_number: 103
+                instructions: ~
+
+          # --------------------------------------------------------------------
+          # 4.15 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "4.15"
+            title: "Comments & Feedback"
+            questions:
+              - field_id: "aC116A"
+                question_number: 104
+                instructions: ~
+              - field_id: "aC11601"
+                question_number: 105
+                instructions: ~
+
+  # ============================================================================
+  # PART: SIGNATORIES (Section 5, Q1-Q3)
+  # ============================================================================
+  - name: "Signatories"
+    sections:
+      - number: 5
+        title: "Signatories"
+        subsections:
+          # --------------------------------------------------------------------
+          # 5.1 Attestation
+          # --------------------------------------------------------------------
+          - number: "5.1"
+            title: "Attestation"
+            questions:
+              - field_id: "aS1"
+                question_number: 1
+                instructions: ~
+              - field_id: "aS2"
+                question_number: 2
+                instructions: ~
+              - field_id: "aINCOMPLETE"
+                question_number: 3
+                instructions: "If no, please write 'Complete'. If yes, provide the reason for submitting incomplete."
