@@ -19,8 +19,21 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       expect(questionnaire.taxonomy_namespace).to eq("https://test.example.com/test_industry_2025")
     end
 
-    describe "sections from structure file" do
-      it "creates sections with auto-numbered values" do
+    describe "parts from structure file" do
+      it "returns questionnaire with parts" do
+        expect(questionnaire.parts).to be_an(Array)
+        expect(questionnaire.parts.length).to eq(1)
+        expect(questionnaire.parts.first.name).to eq("Inherent Risk")
+      end
+
+      it "builds sections within parts" do
+        part = questionnaire.parts.first
+        expect(part.sections.map(&:title)).to eq(["General", "Details"])
+      end
+    end
+
+    describe "sections" do
+      it "creates sections with explicit numbers from YAML" do
         expect(questionnaire.sections.length).to eq(2)
         expect(questionnaire.sections.map(&:number)).to eq([1, 2])
       end
@@ -37,9 +50,9 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         expect(first_section.subsections.first.title).to eq("Activity Status")
       end
 
-      it "auto-numbers subsections within each section" do
+      it "preserves explicit subsection numbers from YAML" do
         first_section = questionnaire.sections.first
-        expect(first_section.subsections.first.number).to eq(1)
+        expect(first_section.subsections.first.number).to eq("1.1")
       end
     end
 
@@ -49,16 +62,10 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         expect(first_subsection.questions.length).to eq(3)
       end
 
-      it "auto-numbers questions scoped to section" do
-        # First section has 3 questions: 1, 2, 3
-        first_section = questionnaire.sections.first
-        question_numbers = first_section.questions.map(&:number)
-        expect(question_numbers).to eq([1, 2, 3])
-
-        # Second section restarts at 1
-        second_section = questionnaire.sections[1]
-        question_numbers = second_section.questions.map(&:number)
-        expect(question_numbers).to eq([1, 2])
+      it "preserves explicit question numbers from YAML" do
+        # With parts-based structure, questions use explicit numbers from YAML
+        questions = questionnaire.questions
+        expect(questions.map(&:number)).to eq([1, 2, 3, 4, 5])
       end
 
       it "includes instructions from structure file" do
@@ -175,14 +182,19 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         FileUtils.mkdir_p(temp_path)
         FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), temp_path)
 
-        # Create structure file with unknown field
+        # Create structure file with unknown field (using parts format)
         structure_content = <<~YAML
-          sections:
-            - title: "Test"
-              subsections:
-                - title: "Sub"
-                  questions:
-                    - field_id: nonexistent_field
+          parts:
+            - name: "Test Part"
+              sections:
+                - number: 1
+                  title: "Test"
+                  subsections:
+                    - number: "1.1"
+                      title: "Sub"
+                      questions:
+                        - field_id: nonexistent_field
+                          question_number: 1
         YAML
         File.write(File.join(temp_path, "questionnaire_structure.yml"), structure_content)
 
@@ -203,19 +215,27 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
         FileUtils.cp(File.join(fixtures_path, "test_survey.xsd"), temp_path)
         FileUtils.cp(File.join(fixtures_path, "test_survey_lab.xml"), temp_path)
 
-        # Create structure file with duplicate field
+        # Create structure file with duplicate field (using parts format)
         structure_content = <<~YAML
-          sections:
-            - title: "Section 1"
-              subsections:
-                - title: "Sub 1"
-                  questions:
-                    - field_id: tgate
-            - title: "Section 2"
-              subsections:
-                - title: "Sub 2"
-                  questions:
-                    - field_id: tgate
+          parts:
+            - name: "Test Part"
+              sections:
+                - number: 1
+                  title: "Section 1"
+                  subsections:
+                    - number: "1.1"
+                      title: "Sub 1"
+                      questions:
+                        - field_id: tgate
+                          question_number: 1
+                - number: 2
+                  title: "Section 2"
+                  subsections:
+                    - number: "2.1"
+                      title: "Sub 2"
+                      questions:
+                        - field_id: tgate
+                          question_number: 1
         YAML
         File.write(File.join(temp_path, "questionnaire_structure.yml"), structure_content)
 

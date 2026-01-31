@@ -20,14 +20,14 @@ module AmsfSurvey
         fields = build_fields(schema_data, labels, xule_data)
         field_index = fields.each_with_object({}) { |f, h| h[f.id] = f }
 
-        # Parse structure file and assemble sections
+        # Parse structure file and assemble parts
         structure_data = parse_structure
-        sections = build_sections(structure_data[:sections], field_index)
+        parts = build_parts(structure_data[:parts], field_index)
 
         AmsfSurvey::Questionnaire.new(
           industry: industry,
           year: year,
-          sections: sections,
+          parts: parts,
           taxonomy_namespace: schema_parser.target_namespace
         )
       end
@@ -72,6 +72,21 @@ module AmsfSurvey
         schema_data.map do |field_id, schema|
           build_field(field_id, schema, labels, xule_data, schema_data)
         end.compact
+      end
+
+      def build_parts(parts_data, field_index)
+        seen_fields = {}
+
+        parts_data.map do |part_data|
+          sections = part_data[:sections].map do |section_data|
+            build_section(section_data, field_index, seen_fields)
+          end
+
+          AmsfSurvey::Part.new(
+            name: part_data[:name],
+            sections: sections
+          )
+        end
       end
 
       def build_field(field_id, schema, labels, xule_data, schema_data)
@@ -121,20 +136,16 @@ module AmsfSurvey
         end
       end
 
-      def build_sections(sections_data, field_index)
-        seen_fields = {}
-
-        sections_data.map do |section_data|
-          subsections = section_data[:subsections].map do |sub_data|
-            build_subsection(sub_data, field_index, seen_fields, section_data[:title])
-          end
-
-          AmsfSurvey::Section.new(
-            number: section_data[:number],
-            title: section_data[:title],
-            subsections: subsections
-          )
+      def build_section(section_data, field_index, seen_fields)
+        subsections = section_data[:subsections].map do |sub_data|
+          build_subsection(sub_data, field_index, seen_fields, section_data[:title])
         end
+
+        AmsfSurvey::Section.new(
+          number: section_data[:number],
+          title: section_data[:title],
+          subsections: subsections
+        )
       end
 
       def build_subsection(sub_data, field_index, seen_fields, section_title)
