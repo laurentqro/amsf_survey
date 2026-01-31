@@ -4,19 +4,34 @@ module AmsfSurvey
   # Container for an industry/year survey structure.
   # Immutable value object built by the taxonomy loader.
   class Questionnaire
-    attr_reader :industry, :year, :sections, :taxonomy_namespace
+    attr_reader :industry, :year, :parts, :taxonomy_namespace
 
-    def initialize(industry:, year:, sections:, taxonomy_namespace: nil)
+    def initialize(industry:, year:, parts: nil, sections: nil, taxonomy_namespace: nil)
       @industry = industry
       @year = year
-      @sections = sections
       @taxonomy_namespace = taxonomy_namespace
+
+      # Support both parts-based and legacy sections-based initialization
+      if parts
+        @parts = parts
+      elsif sections
+        # Legacy: wrap sections in a single unnamed part for backward compatibility
+        @parts = [Part.new(name: nil, sections: sections)]
+      else
+        @parts = []
+      end
+
       @question_index = build_question_index
     end
 
-    # Returns all questions from all sections in order
+    # Returns all sections from all parts (backward compatible)
+    def sections
+      parts.flat_map(&:sections)
+    end
+
+    # Returns all questions from all parts in order
     def questions
-      sections.flat_map(&:questions)
+      parts.flat_map(&:questions)
     end
 
     # Lookup question by lowercase ID
@@ -36,6 +51,11 @@ module AmsfSurvey
     # Number of sections
     def section_count
       sections.length
+    end
+
+    # Number of parts
+    def part_count
+      parts.length
     end
 
     # Questions where gate is true

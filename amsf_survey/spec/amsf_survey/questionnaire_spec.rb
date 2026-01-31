@@ -153,4 +153,41 @@ RSpec.describe AmsfSurvey::Questionnaire do
       expect(questionnaire.gate_questions).to eq([q1])
     end
   end
+
+  describe "parts-based structure" do
+    let(:part1) { AmsfSurvey::Part.new(name: "Inherent Risk", sections: [section1]) }
+    let(:part2) { AmsfSurvey::Part.new(name: "Controls", sections: [section2]) }
+
+    let(:parts_questionnaire) do
+      described_class.new(
+        industry: :test_industry,
+        year: 2025,
+        parts: [part1, part2]
+      )
+    end
+
+    describe "#parts" do
+      it "returns all parts" do
+        expect(parts_questionnaire.parts).to eq([part1, part2])
+      end
+    end
+
+    describe "#sections (backward compatibility)" do
+      it "returns sections from all parts" do
+        expect(parts_questionnaire.sections).to eq([section1, section2])
+      end
+    end
+
+    describe "#questions" do
+      it "returns questions from all parts" do
+        expect(parts_questionnaire.questions).to eq([q1, q2, q3, q4, q5])
+      end
+    end
+
+    describe "#part_count" do
+      it "returns number of parts" do
+        expect(parts_questionnaire.part_count).to eq(2)
+      end
+    end
+  end
 end
