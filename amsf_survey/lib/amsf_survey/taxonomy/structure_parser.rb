@@ -5,6 +5,7 @@ require "yaml"
 module AmsfSurvey
   module Taxonomy
     # Parses questionnaire_structure.yml to extract PDF-based structure.
+    # Supports parts-based format: Part -> Section -> Subsection -> Question
     class StructureParser
       def initialize(structure_path)
         @structure_path = structure_path
@@ -14,8 +15,8 @@ module AmsfSurvey
         validate_file!
         data = load_yaml
 
-        sections = parse_sections(data["sections"] || [])
-        { sections: sections }
+        parts = parse_parts(data["parts"] || [])
+        { parts: parts }
       end
 
       private
@@ -32,51 +33,57 @@ module AmsfSurvey
         raise MalformedTaxonomyError.new(@structure_path, e.message)
       end
 
-      def parse_sections(sections_data)
-        sections_data.each_with_index.map do |section_data, index|
-          parse_section(section_data, index + 1)
+      def parse_parts(parts_data)
+        parts_data.map do |part_data|
+          parse_part(part_data)
         end
       end
 
-      def parse_section(section_data, section_number)
-        question_counter = 0
-        subsections = (section_data["subsections"] || []).each_with_index.map do |sub_data, index|
-          subsection, question_counter = parse_subsection(sub_data, index + 1, question_counter)
-          subsection
+      def parse_part(part_data)
+        sections = (part_data["sections"] || []).map do |section_data|
+          parse_section(section_data)
         end
 
         {
-          number: section_number,
+          name: part_data["name"],
+          sections: sections
+        }
+      end
+
+      def parse_section(section_data)
+        subsections = (section_data["subsections"] || []).map do |sub_data|
+          parse_subsection(sub_data)
+        end
+
+        {
+          number: section_data["number"],
           title: section_data["title"],
           subsections: subsections
         }
       end
 
-      def parse_subsection(sub_data, subsection_number, question_counter)
+      def parse_subsection(sub_data)
         questions = (sub_data["questions"] || []).map do |q_data|
-          question_counter += 1
-          parse_question(q_data, question_counter)
+          parse_question(q_data)
         end
 
         instructions = sub_data["instructions"]&.strip
         instructions = nil if instructions&.empty?
 
-        subsection = {
-          number: subsection_number,
+        {
+          number: sub_data["number"],
           title: sub_data["title"],
           instructions: instructions,
           questions: questions
         }
-
-        [subsection, question_counter]
       end
 
-      def parse_question(q_data, question_number)
+      def parse_question(q_data)
         instructions = q_data["instructions"]&.strip
         instructions = nil if instructions&.empty?
 
         {
-          number: question_number,
+          number: q_data["question_number"],
           field_id: q_data["field_id"].to_s.downcase.to_sym,
           instructions: instructions
         }

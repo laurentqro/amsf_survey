@@ -1,19 +1,30 @@
-sections:
-  - title: "General"
-    subsections:
-      - title: "Activity Status"
-        questions:
-          - field_id: tgate
-            instructions: |
-              Answer Yes if you performed any regulated activities.
-          - field_id: t001
-          - field_id: t002
+parts:
+  - name: "Inherent Risk"
+    sections:
+      - number: 1
+        title: "General"
+        subsections:
+          - number: "1.1"
+            title: "Activity Status"
+            questions:
+              - field_id: tgate
+                question_number: 1
+                instructions: |
+                  Answer Yes if you performed any regulated activities.
+              - field_id: t001
+                question_number: 2
+              - field_id: t002
+                question_number: 3
 
-  - title: "Details"
-    subsections:
-      - title: "Financial Details"
-        questions:
-          - field_id: t003
-            instructions: |
-              Enter total monetary value.
-          - field_id: t004
+      - number: 2
+        title: "Details"
+        subsections:
+          - number: "2.1"
+            title: "Financial Details"
+            questions:
+              - field_id: t003
+                question_number: 4
+                instructions: |
+                  Enter total monetary value.
+              - field_id: t004
+                question_number: 5
