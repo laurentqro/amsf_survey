@@ -73,6 +73,17 @@ module AmsfSurvey
       Generator.new(submission, options).generate
     end
 
+    # Get schema_url for an industry and year (for sync scripts)
+    # @param industry [Symbol] the industry identifier
+    # @param year [Integer] the taxonomy year
+    # @return [String, nil] the schema URL or nil if not available
+    def schema_url_for(industry:, year:)
+      return nil unless registered?(industry)
+      return nil unless supported_years(industry).include?(year)
+
+      questionnaire(industry: industry, year: year).schema_url
+    end
+
     # Reset registry state (for testing only)
     # @api private
     def reset_registry! # :nodoc:

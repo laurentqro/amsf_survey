@@ -28,4 +28,7 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  # Skip arelle tests unless ARELLE env var is set
+  config.filter_run_excluding arelle: true unless ENV["ARELLE"]
 end

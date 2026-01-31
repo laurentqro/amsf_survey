@@ -404,7 +404,8 @@ RSpec.describe AmsfSurvey::Generator do
       end
 
       # T047: schemaRef includes correct xlink:href
-      it "includes schemaRef with correct filename from taxonomy namespace" do
+      # Updated for Task 2: now uses schema_url from taxonomy.yml when available
+      it "includes schemaRef with schema_url from taxonomy.yml" do
         submission = build_submission(tGATE: "Oui")
         xml = described_class.new(submission).generate
         doc = Nokogiri::XML(xml)
@@ -414,7 +415,8 @@ RSpec.describe AmsfSurvey::Generator do
 
         expect(schema_ref).not_to be_nil
         expect(schema_ref["xlink:type"]).to eq("simple")
-        expect(schema_ref["xlink:href"]).to eq("test_industry_2025.xsd")
+        # Test fixture has schema_url: http://example.com/test/taxonomy.xsd
+        expect(schema_ref["xlink:href"]).to eq("http://example.com/test/taxonomy.xsd")
       end
 
       it "handles namespace with query parameters" do
@@ -500,6 +502,56 @@ RSpec.describe AmsfSurvey::Generator do
         context = doc.at_xpath("//xbrli:context", ns)
 
         expect(context["id"]).to eq("ctx_ENTITY_001_20251231")
+      end
+    end
+
+    # =========================================================================
+    # schemaRef generation (Task 2: Use schema_url from taxonomy.yml)
+    # =========================================================================
+    describe "schemaRef generation" do
+      let(:submission) { build_submission(tGATE: "Oui") }
+      let(:generator) { described_class.new(submission) }
+
+      context "when questionnaire has schema_url" do
+        let(:questionnaire_with_url) do
+          instance_double(
+            AmsfSurvey::Questionnaire,
+            taxonomy_namespace: "http://example.com/ns",
+            schema_url: "http://amsf.mc/taxonomy/2025/schema.xsd",
+            questions: []
+          )
+        end
+
+        it "uses schema_url for schemaRef href" do
+          allow(submission).to receive(:questionnaire).and_return(questionnaire_with_url)
+
+          xml = generator.generate
+          doc = Nokogiri::XML(xml)
+
+          schema_ref = doc.at_xpath("//link:schemaRef", "link" => "http://www.xbrl.org/2003/linkbase")
+          expect(schema_ref["xlink:href"]).to eq("http://amsf.mc/taxonomy/2025/schema.xsd")
+        end
+      end
+
+      context "when questionnaire has no schema_url" do
+        let(:questionnaire_without_url) do
+          instance_double(
+            AmsfSurvey::Questionnaire,
+            taxonomy_namespace: "http://example.com/ns/schema_name",
+            schema_url: nil,
+            questions: []
+          )
+        end
+
+        it "falls back to extract_schema_filename" do
+          allow(submission).to receive(:questionnaire).and_return(questionnaire_without_url)
+
+          xml = generator.generate
+          doc = Nokogiri::XML(xml)
+
+          schema_ref = doc.at_xpath("//link:schemaRef", "link" => "http://www.xbrl.org/2003/linkbase")
+          expect(schema_ref["xlink:href"]).to eq("schema_name.xsd")
+        end
       end
     end
 

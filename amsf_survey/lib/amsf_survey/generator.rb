@@ -120,8 +120,17 @@ module AmsfSurvey
       schema_ref = Nokogiri::XML::Node.new("schemaRef", doc)
       schema_ref.namespace = parent.namespace_definitions.find { |ns| ns.prefix == "link" }
       schema_ref["xlink:type"] = "simple"
-      schema_ref["xlink:href"] = extract_schema_filename
+      schema_ref["xlink:href"] = schema_href
       parent.add_child(schema_ref)
+    end
+
+    # Determine the schema href for schemaRef element.
+    # Prefers explicit schema_url from taxonomy.yml if available,
+    # otherwise falls back to extracting filename from taxonomy_namespace.
+    #
+    # @return [String] the schema URL or filename
+    def schema_href
+      questionnaire.schema_url || extract_schema_filename
     end
 
     # Extract schema filename from taxonomy namespace.

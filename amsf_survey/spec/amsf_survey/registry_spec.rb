@@ -154,6 +154,30 @@ RSpec.describe "AmsfSurvey Registry" do
     end
   end
 
+  describe ".schema_url_for" do
+    let(:fixtures_path) { File.expand_path("../fixtures/taxonomies", __dir__) }
+    let(:taxonomy_path) { File.join(fixtures_path, "test_industry") }
+
+    before do
+      AmsfSurvey.register_plugin(industry: :test_industry, taxonomy_path: taxonomy_path)
+    end
+
+    it "returns schema_url for registered industry and year" do
+      url = AmsfSurvey.schema_url_for(industry: :test_industry, year: 2025)
+      expect(url).to eq("http://example.com/test/taxonomy.xsd")
+    end
+
+    it "returns nil for unregistered industry" do
+      url = AmsfSurvey.schema_url_for(industry: :unknown, year: 2025)
+      expect(url).to be_nil
+    end
+
+    it "returns nil for unsupported year" do
+      url = AmsfSurvey.schema_url_for(industry: :test_industry, year: 1999)
+      expect(url).to be_nil
+    end
+  end
+
   describe ".build_submission" do
     let(:fixtures_path) { File.expand_path("../fixtures/taxonomies", __dir__) }
     let(:taxonomy_path) { File.join(fixtures_path, "test_industry") }

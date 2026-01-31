@@ -4,4 +4,9 @@ require "rspec/core/rake_task"
 
 RSpec::Core::RakeTask.new(:spec)
 
+desc "Run Arelle validation tests (requires arelle_api running)"
+task :validate do
+  sh "ARELLE=1 bundle exec rspec spec/integration --tag arelle"
+end
+
 task default: :spec

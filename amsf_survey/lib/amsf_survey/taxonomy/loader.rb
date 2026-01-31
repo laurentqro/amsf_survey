@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "yaml"
+
 module AmsfSurvey
   module Taxonomy
     # Orchestrates parsing of all taxonomy files and builds a Questionnaire.
@@ -15,6 +17,7 @@ module AmsfSurvey
         schema_data = schema_parser.parse
         labels = parse_labels
         xule_data = parse_xule
+        taxonomy_config = parse_taxonomy_config
 
         # Build field index from XBRL data
         fields = build_fields(schema_data, labels, xule_data)
@@ -28,7 +31,8 @@ module AmsfSurvey
           industry: industry,
           year: year,
           parts: parts,
-          taxonomy_namespace: schema_parser.target_namespace
+          taxonomy_namespace: schema_parser.target_namespace,
+          schema_url: taxonomy_config[:schema_url]
         )
       end
 
@@ -66,6 +70,14 @@ module AmsfSurvey
 
       def parse_structure
         StructureParser.new(structure_file_path).parse
+      end
+
+      def parse_taxonomy_config
+        config_path = File.join(@taxonomy_path, "taxonomy.yml")
+        return {} unless File.exist?(config_path)
+
+        config = YAML.safe_load(File.read(config_path), symbolize_names: true)
+        { schema_url: config[:schema_url] }
       end
 
       def build_fields(schema_data, labels, xule_data)

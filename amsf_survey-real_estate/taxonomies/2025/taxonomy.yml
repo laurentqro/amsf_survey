@@ -1,0 +1,3 @@
+# Taxonomy metadata for arelle_api integration
+# This URL determines where arelle_api looks for cached taxonomy files
+schema_url: http://amsf.mc/fr/taxonomy/strix/2025/strix.xsd

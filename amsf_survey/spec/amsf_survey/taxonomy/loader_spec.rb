@@ -3,6 +3,15 @@
 RSpec.describe AmsfSurvey::Taxonomy::Loader do
   let(:fixtures_path) { File.expand_path("../../fixtures/taxonomies/test_industry/2025", __dir__) }
 
+  let(:loader) { described_class.new(fixtures_path) }
+
+  describe "taxonomy.yml parsing" do
+    it "loads schema_url from taxonomy.yml" do
+      questionnaire = loader.load(:test_industry, 2025)
+      expect(questionnaire.schema_url).to eq("http://example.com/test/taxonomy.xsd")
+    end
+  end
+
   describe "#load" do
     subject(:questionnaire) { described_class.new(fixtures_path).load(:test_industry, 2025) }
 
