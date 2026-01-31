@@ -87,6 +87,45 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
     end
   end
 
+  describe "parts structure" do
+    subject(:questionnaire) { AmsfSurvey.questionnaire(industry: :real_estate, year: 2025) }
+
+    it "has three parts" do
+      expect(questionnaire.parts.length).to eq(3)
+    end
+
+    it "has correct part names" do
+      names = questionnaire.parts.map(&:name)
+      expect(names).to eq(["Inherent Risk", "Controls", "Signatories"])
+    end
+
+    it "has correct question counts per part" do
+      counts = questionnaire.parts.map(&:question_count)
+      expect(counts).to eq([214, 105, 3]) # Total: 322
+    end
+
+    it "has 322 total questions" do
+      expect(questionnaire.question_count).to eq(322)
+    end
+  end
+
+  describe "explicit question numbers" do
+    subject(:questionnaire) { AmsfSurvey.questionnaire(industry: :real_estate, year: 2025) }
+
+    it "has question numbers starting at 1 for each part" do
+      questionnaire.parts.each do |part|
+        first_question = part.questions.first
+        expect(first_question.number).to eq(1), "Expected first question in #{part.name} to be 1"
+      end
+    end
+
+    it "has sequential question numbers within Inherent Risk" do
+      inherent_risk = questionnaire.parts.find { |p| p.name == "Inherent Risk" }
+      numbers = inherent_risk.questions.map(&:number)
+      expect(numbers).to eq((1..214).to_a)
+    end
+  end
+
   describe "performance requirements" do
     it "loads questionnaire in under 2 seconds (T070)" do
       AmsfSurvey.reset_registry!
