@@ -84,50 +84,46 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
   end
 
   describe "active entity (aACTIVE = Oui)" do
-    it "validates minimal active entity" do
-      # Active entity with no specific activity data
+    it "reports missing required fields for incomplete active entity" do
+      # Active entity without all required fields - XULE enforces many fields
       submission = build_submission(
         aACTIVE: "Oui",
-        # Section 1.12: Comments & Feedback
+        # Unconditionally required fields (not enough for aACTIVE = Oui)
         a14801: "Non",
-        # Section 3.1: Identification
         a3101: "Non",
         a3103: "Non",
-        # Section 3.2: Onboarding
         a3201: "Non",
         a3209: "Non",
         a3210: "Non",
         a3210B: "Non",
-        # Section 3.3: Structure
         a3301: 1
       )
 
       xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
       result = validate_xbrl(xml)
 
-      unless result["valid"]
-        puts "\n=== Active Entity Validation Errors ==="
-        result["messages"].each do |msg|
-          next if msg["severity"] == "info"
-          puts "#{msg['severity'].upcase}: #{msg['message']}"
-        end
-        puts "========================================\n"
-      end
+      # XULE rules require ~40 additional fields when aACTIVE is Oui
+      # This verifies XULE validation is working correctly
+      expect(result["valid"]).to be false
+      expect(result["summary"]["errors"]).to be > 30
 
-      expect(result["valid"]).to be true
+      # Verify specific required field errors are reported
+      error_messages = result["messages"].select { |m| m["severity"] == "error" }.map { |m| m["message"] }
+      expect(error_messages).to include(match(/a1101 should be present/))
+      expect(error_messages).to include(match(/aACTIVEPS should be present/))
     end
 
-    it "validates active entity with client data" do
-      # Active entity with complete client breakdown
-      # Note: XULE formula validation (cross-field rules) requires additional
-      # Arelle configuration. This test validates XBRL schema compliance.
+    it "validates sum-of-children constraint" do
+      # Test the sum validation rule: a1101 >= a1102 + a1103 + a1104 + a1501 + a1802TOLA
       submission = build_submission(
         aACTIVE: "Oui",
-        a1101: 10,               # Total unique clients
-        a1102: 3,                # Natural persons - Monaco nationals
-        a1103: 4,                # Natural persons - Monaco residents
-        a1104: 2,                # Natural persons - non-residents
-        a1501: 1,                # Legal persons
+        a1101: 5,                # Total clients = 5
+        a1102: 3,                # Monaco nationals = 3
+        a1103: 2,                # Monaco residents = 2
+        a1104: 2,                # Non-residents = 2
+        a1501: 2,                # Legal persons = 2
+        a1802TOLA: 1,            # TOLA = 1
+        # Sum = 3+2+2+2+1 = 10 > 5 (invalid!)
         # Unconditionally required fields
         a14801: "Non",
         a3101: "Non",
@@ -142,16 +138,9 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
       xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
       result = validate_xbrl(xml)
 
-      unless result["valid"]
-        puts "\n=== Active Entity With Clients - Validation Errors ==="
-        result["messages"].each do |msg|
-          next if msg["severity"] == "info"
-          puts "#{msg['severity'].upcase}: #{msg['message']}"
-        end
-        puts "=====================================================\n"
-      end
-
-      expect(result["valid"]).to be true
+      # Should detect sum constraint violation
+      error_messages = result["messages"].select { |m| m["severity"] == "error" }.map { |m| m["message"] }
+      expect(error_messages).to include(match(/Sum of children.*more than the parent/))
     end
   end
 end
