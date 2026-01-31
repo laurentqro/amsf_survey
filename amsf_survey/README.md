@@ -6,7 +6,7 @@ Ruby gem for Monaco AMSF (Autorité Monégasque de Supervision Financière) AML/
 
 Real estate professionals in Monaco must submit annual AML/CFT surveys to AMSF via the Strix portal. This gem:
 
-1. **Parses XBRL taxonomy files** - Understands the 323-question questionnaire structure
+1. **Parses XBRL taxonomy files** - Understands the 322-question questionnaire structure
 2. **Provides direct XBRL ID access** - Use question IDs like `:aactive`, `:a1101` directly
 3. **Tracks submission completeness** - Checks which required questions are unanswered
 4. **Generates XBRL XML** - Output format the Strix portal accepts
@@ -89,45 +89,56 @@ Questionnaire
 ├── year                # 2025
 ├── taxonomy_namespace  # "https://amlcft.amsf.mc/..."
 │
-└── sections[]
-    ├── number          # 1 (auto-numbered)
-    ├── title           # "Risque client" (from YAML)
+└── parts[]             # Part objects (NEW)
+    ├── name            # "Inherent Risk", "Controls", "Signatories"
     │
-    └── subsections[]
-        ├── number      # 1 (auto-numbered within section)
-        ├── title       # "Activité au cours de la période" (from YAML)
+    └── sections[]
+        ├── number      # 1, 2, 3... (explicit from YAML)
+        ├── title       # "Customer Risk"
         │
-        └── questions[]
-            ├── number        # 1 (auto-numbered within section)
-            ├── instructions  # "Activities subject to law..." (from YAML)
+        └── subsections[]
+            ├── number      # "1.1", "1.2"... (string, explicit from YAML)
+            ├── title       # "Active in Reporting Cycle"
             │
-            │ # XBRL attributes (from taxonomy files):
-            ├── id            # :aactive (lowercase for API)
-            ├── xbrl_id       # :aACTIVE (original casing)
-            ├── label         # "Avez-vous exercé..." (French text)
-            ├── verbose_label # Extended help text
-            ├── type          # :boolean, :integer, :monetary, :string, :enum
-            ├── valid_values  # ["Oui", "Non"] for boolean/enum
-            ├── gate?         # true if controls other questions
-            └── depends_on    # { aACTIVE: "Oui" } gate dependencies
+            └── questions[]
+                ├── number        # 1, 2, 3... (explicit, resets per Part)
+                ├── instructions  # "Activities subject to law..." (from YAML)
+                │
+                │ # XBRL attributes (from taxonomy files):
+                ├── id            # :aactive (lowercase for API)
+                ├── xbrl_id       # :aACTIVE (original casing)
+                ├── label         # "Avez-vous exercé..." (French text)
+                ├── verbose_label # Extended help text
+                ├── type          # :boolean, :integer, :monetary, :string, :enum
+                ├── valid_values  # ["Oui", "Non"] for boolean/enum
+                ├── gate?         # true if controls other questions
+                └── depends_on    # { aACTIVE: "Oui" } gate dependencies
 ```
+
+**Question Numbering:** Question numbers are explicit in the YAML and reset at each Part boundary:
+- Inherent Risk: Q1-Q214
+- Controls: Q1-Q105
+- Signatories: Q1-Q3
 
 ### Traversing the Hierarchy
 
 ```ruby
 q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
-# Iterate all sections
-q.sections.each do |section|
-  puts "Section #{section.number}: #{section.title}"
+# Iterate all parts (top-level)
+q.parts.each do |part|
+  puts "#{part.name} (#{part.question_count} questions)"
 
-  section.subsections.each do |subsection|
-    puts "  #{subsection.number}. #{subsection.title}"
+  part.sections.each do |section|
+    puts "  Section #{section.number}: #{section.title}"
 
-    subsection.questions.each do |question|
-      puts "    Q#{question.number}: #{question.label}"
-      puts "      ID: #{question.id}, Type: #{question.type}"
-      puts "      Instructions: #{question.instructions}" if question.instructions
+    section.subsections.each do |subsection|
+      puts "    #{subsection.number}. #{subsection.title}"
+
+      subsection.questions.each do |question|
+        puts "      Q#{question.number}: #{question.label}"
+        puts "        ID: #{question.id}, Type: #{question.type}"
+      end
     end
   end
 end
@@ -135,6 +146,10 @@ end
 # Direct question lookup (skips hierarchy)
 question = q.question(:a1101)
 puts question.label  # => French question text
+
+# Access parts directly
+inherent_risk = q.parts.find { |p| p.name == "Inherent Risk" }
+puts inherent_risk.question_count  # => 214
 ```
 
 ## Core API
@@ -160,29 +175,40 @@ AmsfSurvey.supported_years(:real_estate)
 ```ruby
 q = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
 
+q.parts               # => [Part, Part, Part] (Inherent Risk, Controls, Signatories)
+q.part_count          # => 3
 q.questions           # => [Question, Question, ...] all questions in order
-q.question_count      # => 323
-q.sections            # => [Section, Section, ...]
+q.question_count      # => 322
+q.sections            # => [Section, Section, ...] (derived from all parts)
 q.question(:aactive)  # => Question object (lookup by lowercase ID)
 q.question(:a1101)    # => Question object (any casing works, normalized to lowercase)
 q.gate_questions      # => Questions that control visibility of others
 ```
 
-### Section & Subsection
+### Part, Section & Subsection
 
 The questionnaire uses a hierarchical structure matching the PDF:
 
 ```ruby
-section = q.sections.first
+# Parts (top-level)
+part = q.parts.first
+part.name                  # => "Inherent Risk"
+part.sections              # => [Section, Section, ...]
+part.questions             # => All questions in this part
+part.question_count        # => 214
+
+# Sections
+section = part.sections.first
 section.title              # => "Customer Risk"
 section.number             # => 1
 section.subsections        # => [Subsection, Subsection, ...]
 section.questions          # => All questions across all subsections
 section.question_count     # => Total questions in section
 
+# Subsections
 subsection = section.subsections.first
 subsection.title           # => "Active in Reporting Cycle"
-subsection.number          # => 1
+subsection.number          # => "1.1" (string)
 subsection.questions       # => [Question, Question, ...]
 subsection.question_count  # => 3
 ```
@@ -337,16 +363,24 @@ amsf_survey-yachting/
 The `questionnaire_structure.yml` file maps the PDF structure to XBRL field IDs:
 
 ```yaml
-sections:
-  - title: "Customer Risk"
-    subsections:
-      - title: "Active in Reporting Cycle"
-        questions:
-          - field_id: "aACTIVE"
-            instructions: "Activities subject to the law..."
-          - field_id: "aACTIVEPS"
-            instructions: "Purchases and Sales."
+parts:
+  - name: "Inherent Risk"
+    sections:
+      - number: 1
+        title: "Customer Risk"
+        subsections:
+          - number: "1.1"
+            title: "Active in Reporting Cycle"
+            questions:
+              - field_id: "aACTIVE"
+                question_number: 1
+                instructions: "Activities subject to the law..."
+              - field_id: "aACTIVEPS"
+                question_number: 2
+                instructions: "Purchases and Sales."
 ```
+
+Question numbers are explicit and reset at each part boundary.
 
 ## Development
 
@@ -355,7 +389,7 @@ bundle install
 bundle exec rspec
 ```
 
-Test coverage: 100% line coverage, 353 tests.
+Test coverage: ~100% line coverage, 372 tests.
 
 ## License
 

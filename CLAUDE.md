@@ -36,13 +36,32 @@ gem build amsf_survey.gemspec
 - `AmsfSurvey.to_xbrl(submission)` - Generate XBRL XML
 
 Key classes:
-- `Questionnaire` - Container for sections/questions, supports question lookup by lowercase ID, exposes `taxonomy_namespace`
-- `Section` - Logical grouping of subsections
-- `Subsection` - Groups questions within a section
-- `Question` - Primary unit combining XBRL metadata with PDF structure. Has `id` (lowercase for API) and `xbrl_id` (original casing for XBRL)
+- `Questionnaire` - Container for parts/sections/questions, supports question lookup by lowercase ID, exposes `taxonomy_namespace`
+- `Part` - Top-level grouping matching PDF structure (e.g., "Inherent Risk", "Controls", "Signatories"). Question numbers reset per part.
+- `Section` - Logical grouping of subsections within a part
+- `Subsection` - Groups questions within a section. Uses string numbers like "1.1", "1.2"
+- `Question` - Primary unit combining XBRL metadata with PDF structure. Has `id` (lowercase for API), `xbrl_id` (original casing for XBRL), and `number` (explicit from YAML)
 - `Field` - Internal XBRL metadata (type, labels, visibility rules). Not part of public API.
 - `Submission` - Holds entity data with type casting, tracks completeness
 - `Generator` - XBRL instance XML output with proper namespaces, context, and facts
+
+### Object Hierarchy
+
+```
+Questionnaire
+└── parts[]                    # Part objects
+    ├── name                   # "Inherent Risk", "Controls", "Signatories"
+    └── sections[]             # Section objects
+        ├── number             # 1, 2, 3... (explicit from YAML)
+        ├── title              # "Customer Risk"
+        └── subsections[]      # Subsection objects
+            ├── number         # "1.1", "1.2"... (string, explicit from YAML)
+            ├── title          # "Active in Reporting Cycle"
+            └── questions[]    # Question objects
+                ├── number     # 1, 2, 3... (explicit, resets per Part)
+                ├── id         # :aactive (lowercase for API)
+                └── xbrl_id    # :aACTIVE (original casing for XBRL)
+```
 
 ### Question ID Handling
 
@@ -61,7 +80,7 @@ questionnaire.question(:aactive)  # Same question
 
 - `SchemaParser` - Parses `.xsd` files for field types, valid values, and `targetNamespace`
 - `LabelParser` - Parses `_lab.xml` files for French labels with HTML stripping
-- `StructureParser` - Parses `questionnaire_structure.yml` for section/subsection hierarchy and question metadata
+- `StructureParser` - Parses `questionnaire_structure.yml` for part/section/subsection hierarchy and explicit question numbers
 - `XuleParser` - Parses `.xule` files for gate question dependencies
 - `Loader` - Orchestrates all parsers to build a `Questionnaire`
 
@@ -128,6 +147,7 @@ Design document: `docs/plans/2025-12-21-amsf-survey-design.md`
 - File-based taxonomy loading from plugin gems
 
 ## Recent Changes
+- 006-explicit-question-numbering: Added Part class for top-level hierarchy. Questionnaire now holds parts (Part → Section → Subsection → Question). Question numbers are explicit in YAML and reset per part. Real estate taxonomy has 322 questions across 3 parts: Inherent Risk (Q1-214), Controls (Q1-105), Signatories (Q1-3).
 - 005-remove-semantic-indirection: Removed semantic_mappings.yml and Validator. Field IDs now use XBRL element names directly (lowercase for API, original for XBRL)
 - 004-xbrl-generator: Added XBRL instance XML generation (Generator class, AmsfSurvey.to_xbrl method)
 - 003-submission-validation: Added Submission class with type casting
