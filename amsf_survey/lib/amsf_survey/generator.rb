@@ -14,6 +14,7 @@ module AmsfSurvey
   #   xbrli:xbrl (root)
   #     ├── link:schemaRef (taxonomy reference)
   #     ├── xbrli:context (entity + period metadata)
+  #     ├── xbrli:unit (for numeric facts)
   #     └── strix:* facts (one element per field)
   #
   # @example Basic usage
@@ -32,6 +33,9 @@ module AmsfSurvey
 
     # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
+
+    # Unit ID for dimensionless numeric values (counts, percentages as ratios)
+    PURE_UNIT_ID = "pure"
 
     # @param submission [Submission] the source submission object
     # @param options [Hash] generation options
@@ -110,6 +114,7 @@ module AmsfSurvey
       # Build child elements
       build_schema_ref(doc, root)
       build_context(doc, root)
+      build_unit(doc, root)
       build_facts(doc, root)
 
       doc
@@ -186,6 +191,23 @@ module AmsfSurvey
       parent.add_child(context)
     end
 
+    # Build the XBRL unit element for numeric facts.
+    # Uses xbrli:pure (dimensionless) for counts, integers, and percentages.
+    def build_unit(doc, parent)
+      xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+
+      unit = Nokogiri::XML::Node.new("unit", doc)
+      unit.namespace = xbrli_ns
+      unit["id"] = PURE_UNIT_ID
+
+      measure = Nokogiri::XML::Node.new("measure", doc)
+      measure.namespace = xbrli_ns
+      measure.content = "xbrli:pure"
+
+      unit.add_child(measure)
+      parent.add_child(unit)
+    end
+
     # Build fact elements for all visible questions
     def build_facts(doc, parent)
       data = submission.data
@@ -210,13 +232,21 @@ module AmsfSurvey
       fact.namespace = strix_ns
       fact["contextRef"] = context_id
 
-      # Add decimals attribute for numeric types
-      decimals = decimals_for(question.type)
-      fact["decimals"] = decimals if decimals
+      # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
+      # XBRL requires unitRef and content when decimals is present.
+      if numeric_type?(question.type) && !value.nil?
+        fact["unitRef"] = PURE_UNIT_ID
+        fact["decimals"] = decimals_for(question.type)
+      end
 
       fact.content = format_value(value, question.type)
 
       parent.add_child(fact)
+    end
+
+    # Check if type is numeric (requires unitRef)
+    def numeric_type?(type)
+      %i[integer monetary percentage].include?(type)
     end
 
     # Determine decimals attribute based on field type

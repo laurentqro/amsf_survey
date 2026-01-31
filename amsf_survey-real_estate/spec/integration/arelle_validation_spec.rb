@@ -25,7 +25,7 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
     it "successfully validates XBRL against arelle_api" do
       submission = build_submission({})
 
-      xml = AmsfSurvey.to_xbrl(submission)
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
       result = validate_xbrl(xml)
 
       # Verify we got a valid response structure
@@ -43,13 +43,31 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
     end
   end
 
-  describe "discovery: minimal valid submission", :pending do
-    # This test is for discovering what fields are required
-    # Run it manually during development: ARELLE=1 bundle exec rspec -e "discovery"
-    it "discovers required fields by attempting validation" do
-      submission = build_submission({})
+  describe "inactive entity (aACTIVE = Non)" do
+    it "generates valid XBRL for inactive entity" do
+      # Minimal valid submission: entity not active in reporting period
+      # These fields are unconditionally required regardless of aACTIVE:
+      # - Section 1.12: a14801 (Comments & Feedback - gate question)
+      # - Section 3.1: a3101, a3103 (Identification - reliance on third parties)
+      # - Section 3.2: a3201, a3209, a3210, a3210B (Onboarding)
+      # - Section 3.3: a3301 (Structure - number of personnel)
+      submission = build_submission(
+        aACTIVE: "Non",
+        # Section 1.12: Comments & Feedback
+        a14801: "Non",      # Q110: Has feedback about section 1?
+        # Section 3.1: Identification
+        a3101: "Non",       # Q168: Rely on third parties for CDD?
+        a3103: "Non",       # Q170: Rely on third parties for CDD identification?
+        # Section 3.2: Onboarding
+        a3201: "Non",       # Q173: Did you reject any clients?
+        a3209: "Non",       # Q181: Use introducers?
+        a3210: "Non",       # Q182: Use delegated CDD?
+        a3210B: "Non",      # Q183: Delegate CDD to external parties?
+        # Section 3.3: Structure
+        a3301: 1            # Q189: Number of personnel employed
+      )
 
-      xml = AmsfSurvey.to_xbrl(submission)
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
       result = validate_xbrl(xml)
 
       unless result["valid"]
