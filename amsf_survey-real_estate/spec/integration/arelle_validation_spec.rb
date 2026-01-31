@@ -82,4 +82,76 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
       expect(result["valid"]).to be true
     end
   end
+
+  describe "active entity (aACTIVE = Oui)" do
+    it "validates minimal active entity" do
+      # Active entity with no specific activity data
+      submission = build_submission(
+        aACTIVE: "Oui",
+        # Section 1.12: Comments & Feedback
+        a14801: "Non",
+        # Section 3.1: Identification
+        a3101: "Non",
+        a3103: "Non",
+        # Section 3.2: Onboarding
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        # Section 3.3: Structure
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+      result = validate_xbrl(xml)
+
+      unless result["valid"]
+        puts "\n=== Active Entity Validation Errors ==="
+        result["messages"].each do |msg|
+          next if msg["severity"] == "info"
+          puts "#{msg['severity'].upcase}: #{msg['message']}"
+        end
+        puts "========================================\n"
+      end
+
+      expect(result["valid"]).to be true
+    end
+
+    it "validates active entity with client data" do
+      # Active entity with complete client breakdown
+      # Note: XULE formula validation (cross-field rules) requires additional
+      # Arelle configuration. This test validates XBRL schema compliance.
+      submission = build_submission(
+        aACTIVE: "Oui",
+        a1101: 10,               # Total unique clients
+        a1102: 3,                # Natural persons - Monaco nationals
+        a1103: 4,                # Natural persons - Monaco residents
+        a1104: 2,                # Natural persons - non-residents
+        a1501: 1,                # Legal persons
+        # Unconditionally required fields
+        a14801: "Non",
+        a3101: "Non",
+        a3103: "Non",
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+      result = validate_xbrl(xml)
+
+      unless result["valid"]
+        puts "\n=== Active Entity With Clients - Validation Errors ==="
+        result["messages"].each do |msg|
+          next if msg["severity"] == "info"
+          puts "#{msg['severity'].upcase}: #{msg['message']}"
+        end
+        puts "=====================================================\n"
+      end
+
+      expect(result["valid"]).to be true
+    end
+  end
 end
