@@ -251,7 +251,8 @@ module AmsfSurvey
         # Validate dimensional field values
         if question.dimensional?
           validate_dimensional_value!(question, value)
-          build_dimensional_facts(doc, parent, strix_ns, question, value)
+          # Skip nil - can't build facts without data. Arelle validates completeness.
+          build_dimensional_facts(doc, parent, strix_ns, question, value) if value
         else
           # Non-dimensional fields should not receive Hash values
           if value.is_a?(Hash)
@@ -422,12 +423,13 @@ module AmsfSurvey
 
     # Validate that dimensional fields receive Hash values.
     # Scalar values for dimensional fields would generate incorrect XBRL.
+    # Nil values are allowed - Arelle validates completeness.
     #
     # @param question [Question] the dimensional question
     # @param value [Object] the value to validate
-    # @raise [GeneratorError] if value is not a Hash
+    # @raise [GeneratorError] if value is a non-Hash, non-nil type
     def validate_dimensional_value!(question, value)
-      return if value.is_a?(Hash)
+      return if value.nil? || value.is_a?(Hash)
 
       raise GeneratorError, "Dimensional field '#{question.xbrl_id}' requires Hash value " \
                             "(e.g., {\"FR\" => 40.0}), got #{value.class}: #{value.inspect}"
