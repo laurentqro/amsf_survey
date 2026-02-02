@@ -35,14 +35,14 @@ module AmsfSurvey
     # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
 
-    # Dimension name for country-based dimensional breakdowns
-    COUNTRY_DIMENSION = "CountryDimension"
-
-    # Prefix for dimension member IDs (e.g., "sdlFR" for France)
-    DIMENSION_MEMBER_PREFIX = "sdl"
-
     # Unit ID for dimensionless numeric values (counts, percentages as ratios)
     PURE_UNIT_ID = "pure"
+
+    # Default dimension name (fallback if not parsed from taxonomy)
+    DEFAULT_DIMENSION_NAME = "CountryDimension"
+
+    # Default member prefix (fallback if not parsed from taxonomy)
+    DEFAULT_MEMBER_PREFIX = "sdl"
 
     # @param submission [Submission] the source submission object
     # @param options [Hash] generation options
@@ -93,6 +93,18 @@ module AmsfSurvey
     # The taxonomy namespace from the XSD (e.g., https://amlcft.amsf.mc/dcm/DTS/strix_...)
     def taxonomy_namespace
       questionnaire.taxonomy_namespace
+    end
+
+    # The dimension name from the taxonomy (e.g., "CountryDimension")
+    # Falls back to default if not parsed from _def.xml
+    def dimension_name
+      questionnaire.dimension_name || DEFAULT_DIMENSION_NAME
+    end
+
+    # The member prefix from the taxonomy (e.g., "sdl")
+    # Falls back to default if not parsed from _def.xml
+    def member_prefix
+      questionnaire.member_prefix || DEFAULT_MEMBER_PREFIX
     end
 
     # Generate a unique context ID for this submission.
@@ -332,8 +344,8 @@ module AmsfSurvey
       # Explicit dimension member
       explicit_member = Nokogiri::XML::Node.new("explicitMember", doc)
       explicit_member.namespace = xbrldi_ns
-      explicit_member["dimension"] = "strix:#{COUNTRY_DIMENSION}"
-      explicit_member.content = "strix:#{DIMENSION_MEMBER_PREFIX}#{country_code}"
+      explicit_member["dimension"] = "strix:#{dimension_name}"
+      explicit_member.content = "strix:#{member_prefix}#{country_code}"
 
       segment.add_child(explicit_member)
       entity.add_child(segment)

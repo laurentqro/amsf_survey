@@ -18,10 +18,10 @@ module AmsfSurvey
         labels = parse_labels
         xule_data = parse_xule
         taxonomy_config = parse_taxonomy_config
-        dimensional_fields = parse_dimensions
+        dimension_data = parse_dimensions
 
         # Build field index from XBRL data
-        fields = build_fields(schema_data, labels, xule_data, dimensional_fields)
+        fields = build_fields(schema_data, labels, xule_data, dimension_data[:dimensional_fields])
         field_index = fields.each_with_object({}) { |f, h| h[f.id] = f }
 
         # Parse structure file and assemble parts
@@ -33,7 +33,9 @@ module AmsfSurvey
           year: year,
           parts: parts,
           taxonomy_namespace: schema_parser.target_namespace,
-          schema_url: taxonomy_config[:schema_url]
+          schema_url: taxonomy_config[:schema_url],
+          dimension_name: dimension_data[:dimension_name],
+          member_prefix: dimension_data[:member_prefix]
         )
       end
 
@@ -83,7 +85,7 @@ module AmsfSurvey
 
       def parse_dimensions
         def_files = Dir.glob(File.join(@taxonomy_path, "*_def.xml"))
-        return Set.new if def_files.empty?
+        return { dimensional_fields: Set.new, dimension_name: nil, member_prefix: nil } if def_files.empty?
 
         DimensionParser.new(def_files.first).parse
       end

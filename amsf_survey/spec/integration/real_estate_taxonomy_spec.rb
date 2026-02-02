@@ -85,6 +85,13 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
       expect(question_mixed).to eq(question_lower)
       expect(question_upper).to eq(question_lower)
     end
+
+    it "extracts dimension metadata from _def.xml" do
+      # Dimension name parsed from hypercube-dimension arc
+      expect(questionnaire.dimension_name).to eq("CountryDimension")
+      # Member prefix parsed from domain-member arcs (e.g., sdlFR, sdlXK)
+      expect(questionnaire.member_prefix).to eq("sdl")
+    end
   end
 
   describe "parts structure" do

@@ -585,5 +585,40 @@ RSpec.describe AmsfSurvey::Generator do
           .to raise_error(AmsfSurvey::GeneratorError, /questionnaire is not available/)
       end
     end
+
+    context "dimension metadata" do
+      it "uses dimension_name from questionnaire when available" do
+        custom_questionnaire = AmsfSurvey::Questionnaire.new(
+          industry: :test_industry,
+          year: 2025,
+          sections: [],
+          taxonomy_namespace: "https://example.com/test",
+          dimension_name: "CustomDimension",
+          member_prefix: "cd"
+        )
+        submission = build_submission
+        allow(submission).to receive(:questionnaire).and_return(custom_questionnaire)
+
+        generator = described_class.new(submission)
+        # Access private method to verify
+        expect(generator.send(:dimension_name)).to eq("CustomDimension")
+        expect(generator.send(:member_prefix)).to eq("cd")
+      end
+
+      it "falls back to defaults when questionnaire has no dimension metadata" do
+        custom_questionnaire = AmsfSurvey::Questionnaire.new(
+          industry: :test_industry,
+          year: 2025,
+          sections: [],
+          taxonomy_namespace: "https://example.com/test"
+        )
+        submission = build_submission
+        allow(submission).to receive(:questionnaire).and_return(custom_questionnaire)
+
+        generator = described_class.new(submission)
+        expect(generator.send(:dimension_name)).to eq("CountryDimension")
+        expect(generator.send(:member_prefix)).to eq("sdl")
+      end
+    end
   end
 end

@@ -4,7 +4,8 @@ require "nokogiri"
 
 module AmsfSurvey
   module Taxonomy
-    # Parses XBRL definition linkbase files (_def.xml) to identify dimensional fields.
+    # Parses XBRL definition linkbase files (_def.xml) to identify dimensional fields
+    # and extract dimension metadata (dimension name, member prefix).
     #
     # Dimensional fields require country-breakdown XBRL output - multiple facts,
     # one per country with its own context containing a dimension segment.
@@ -14,7 +15,11 @@ module AmsfSurvey
     class DimensionParser
       LINK_NS = "http://www.xbrl.org/2003/linkbase"
       XLINK_NS = "http://www.w3.org/1999/xlink"
-      DIM_ARCROLE = "http://xbrl.org/int/dim/arcrole/domain-member"
+
+      # XBRL dimensional arcroles
+      DOMAIN_MEMBER_ARCROLE = "http://xbrl.org/int/dim/arcrole/domain-member"
+      HYPERCUBE_DIMENSION_ARCROLE = "http://xbrl.org/int/dim/arcrole/hypercube-dimension"
+      DIMENSION_DOMAIN_ARCROLE = "http://xbrl.org/int/dim/arcrole/dimension-domain"
 
       # Pattern to identify dimensional abstract groups (e.g., Abstract_aAC)
       # These are connected to hypercubes for dimensional breakdowns
@@ -24,17 +29,34 @@ module AmsfSurvey
         @def_path = def_path
       end
 
-      # Parse the definition file and return set of dimensional field IDs.
+      # Parse the definition file and return dimension metadata.
       #
-      # @return [Set<Symbol>] field IDs requiring dimensional breakdown
+      # @return [Hash] with keys:
+      #   - :dimensional_fields [Set<Symbol>] field IDs requiring dimensional breakdown
+      #   - :dimension_name [String, nil] the dimension element name (e.g., "CountryDimension")
+      #   - :member_prefix [String, nil] the prefix for member IDs (e.g., "sdl")
       def parse
-        return Set.new unless File.exist?(@def_path)
+        return empty_result unless File.exist?(@def_path)
 
         doc = parse_document
-        extract_dimensional_fields(doc)
+        return empty_result if doc.root.nil?
+
+        {
+          dimensional_fields: extract_dimensional_fields(doc),
+          dimension_name: extract_dimension_name(doc),
+          member_prefix: extract_member_prefix(doc)
+        }
       end
 
       private
+
+      def empty_result
+        {
+          dimensional_fields: Set.new,
+          dimension_name: nil,
+          member_prefix: nil
+        }
+      end
 
       def parse_document
         Nokogiri::XML(File.read(@def_path)) { |config| config.strict }
@@ -50,9 +72,8 @@ module AmsfSurvey
       def extract_dimensional_fields(doc)
         dimensional_fields = Set.new
 
-        # Find all definitionArc elements with domain-member arcrole
         arcs = doc.xpath(
-          "//link:definitionArc[@xlink:arcrole='#{DIM_ARCROLE}']",
+          "//link:definitionArc[@xlink:arcrole='#{DOMAIN_MEMBER_ARCROLE}']",
           "link" => LINK_NS,
           "xlink" => XLINK_NS
         )
@@ -63,15 +84,63 @@ module AmsfSurvey
 
           next unless from_label && to_label
 
-          # Check if the source is a dimensional abstract
           if DIMENSIONAL_ABSTRACT_PATTERN.match?(from_label)
-            # Extract field ID from target label (e.g., "strix_a1204S1" -> :a1204S1)
             field_id = extract_field_id(to_label)
             dimensional_fields << field_id if field_id
           end
         end
 
         dimensional_fields
+      end
+
+      # Extract dimension name from hypercube-dimension arcs.
+      # Finds the dimension element connected to a hypercube (e.g., CountryDimension).
+      #
+      # @param doc [Nokogiri::XML::Document] parsed definition linkbase
+      # @return [String, nil] dimension name without namespace prefix
+      def extract_dimension_name(doc)
+        arc = doc.at_xpath(
+          "//link:definitionArc[@xlink:arcrole='#{HYPERCUBE_DIMENSION_ARCROLE}']",
+          "link" => LINK_NS,
+          "xlink" => XLINK_NS
+        )
+
+        return nil unless arc
+
+        dimension_label = arc["xlink:to"]
+        strip_namespace_prefix(dimension_label)
+      end
+
+      # Extract member prefix by analyzing domain-member relationships.
+      # Looks for members connected to a domain (e.g., CountryDomain -> sdlFR).
+      #
+      # @param doc [Nokogiri::XML::Document] parsed definition linkbase
+      # @return [String, nil] common prefix for dimension members
+      def extract_member_prefix(doc)
+        # First find the domain from dimension-domain arc
+        domain_arc = doc.at_xpath(
+          "//link:definitionArc[@xlink:arcrole='#{DIMENSION_DOMAIN_ARCROLE}']",
+          "link" => LINK_NS,
+          "xlink" => XLINK_NS
+        )
+
+        return nil unless domain_arc
+
+        domain_label = domain_arc["xlink:to"]
+        return nil unless domain_label
+
+        # Find members connected to this domain
+        member_arcs = doc.xpath(
+          "//link:definitionArc[@xlink:arcrole='#{DOMAIN_MEMBER_ARCROLE}'][@xlink:from='#{domain_label}']",
+          "link" => LINK_NS,
+          "xlink" => XLINK_NS
+        )
+
+        return nil if member_arcs.empty?
+
+        # Extract prefix from first member (e.g., "strix_sdlFR" -> "sdl")
+        first_member = member_arcs.first["xlink:to"]
+        extract_member_prefix_from_label(first_member)
       end
 
       # Extract field ID from XBRL locator label.
@@ -81,12 +150,37 @@ module AmsfSurvey
       def extract_field_id(label)
         return nil unless label
 
-        # Remove namespace prefix (e.g., "strix_") - only the first segment before underscore
-        # that matches the taxonomy namespace prefix pattern
-        field_name = label.sub(/\Astrix_/, "")
-        return nil if field_name.empty? || field_name == label
+        field_name = strip_namespace_prefix(label)
+        return nil if field_name.nil? || field_name.empty?
 
         field_name.to_sym
+      end
+
+      # Remove namespace prefix from label.
+      #
+      # @param label [String] e.g., "strix_CountryDimension"
+      # @return [String, nil] e.g., "CountryDimension"
+      def strip_namespace_prefix(label)
+        return nil unless label
+
+        # Remove "strix_" prefix (common AMSF convention)
+        result = label.sub(/\Astrix_/, "")
+        result == label ? nil : result
+      end
+
+      # Extract the common prefix from a dimension member label.
+      # Members follow pattern: namespace_prefixCOUNTRYCODE (e.g., strix_sdlFR)
+      #
+      # @param label [String] e.g., "strix_sdlFR"
+      # @return [String, nil] e.g., "sdl"
+      def extract_member_prefix_from_label(label)
+        member_id = strip_namespace_prefix(label)
+        return nil unless member_id
+
+        # Member IDs are prefix + country code (2 uppercase letters)
+        # Extract everything before the last 2 uppercase letters
+        match = member_id.match(/\A(.+?)[A-Z]{2,}\z/)
+        match ? match[1] : nil
       end
     end
   end
