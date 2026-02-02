@@ -18,9 +18,10 @@ module AmsfSurvey
         labels = parse_labels
         xule_data = parse_xule
         taxonomy_config = parse_taxonomy_config
+        dimensional_fields = parse_dimensions
 
         # Build field index from XBRL data
-        fields = build_fields(schema_data, labels, xule_data)
+        fields = build_fields(schema_data, labels, xule_data, dimensional_fields)
         field_index = fields.each_with_object({}) { |f, h| h[f.id] = f }
 
         # Parse structure file and assemble parts
@@ -80,9 +81,16 @@ module AmsfSurvey
         { schema_url: config[:schema_url] }
       end
 
-      def build_fields(schema_data, labels, xule_data)
+      def parse_dimensions
+        def_files = Dir.glob(File.join(@taxonomy_path, "*_def.xml"))
+        return Set.new if def_files.empty?
+
+        DimensionParser.new(def_files.first).parse
+      end
+
+      def build_fields(schema_data, labels, xule_data, dimensional_fields)
         schema_data.map do |field_id, schema|
-          build_field(field_id, schema, labels, xule_data, schema_data)
+          build_field(field_id, schema, labels, xule_data, schema_data, dimensional_fields)
         end.compact
       end
 
@@ -101,10 +109,11 @@ module AmsfSurvey
         end
       end
 
-      def build_field(field_id, schema, labels, xule_data, schema_data)
+      def build_field(field_id, schema, labels, xule_data, schema_data, dimensional_fields)
         label_data = labels[field_id] || {}
         is_gate = xule_data[:gate_fields].include?(field_id)
         depends_on = resolve_gate_dependencies(xule_data[:gate_rules][field_id], schema_data)
+        is_dimensional = dimensional_fields.include?(field_id)
 
         AmsfSurvey::Field.new(
           id: field_id,
@@ -114,7 +123,8 @@ module AmsfSurvey
           verbose_label: label_data[:verbose_label],
           valid_values: schema[:valid_values],
           depends_on: depends_on,
-          gate: is_gate
+          gate: is_gate,
+          dimensional: is_dimensional
         )
       end
 

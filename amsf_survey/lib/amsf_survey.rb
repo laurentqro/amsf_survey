@@ -15,6 +15,7 @@ require_relative "amsf_survey/taxonomy/schema_parser"
 require_relative "amsf_survey/taxonomy/label_parser"
 require_relative "amsf_survey/taxonomy/xule_parser"
 require_relative "amsf_survey/taxonomy/structure_parser"
+require_relative "amsf_survey/taxonomy/dimension_parser"
 require_relative "amsf_survey/taxonomy/loader"
 require_relative "amsf_survey/registry"
 

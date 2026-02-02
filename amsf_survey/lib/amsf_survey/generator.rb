@@ -30,9 +30,16 @@ module AmsfSurvey
     XBRLI_NS = "http://www.xbrl.org/2003/instance"
     LINK_NS = "http://www.xbrl.org/2003/linkbase"
     XLINK_NS = "http://www.w3.org/1999/xlink"
+    XBRLDI_NS = "http://xbrl.org/2006/xbrldi"
 
     # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
+
+    # Dimension name for country-based dimensional breakdowns
+    COUNTRY_DIMENSION = "CountryDimension"
+
+    # Prefix for dimension member IDs (e.g., "sdlFR" for France)
+    DIMENSION_MEMBER_PREFIX = "sdl"
 
     # Unit ID for dimensionless numeric values (counts, percentages as ratios)
     PURE_UNIT_ID = "pure"
@@ -101,11 +108,15 @@ module AmsfSurvey
       doc = Nokogiri::XML::Document.new
       doc.encoding = "UTF-8"
 
+      # Track dimensional contexts (created lazily as dimensional facts are encountered)
+      @dimensional_contexts = {}
+
       # Create root element with namespaces
       root = Nokogiri::XML::Node.new("xbrl", doc)
       root.add_namespace_definition("xbrli", XBRLI_NS)
       root.add_namespace_definition("link", LINK_NS)
       root.add_namespace_definition("xlink", XLINK_NS)
+      root.add_namespace_definition("xbrldi", XBRLDI_NS)
       root.add_namespace_definition("strix", taxonomy_namespace)
       root.namespace = root.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
 
@@ -222,7 +233,12 @@ module AmsfSurvey
         # Skip nil values if include_empty is false
         next if value.nil? && !@include_empty
 
-        build_fact(doc, parent, strix_ns, question, value)
+        # Hash values indicate dimensional fields (e.g., country breakdowns)
+        if value.is_a?(Hash) && question.dimensional?
+          build_dimensional_facts(doc, parent, strix_ns, question, value)
+        else
+          build_fact(doc, parent, strix_ns, question, value)
+        end
       end
     end
 
@@ -234,6 +250,131 @@ module AmsfSurvey
 
       # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
       # XBRL requires unitRef and content when decimals is present.
+      if numeric_type?(question.type) && !value.nil?
+        fact["unitRef"] = PURE_UNIT_ID
+        fact["decimals"] = decimals_for(question.type)
+      end
+
+      fact.content = format_value(value, question.type)
+
+      parent.add_child(fact)
+    end
+
+    # Build dimensional facts - one fact per dimension member (e.g., per country)
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the parent element
+    # @param strix_ns [Nokogiri::XML::Namespace] the strix namespace
+    # @param question [Question] the question being processed
+    # @param values [Hash] country code => value mapping (e.g., {"RU" => 9.0, "FR" => 5.0})
+    def build_dimensional_facts(doc, parent, strix_ns, question, values)
+      values.each do |country_code, value|
+        next if value.nil? && !@include_empty
+
+        # Ensure dimensional context exists for this country
+        dim_context_id = ensure_dimensional_context(doc, parent, country_code)
+
+        # Build fact referencing the dimensional context
+        build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+      end
+    end
+
+    # Ensure a dimensional context exists for the given country, creating if needed.
+    # Dimensional contexts are lazily created and cached to avoid duplicates.
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the root element to add context to
+    # @param country_code [String] ISO country code (e.g., "RU", "FR")
+    # @return [String] the dimensional context ID
+    def ensure_dimensional_context(doc, parent, country_code)
+      cache_key = country_code.to_s.upcase
+
+      return @dimensional_contexts[cache_key] if @dimensional_contexts[cache_key]
+
+      dim_context_id = build_dimensional_context(doc, parent, cache_key)
+      @dimensional_contexts[cache_key] = dim_context_id
+      dim_context_id
+    end
+
+    # Build a dimensional context with country segment
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the root element
+    # @param country_code [String] ISO country code (uppercase)
+    # @return [String] the created context ID
+    def build_dimensional_context(doc, parent, country_code)
+      xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+      xbrldi_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrldi" }
+      strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
+
+      dim_context_id = "#{context_id}_#{country_code}"
+
+      # Context element
+      context = Nokogiri::XML::Node.new("context", doc)
+      context.namespace = xbrli_ns
+      context["id"] = dim_context_id
+
+      # Entity element with segment for dimension
+      entity = Nokogiri::XML::Node.new("entity", doc)
+      entity.namespace = xbrli_ns
+
+      # Identifier element
+      identifier = Nokogiri::XML::Node.new("identifier", doc)
+      identifier.namespace = xbrli_ns
+      identifier["scheme"] = ENTITY_SCHEME
+      identifier.content = submission.entity_id
+      entity.add_child(identifier)
+
+      # Segment element containing the dimension member
+      segment = Nokogiri::XML::Node.new("segment", doc)
+      segment.namespace = xbrli_ns
+
+      # Explicit dimension member
+      explicit_member = Nokogiri::XML::Node.new("explicitMember", doc)
+      explicit_member.namespace = xbrldi_ns
+      explicit_member["dimension"] = "strix:#{COUNTRY_DIMENSION}"
+      explicit_member.content = "strix:#{DIMENSION_MEMBER_PREFIX}#{country_code}"
+
+      segment.add_child(explicit_member)
+      entity.add_child(segment)
+      context.add_child(entity)
+
+      # Period element
+      period = Nokogiri::XML::Node.new("period", doc)
+      period.namespace = xbrli_ns
+
+      instant = Nokogiri::XML::Node.new("instant", doc)
+      instant.namespace = xbrli_ns
+      instant.content = format_date(submission.period)
+
+      period.add_child(instant)
+      context.add_child(period)
+
+      # Insert dimensional contexts after the base context
+      # Find the first context and insert after it
+      first_context = parent.at_xpath("xbrli:context", "xbrli" => XBRLI_NS)
+      if first_context
+        first_context.add_next_sibling(context)
+      else
+        parent.add_child(context)
+      end
+
+      dim_context_id
+    end
+
+    # Build a single dimensional fact
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the parent element
+    # @param strix_ns [Nokogiri::XML::Namespace] the strix namespace
+    # @param question [Question] the question
+    # @param value [Object] the value for this dimension
+    # @param dim_context_id [String] the dimensional context ID
+    def build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+      fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
+      fact.namespace = strix_ns
+      fact["contextRef"] = dim_context_id
+
       if numeric_type?(question.type) && !value.nil?
         fact["unitRef"] = PURE_UNIT_ID
         fact["decimals"] = decimals_for(question.type)

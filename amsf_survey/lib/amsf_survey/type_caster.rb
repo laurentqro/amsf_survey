@@ -28,7 +28,7 @@ module AmsfSurvey
     # Cast a value to the appropriate type based on field type.
     #
     # @param value [Object] the value to cast
-    # @param field_type [Symbol] the field type (:integer, :monetary, :boolean, :enum, :string)
+    # @param field_type [Symbol] the field type (:integer, :monetary, :boolean, :enum, :string, :percentage)
     # @return [Object, nil] the cast value, or nil for empty/invalid values
     def cast(value, field_type)
       return nil if value.nil?
@@ -38,6 +38,8 @@ module AmsfSurvey
         cast_integer(value)
       when :monetary
         cast_monetary(value)
+      when :percentage
+        cast_percentage(value)
       when :boolean
         cast_boolean(value)
       when :enum
@@ -105,6 +107,37 @@ module AmsfSurvey
 
       str = value.to_s.strip
       str.empty? ? nil : str
+    end
+
+    # Percentage fields handle both scalar values and Hash values (for dimensional breakdowns).
+    # Hash values are passed through as-is, scalar values are cast to BigDecimal.
+    #
+    # @param value [Object] the value to cast
+    # @return [BigDecimal, Hash, nil] the cast value
+    def cast_percentage(value)
+      return nil if value.nil?
+
+      # Hash values for dimensional fields are passed through
+      return value if value.is_a?(Hash)
+
+      cast_percentage_scalar(value)
+    end
+
+    # Cast a single percentage value to BigDecimal.
+    #
+    # @param value [Object] the value to cast
+    # @return [BigDecimal, nil] the cast value
+    def cast_percentage_scalar(value)
+      return value if value.is_a?(BigDecimal)
+      return nil if value.nil?
+
+      str = value.to_s.strip
+      return nil if str.empty?
+      return nil if str.length > MAX_INPUT_LENGTH
+
+      BigDecimal(str)
+    rescue ArgumentError, FloatDomainError
+      nil
     end
   end
 end

@@ -6,7 +6,8 @@ module AmsfSurvey
   class Field
     attr_reader :xbrl_id, :type, :xbrl_type, :label,
                 :verbose_label, :valid_values,
-                :depends_on, :gate, :min, :max
+                :depends_on, :gate, :min, :max,
+                :dimensional
 
     def initialize(
       id:,
@@ -18,7 +19,8 @@ module AmsfSurvey
       valid_values: nil,
       depends_on: {},
       min: nil,
-      max: nil
+      max: nil,
+      dimensional: false
     )
       @xbrl_id = id
       @id = id.to_s.downcase.to_sym
@@ -31,6 +33,7 @@ module AmsfSurvey
       @depends_on = depends_on || {}
       @min = min
       @max = max
+      @dimensional = dimensional
     end
 
     # Returns lowercase ID for API usage (e.g., :aactive, :a1101)
@@ -50,6 +53,9 @@ module AmsfSurvey
     def monetary? = type == :monetary
     def enum? = type == :enum
     def percentage? = type == :percentage
+
+    # Dimensional predicate
+    def dimensional? = dimensional
 
     # Gate predicates
     def gate? = gate

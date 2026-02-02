@@ -24,6 +24,7 @@ module AmsfSurvey
     def valid_values = field.valid_values
     def gate? = field.gate?
     def depends_on = field.depends_on
+    def dimensional? = field.dimensional?
 
     # Cast a value to the appropriate type for this question
     def cast(value) = field.cast(value)
