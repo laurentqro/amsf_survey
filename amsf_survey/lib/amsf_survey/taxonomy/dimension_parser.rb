@@ -177,9 +177,9 @@ module AmsfSurvey
         member_id = strip_namespace_prefix(label)
         return nil unless member_id
 
-        # Member IDs are prefix + country code (2 uppercase letters)
-        # Extract everything before the last 2 uppercase letters
-        match = member_id.match(/\A(.+?)[A-Z]{2,}\z/)
+        # Member IDs are prefix + country code (ISO 3166-1 alpha-2: exactly 2 uppercase letters)
+        # Extract everything before the 2-letter country code suffix
+        match = member_id.match(/\A(.+?)[A-Z]{2}\z/)
         match ? match[1] : nil
       end
     end
