@@ -18,7 +18,7 @@ module AmsfSurvey
         labels = parse_labels
         xule_data = parse_xule
         taxonomy_config = parse_taxonomy_config
-        dimension_data = parse_dimensions
+        dimension_data = parse_dimensions(taxonomy_config)
 
         # Build field index from XBRL data
         fields = build_fields(schema_data, labels, xule_data, dimension_data[:dimensional_fields])
@@ -79,15 +79,15 @@ module AmsfSurvey
         config_path = File.join(@taxonomy_path, "taxonomy.yml")
         return {} unless File.exist?(config_path)
 
-        config = YAML.safe_load(File.read(config_path), symbolize_names: true)
-        { schema_url: config[:schema_url] }
+        YAML.safe_load(File.read(config_path), symbolize_names: true) || {}
       end
 
-      def parse_dimensions
+      def parse_dimensions(taxonomy_config)
         def_files = Dir.glob(File.join(@taxonomy_path, "*_def.xml"))
         return { dimensional_fields: Set.new, dimension_name: nil, member_prefix: nil } if def_files.empty?
 
-        DimensionParser.new(def_files.first).parse
+        dimension_config = taxonomy_config[:dimension] || {}
+        DimensionParser.new(def_files.first, dimension_config).parse
       end
 
       def build_fields(schema_data, labels, xule_data, dimensional_fields)

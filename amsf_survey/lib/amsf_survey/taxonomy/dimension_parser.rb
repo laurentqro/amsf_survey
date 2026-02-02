@@ -10,8 +10,10 @@ module AmsfSurvey
     # Dimensional fields require country-breakdown XBRL output - multiple facts,
     # one per country with its own context containing a dimension segment.
     #
-    # In the real estate taxonomy, fields in the Abstract_aAC group are connected
-    # to CountryTableaAC hypercube and require dimensional breakdown.
+    # Pattern matching is configurable via taxonomy.yml dimension settings:
+    #   dimension:
+    #     abstract_pattern: "Abstract_aAC$"       # Pattern for dimensional abstract groups
+    #     member_suffix_pattern: "[A-Z]{2}$"      # Pattern for country code suffix
     class DimensionParser
       LINK_NS = "http://www.xbrl.org/2003/linkbase"
       XLINK_NS = "http://www.w3.org/1999/xlink"
@@ -21,12 +23,22 @@ module AmsfSurvey
       HYPERCUBE_DIMENSION_ARCROLE = "http://xbrl.org/int/dim/arcrole/hypercube-dimension"
       DIMENSION_DOMAIN_ARCROLE = "http://xbrl.org/int/dim/arcrole/dimension-domain"
 
-      # Pattern to identify dimensional abstract groups (e.g., Abstract_aAC)
-      # These are connected to hypercubes for dimensional breakdowns
-      DIMENSIONAL_ABSTRACT_PATTERN = /Abstract_aAC\z/
+      # Default pattern to identify dimensional abstract groups (e.g., Abstract_aAC)
+      # Can be overridden via taxonomy.yml dimension.abstract_pattern
+      DEFAULT_ABSTRACT_PATTERN = /Abstract_aAC\z/
 
-      def initialize(def_path)
+      # Default pattern for dimension member suffix (ISO 3166-1 alpha-2 country codes)
+      # Can be overridden via taxonomy.yml dimension.member_suffix_pattern
+      DEFAULT_MEMBER_SUFFIX_PATTERN = /[A-Z]{2}\z/
+
+      # @param def_path [String] path to the _def.xml file
+      # @param config [Hash] dimension configuration from taxonomy.yml
+      # @option config [String] :abstract_pattern regex pattern for dimensional abstracts
+      # @option config [String] :member_suffix_pattern regex pattern for member suffixes
+      def initialize(def_path, config = {})
         @def_path = def_path
+        @abstract_pattern = build_pattern(config[:abstract_pattern], DEFAULT_ABSTRACT_PATTERN)
+        @member_suffix_pattern = build_pattern(config[:member_suffix_pattern], DEFAULT_MEMBER_SUFFIX_PATTERN)
       end
 
       # Parse the definition file and return dimension metadata.
@@ -49,6 +61,20 @@ module AmsfSurvey
       end
 
       private
+
+      # Build a Regexp from a string pattern, or use the default.
+      #
+      # @param pattern_string [String, nil] regex pattern from config
+      # @param default [Regexp] default pattern to use if config is nil
+      # @return [Regexp] compiled regex
+      def build_pattern(pattern_string, default)
+        return default if pattern_string.nil? || pattern_string.empty?
+
+        Regexp.new(pattern_string)
+      rescue RegexpError => e
+        warn "[DimensionParser] Invalid regex pattern '#{pattern_string}': #{e.message}. Using default."
+        default
+      end
 
       def empty_result
         {
@@ -84,7 +110,7 @@ module AmsfSurvey
 
           next unless from_label && to_label
 
-          if DIMENSIONAL_ABSTRACT_PATTERN.match?(from_label)
+          if @abstract_pattern.match?(from_label)
             field_id = extract_field_id(to_label)
             dimensional_fields << field_id if field_id
           end
@@ -157,6 +183,7 @@ module AmsfSurvey
       end
 
       # Remove namespace prefix from label.
+      # Logs a warning if the expected prefix is not found (may indicate taxonomy inconsistency).
       #
       # @param label [String] e.g., "strix_CountryDimension"
       # @return [String, nil] e.g., "CountryDimension"
@@ -165,11 +192,16 @@ module AmsfSurvey
 
         # Remove "strix_" prefix (common AMSF convention)
         result = label.sub(/\Astrix_/, "")
-        result == label ? nil : result
+        if result == label
+          warn "[DimensionParser] Label '#{label}' does not have expected 'strix_' prefix"
+          return nil
+        end
+        result
       end
 
       # Extract the common prefix from a dimension member label.
-      # Members follow pattern: namespace_prefixCOUNTRYCODE (e.g., strix_sdlFR)
+      # Members follow pattern: namespace_prefixSUFFIX (e.g., strix_sdlFR)
+      # The suffix pattern is configurable (defaults to ISO 3166-1 alpha-2 country codes).
       #
       # @param label [String] e.g., "strix_sdlFR"
       # @return [String, nil] e.g., "sdl"
@@ -177,10 +209,17 @@ module AmsfSurvey
         member_id = strip_namespace_prefix(label)
         return nil unless member_id
 
-        # Member IDs are prefix + country code (ISO 3166-1 alpha-2: exactly 2 uppercase letters)
-        # Extract everything before the 2-letter country code suffix
-        match = member_id.match(/\A(.+?)[A-Z]{2}\z/)
-        match ? match[1] : nil
+        # Extract everything before the suffix pattern (e.g., country code)
+        # Build a capture pattern: (.+?) followed by the suffix
+        capture_pattern = /\A(.+?)#{@member_suffix_pattern.source}/
+        match = member_id.match(capture_pattern)
+
+        unless match
+          warn "[DimensionParser] Member '#{member_id}' does not match suffix pattern #{@member_suffix_pattern.inspect}"
+          return nil
+        end
+
+        match[1]
       end
     end
   end

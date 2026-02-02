@@ -16,6 +16,17 @@ module AmsfSurvey
   # For regulatory compliance, validation is delegated to Arelle (external XBRL validator).
   # The gem tracks completeness via Submission#complete? and Submission#unanswered_questions.
   #
+  # ## Dimensional Fields (Country Breakdowns)
+  #
+  # Percentage fields can accept Hash values for dimensional breakdowns:
+  #   { "FR" => 40.0, "DE" => 30.0 }
+  #
+  # Hash handling:
+  # - Keys are normalized to uppercase strings (e.g., :fr → "FR")
+  # - Values are cast to BigDecimal
+  # - Empty hashes ({}) are treated as unanswered (equivalent to nil)
+  # - Duplicate keys after normalization raise DuplicateKeyError
+  #
   # @see Submission#complete? For checking if all visible questions are filled
   # @see Submission#unanswered_questions For listing unfilled visible questions
   module TypeCaster
