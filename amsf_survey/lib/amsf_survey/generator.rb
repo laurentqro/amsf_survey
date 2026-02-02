@@ -121,8 +121,9 @@ module AmsfSurvey
       doc = Nokogiri::XML::Document.new
       doc.encoding = "UTF-8"
 
-      # Reset dimensional contexts for this document generation
+      # Reset caches for this document generation
       @dimensional_contexts.clear
+      @base_context = nil
 
       # Create root element with namespaces
       root = Nokogiri::XML::Node.new("xbrl", doc)
@@ -247,10 +248,16 @@ module AmsfSurvey
         # Empty hashes for dimensional fields are treated as unanswered
         next if empty_value?(value) && !@include_empty
 
-        # Hash values indicate dimensional fields (e.g., country breakdowns)
-        if value.is_a?(Hash) && question.dimensional?
+        # Validate dimensional field values
+        if question.dimensional?
+          validate_dimensional_value!(question, value)
           build_dimensional_facts(doc, parent, strix_ns, question, value)
         else
+          # Non-dimensional fields should not receive Hash values
+          if value.is_a?(Hash)
+            raise GeneratorError, "Non-dimensional field '#{question.xbrl_id}' received Hash value. " \
+                                  "Only dimensional fields accept country breakdown data."
+          end
           build_fact(doc, parent, strix_ns, question, value)
         end
       end
@@ -295,6 +302,20 @@ module AmsfSurvey
       dim_context_id = build_dimensional_context(doc, parent, cache_key)
       @dimensional_contexts[cache_key] = dim_context_id
       dim_context_id
+    end
+
+    # Get the base context node, caching the XPath lookup for performance.
+    # Called once per country when building dimensional contexts.
+    #
+    # @param parent [Nokogiri::XML::Node] the root element
+    # @return [Nokogiri::XML::Node] the base context element
+    # @raise [GeneratorError] if base context doesn't exist
+    def cached_base_context(parent)
+      @base_context ||= begin
+        ctx = parent.at_xpath("xbrli:context", "xbrli" => XBRLI_NS)
+        raise GeneratorError, "Base context must exist before creating dimensional contexts" unless ctx
+        ctx
+      end
     end
 
     # Build a dimensional context with country segment
@@ -351,14 +372,10 @@ module AmsfSurvey
       period.add_child(instant)
       context.add_child(period)
 
-      # Insert dimensional contexts after the base context
       # Insert dimensional context after the base context.
       # Base context must exist (created by build_context before build_facts).
-      first_context = parent.at_xpath("xbrli:context", "xbrli" => XBRLI_NS)
-      unless first_context
-        raise GeneratorError, "Base context must exist before creating dimensional contexts"
-      end
-      first_context.add_next_sibling(context)
+      base_context = cached_base_context(parent)
+      base_context.add_next_sibling(context)
 
       dim_context_id
     end
@@ -401,6 +418,19 @@ module AmsfSurvey
     # @return [Boolean] true if value is nil or empty hash
     def empty_value?(value)
       value.nil? || (value.is_a?(Hash) && value.empty?)
+    end
+
+    # Validate that dimensional fields receive Hash values.
+    # Scalar values for dimensional fields would generate incorrect XBRL.
+    #
+    # @param question [Question] the dimensional question
+    # @param value [Object] the value to validate
+    # @raise [GeneratorError] if value is not a Hash
+    def validate_dimensional_value!(question, value)
+      return if value.is_a?(Hash)
+
+      raise GeneratorError, "Dimensional field '#{question.xbrl_id}' requires Hash value " \
+                            "(e.g., {\"FR\" => 40.0}), got #{value.class}: #{value.inspect}"
     end
 
     # Check if type is numeric (requires unitRef)

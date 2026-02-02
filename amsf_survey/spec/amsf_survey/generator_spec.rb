@@ -616,6 +616,91 @@ RSpec.describe AmsfSurvey::Generator do
       end
     end
 
+    # =========================================================================
+    # Dimensional Value Validation
+    # =========================================================================
+    context "dimensional value validation" do
+      it "raises GeneratorError when dimensional field receives scalar value" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Stub data to return a scalar for the dimensional field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: BigDecimal("42.0") # Scalar instead of Hash
+        })
+
+        # Add to questionnaire's questions
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /Dimensional field 'tDIM' requires Hash value/)
+      end
+
+      it "raises GeneratorError when non-dimensional field receives Hash value" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Stub data to return a Hash for a non-dimensional integer field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          t001: { "FR" => 50 } # Hash instead of scalar
+        })
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /Non-dimensional field 't001' received Hash value/)
+      end
+
+      it "accepts Hash value for dimensional field" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Stub data with valid Hash for dimensional field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: { "FR" => BigDecimal("40.0"), "DE" => BigDecimal("60.0") }
+        })
+
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        dim_facts = doc.xpath("//strix:tDIM", ns)
+
+        expect(dim_facts.size).to eq(2)
+      end
+
+      it "accepts scalar value for non-dimensional field" do
+        submission = build_submission(tGATE: "Oui", t001: 100)
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        t001_fact = doc.at_xpath("//strix:t001", ns)
+
+        expect(t001_fact).not_to be_nil
+        expect(t001_fact.text).to eq("100")
+      end
+    end
+
     context "dimension metadata" do
       it "uses dimension_name from questionnaire when available" do
         custom_questionnaire = AmsfSurvey::Questionnaire.new(
