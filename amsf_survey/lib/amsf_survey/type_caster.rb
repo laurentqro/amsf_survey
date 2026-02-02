@@ -110,17 +110,30 @@ module AmsfSurvey
     end
 
     # Percentage fields handle both scalar values and Hash values (for dimensional breakdowns).
-    # Hash values are passed through as-is, scalar values are cast to BigDecimal.
+    # Hash values have their keys normalized (uppercase country codes), scalar values are cast to BigDecimal.
     #
     # @param value [Object] the value to cast
     # @return [BigDecimal, Hash, nil] the cast value
     def cast_percentage(value)
       return nil if value.nil?
 
-      # Hash values for dimensional fields are passed through
-      return value if value.is_a?(Hash)
+      # Hash values for dimensional fields - normalize keys to uppercase
+      return normalize_dimensional_hash(value) if value.is_a?(Hash)
 
       cast_percentage_scalar(value)
+    end
+
+    # Normalize dimensional hash keys to uppercase strings.
+    # Merges duplicate keys (e.g., "fr" and "FR" become one "FR" entry).
+    # Also casts each value to BigDecimal.
+    #
+    # @param hash [Hash] country code => value mapping
+    # @return [Hash{String => BigDecimal}] normalized hash
+    def normalize_dimensional_hash(hash)
+      hash.each_with_object({}) do |(key, value), result|
+        normalized_key = key.to_s.upcase
+        result[normalized_key] = cast_percentage_scalar(value)
+      end
     end
 
     # Cast a single percentage value to BigDecimal.
