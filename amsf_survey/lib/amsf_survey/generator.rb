@@ -435,6 +435,10 @@ module AmsfSurvey
       if value.nil?
         # Use xsi:nil="true" for empty facts (all AMSF fields are nillable)
         fact["xsi:nil"] = "true"
+        # Numeric nil facts still require unitRef per XBRL spec
+        if numeric_type?(question.type)
+          fact["unitRef"] = unit_for(question.type)
+        end
       else
         # Add numeric attributes (unitRef, decimals) for numeric types with values
         if numeric_type?(question.type)
