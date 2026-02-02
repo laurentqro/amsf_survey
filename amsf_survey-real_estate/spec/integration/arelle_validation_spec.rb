@@ -227,5 +227,51 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
 
       expect(member_errors).to be_empty, "Expected valid dimension members, got: #{member_errors.map { |e| e['message'] }}"
     end
+
+    it "validates dimensional field with many countries" do
+      # Test a dimensional field with many countries to ensure context generation scales
+      submission = build_submission(
+        aACTIVE: "Oui",
+        # Dimensional percentage field with 5 countries
+        a1204S1: {
+          "FR" => 25.0,
+          "DE" => 20.0,
+          "IT" => 20.0,
+          "ES" => 20.0,
+          "PT" => 15.0
+        },
+        # Unconditionally required fields
+        a14801: "Non",
+        a3101: "Non",
+        a3103: "Non",
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+      doc = Nokogiri::XML(xml)
+
+      # Count contexts: 1 base + 5 dimensional
+      contexts = doc.xpath("//xbrli:context", "xbrli" => "http://www.xbrl.org/2003/instance")
+      expect(contexts.size).to eq(6)
+
+      # Verify each country has exactly one fact
+      %w[FR DE IT ES PT].each do |country|
+        country_facts = doc.xpath("//*[contains(@contextRef, '_#{country}')]")
+        expect(country_facts.size).to eq(1), "Expected 1 fact for #{country}, got #{country_facts.size}"
+      end
+
+      result = validate_xbrl(xml)
+
+      # Should not have dimensional structure errors
+      dim_errors = result["messages"].select do |m|
+        m["severity"] == "error" && m["message"].to_s.match?(/dimension|context/i)
+      end
+
+      expect(dim_errors).to be_empty, "Expected no dimensional errors, got: #{dim_errors.map { |e| e['message'] }}"
+    end
   end
 end

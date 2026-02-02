@@ -52,6 +52,7 @@ module AmsfSurvey
       @submission = submission
       @pretty = options.fetch(:pretty, false)
       @include_empty = options.fetch(:include_empty, true)
+      @dimensional_contexts = {}
     end
 
     # Generate XBRL instance XML from the submission.
@@ -120,8 +121,8 @@ module AmsfSurvey
       doc = Nokogiri::XML::Document.new
       doc.encoding = "UTF-8"
 
-      # Track dimensional contexts (created lazily as dimensional facts are encountered)
-      @dimensional_contexts = {}
+      # Reset dimensional contexts for this document generation
+      @dimensional_contexts.clear
 
       # Create root element with namespaces
       root = Nokogiri::XML::Node.new("xbrl", doc)
@@ -351,13 +352,13 @@ module AmsfSurvey
       context.add_child(period)
 
       # Insert dimensional contexts after the base context
-      # Find the first context and insert after it
+      # Insert dimensional context after the base context.
+      # Base context must exist (created by build_context before build_facts).
       first_context = parent.at_xpath("xbrli:context", "xbrli" => XBRLI_NS)
-      if first_context
-        first_context.add_next_sibling(context)
-      else
-        parent.add_child(context)
+      unless first_context
+        raise GeneratorError, "Base context must exist before creating dimensional contexts"
       end
+      first_context.add_next_sibling(context)
 
       dim_context_id
     end
