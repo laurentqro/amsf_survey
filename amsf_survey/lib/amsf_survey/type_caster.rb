@@ -18,12 +18,14 @@ module AmsfSurvey
   #
   # ## Dimensional Fields (Country Breakdowns)
   #
-  # Percentage fields can accept Hash values for dimensional breakdowns:
-  #   { "FR" => 40.0, "DE" => 30.0 }
+  # Dimensional fields (integer, percentage, monetary) can accept Hash values for
+  # country breakdowns:
+  #   { "FR" => 40, "DE" => 30 }      # integer dimensional
+  #   { "FR" => 40.0, "DE" => 30.0 }  # percentage dimensional
   #
   # Hash handling:
   # - Keys are normalized to uppercase strings (e.g., :fr → "FR")
-  # - Values are cast to BigDecimal
+  # - Values are cast to the appropriate type (Integer, BigDecimal, etc.)
   # - Empty hashes ({}) are treated as unanswered (equivalent to nil)
   # - Duplicate keys after normalization raise DuplicateKeyError
   #
@@ -62,10 +64,25 @@ module AmsfSurvey
       end
     end
 
-    # Cast to integer. Returns nil for empty, whitespace-only, or non-numeric strings.
+    # Cast to integer. Handles both scalar values and Hash values (for dimensional breakdowns).
+    # Returns nil for empty, whitespace-only, or non-numeric strings.
     # Also rejects inputs exceeding MAX_INPUT_LENGTH for DoS protection.
     def cast_integer(value)
+      return nil if value.nil?
+
+      # Hash values for dimensional fields - normalize keys to uppercase
+      return normalize_dimensional_hash(value, :cast_integer_scalar) if value.is_a?(Hash)
+
+      cast_integer_scalar(value)
+    end
+
+    # Cast a single integer value.
+    #
+    # @param value [Object] the value to cast
+    # @return [Integer, nil] the cast value
+    def cast_integer_scalar(value)
       return value if value.is_a?(Integer)
+      return nil if value.nil?
 
       str = value.to_s.strip
       return nil if str.empty?
@@ -75,10 +92,24 @@ module AmsfSurvey
       str.to_i
     end
 
-    # Cast to BigDecimal for monetary precision.
+    # Cast to BigDecimal for monetary precision. Handles both scalar values and
+    # Hash values (for dimensional breakdowns).
     # Returns nil for empty, non-numeric, or excessively long strings.
     # Catches ArgumentError and FloatDomainError for malformed inputs.
     def cast_monetary(value)
+      return nil if value.nil?
+
+      # Hash values for dimensional fields - normalize keys to uppercase
+      return normalize_dimensional_hash(value, :cast_monetary_scalar) if value.is_a?(Hash)
+
+      cast_monetary_scalar(value)
+    end
+
+    # Cast a single monetary value to BigDecimal.
+    #
+    # @param value [Object] the value to cast
+    # @return [BigDecimal, nil] the cast value
+    def cast_monetary_scalar(value)
       return value if value.is_a?(BigDecimal)
       return nil if value.nil?
 
@@ -129,7 +160,7 @@ module AmsfSurvey
       return nil if value.nil?
 
       # Hash values for dimensional fields - normalize keys to uppercase
-      return normalize_dimensional_hash(value) if value.is_a?(Hash)
+      return normalize_dimensional_hash(value, :cast_percentage_scalar) if value.is_a?(Hash)
 
       cast_percentage_scalar(value)
     end
@@ -137,12 +168,13 @@ module AmsfSurvey
     # Normalize dimensional hash keys to uppercase strings.
     # Raises an error if duplicate keys are detected after normalization
     # (e.g., "fr" and "FR" would both normalize to "FR").
-    # Also casts each value to BigDecimal.
+    # Casts each value using the specified scalar casting method.
     #
     # @param hash [Hash] country code => value mapping
-    # @return [Hash{String => BigDecimal}] normalized hash
+    # @param scalar_caster [Symbol] method name for casting individual values
+    # @return [Hash{String => Object}] normalized hash with cast values
     # @raise [DuplicateKeyError] if duplicate keys exist after normalization
-    def normalize_dimensional_hash(hash)
+    def normalize_dimensional_hash(hash, scalar_caster)
       result = {}
       hash.each do |key, value|
         normalized_key = key.to_s.upcase
@@ -150,7 +182,7 @@ module AmsfSurvey
           raise DuplicateKeyError, "Duplicate country code after normalization: " \
                                    "#{key.inspect} conflicts with existing key #{normalized_key}"
         end
-        result[normalized_key] = cast_percentage_scalar(value)
+        result[normalized_key] = send(scalar_caster, value)
       end
       result
     end

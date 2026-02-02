@@ -44,6 +44,43 @@ RSpec.describe AmsfSurvey::TypeCaster do
         result = described_class.cast(max_input, :integer)
         expect(result).to be_a(Integer)
       end
+
+      context "with dimensional Hash values (country breakdowns)" do
+        it "normalizes lowercase country codes to uppercase" do
+          result = described_class.cast({ "fr" => 5, "de" => 10 }, :integer)
+          expect(result.keys).to contain_exactly("FR", "DE")
+        end
+
+        it "normalizes symbol country codes to uppercase strings" do
+          result = described_class.cast({ fr: 5, DE: 10 }, :integer)
+          expect(result.keys).to contain_exactly("FR", "DE")
+          expect(result.keys).to all(be_a(String))
+        end
+
+        it "raises DuplicateKeyError for duplicate keys after normalization" do
+          expect {
+            described_class.cast({ "fr" => 5, "FR" => 10 }, :integer)
+          }.to raise_error(AmsfSurvey::DuplicateKeyError, /Duplicate country code.*"FR".*conflicts/)
+        end
+
+        it "casts Hash values to Integer" do
+          result = described_class.cast({ "FR" => "5", "DE" => 10 }, :integer)
+          expect(result["FR"]).to be_a(Integer)
+          expect(result["FR"]).to eq(5)
+          expect(result["DE"]).to be_a(Integer)
+          expect(result["DE"]).to eq(10)
+        end
+
+        it "returns nil for invalid numeric values in Hash" do
+          result = described_class.cast({ "FR" => "invalid" }, :integer)
+          expect(result["FR"]).to be_nil
+        end
+
+        it "handles empty Hash" do
+          result = described_class.cast({}, :integer)
+          expect(result).to eq({})
+        end
+      end
     end
 
     context "with monetary fields" do
@@ -142,6 +179,43 @@ RSpec.describe AmsfSurvey::TypeCaster do
           max_input = "1" * 100 # Exactly MAX_INPUT_LENGTH
           result = described_class.cast(max_input, :monetary)
           expect(result).to be_a(BigDecimal)
+        end
+
+        context "with dimensional Hash values (country breakdowns)" do
+          it "normalizes lowercase country codes to uppercase" do
+            result = described_class.cast({ "fr" => 100.50, "de" => 200.75 }, :monetary)
+            expect(result.keys).to contain_exactly("FR", "DE")
+          end
+
+          it "normalizes symbol country codes to uppercase strings" do
+            result = described_class.cast({ fr: 100.50, DE: 200.75 }, :monetary)
+            expect(result.keys).to contain_exactly("FR", "DE")
+            expect(result.keys).to all(be_a(String))
+          end
+
+          it "raises DuplicateKeyError for duplicate keys after normalization" do
+            expect {
+              described_class.cast({ "fr" => 100.0, "FR" => 200.0 }, :monetary)
+            }.to raise_error(AmsfSurvey::DuplicateKeyError, /Duplicate country code.*"FR".*conflicts/)
+          end
+
+          it "casts Hash values to BigDecimal" do
+            result = described_class.cast({ "FR" => "100.50", "DE" => 200 }, :monetary)
+            expect(result["FR"]).to be_a(BigDecimal)
+            expect(result["FR"]).to eq(BigDecimal("100.50"))
+            expect(result["DE"]).to be_a(BigDecimal)
+            expect(result["DE"]).to eq(BigDecimal("200"))
+          end
+
+          it "returns nil for invalid numeric values in Hash" do
+            result = described_class.cast({ "FR" => "invalid" }, :monetary)
+            expect(result["FR"]).to be_nil
+          end
+
+          it "handles empty Hash" do
+            result = described_class.cast({}, :monetary)
+            expect(result).to eq({})
+          end
         end
 
         it "preserves exact decimal representation vs float" do
