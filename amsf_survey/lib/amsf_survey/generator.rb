@@ -30,12 +30,19 @@ module AmsfSurvey
     XBRLI_NS = "http://www.xbrl.org/2003/instance"
     LINK_NS = "http://www.xbrl.org/2003/linkbase"
     XLINK_NS = "http://www.w3.org/1999/xlink"
+    XBRLDI_NS = "http://xbrl.org/2006/xbrldi"
 
     # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
 
     # Unit ID for dimensionless numeric values (counts, percentages as ratios)
     PURE_UNIT_ID = "pure"
+
+    # Default dimension name (fallback if not parsed from taxonomy)
+    DEFAULT_DIMENSION_NAME = "CountryDimension"
+
+    # Default member prefix (fallback if not parsed from taxonomy)
+    DEFAULT_MEMBER_PREFIX = "sdl"
 
     # @param submission [Submission] the source submission object
     # @param options [Hash] generation options
@@ -45,6 +52,7 @@ module AmsfSurvey
       @submission = submission
       @pretty = options.fetch(:pretty, false)
       @include_empty = options.fetch(:include_empty, true)
+      @dimensional_contexts = {}
     end
 
     # Generate XBRL instance XML from the submission.
@@ -88,6 +96,18 @@ module AmsfSurvey
       questionnaire.taxonomy_namespace
     end
 
+    # The dimension name from the taxonomy (e.g., "CountryDimension")
+    # Falls back to default if not parsed from _def.xml
+    def dimension_name
+      questionnaire.dimension_name || DEFAULT_DIMENSION_NAME
+    end
+
+    # The member prefix from the taxonomy (e.g., "sdl")
+    # Falls back to default if not parsed from _def.xml
+    def member_prefix
+      questionnaire.member_prefix || DEFAULT_MEMBER_PREFIX
+    end
+
     # Generate a unique context ID for this submission.
     # Includes entity_id and full date to ensure uniqueness if multiple
     # submissions are ever combined in a single XBRL document.
@@ -101,11 +121,16 @@ module AmsfSurvey
       doc = Nokogiri::XML::Document.new
       doc.encoding = "UTF-8"
 
+      # Reset caches for this document generation
+      @dimensional_contexts.clear
+      @base_context = nil
+
       # Create root element with namespaces
       root = Nokogiri::XML::Node.new("xbrl", doc)
       root.add_namespace_definition("xbrli", XBRLI_NS)
       root.add_namespace_definition("link", LINK_NS)
       root.add_namespace_definition("xlink", XLINK_NS)
+      root.add_namespace_definition("xbrldi", XBRLDI_NS)
       root.add_namespace_definition("strix", taxonomy_namespace)
       root.namespace = root.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
 
@@ -219,18 +244,160 @@ module AmsfSurvey
         # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
         value = data[question.xbrl_id]
 
-        # Skip nil values if include_empty is false
-        next if value.nil? && !@include_empty
+        # Skip nil/empty values if include_empty is false
+        # Empty hashes for dimensional fields are treated as unanswered
+        next if empty_value?(value) && !@include_empty
 
-        build_fact(doc, parent, strix_ns, question, value)
+        # Validate dimensional field values
+        if question.dimensional?
+          validate_dimensional_value!(question, value)
+          build_dimensional_facts(doc, parent, strix_ns, question, value)
+        else
+          # Non-dimensional fields should not receive Hash values
+          if value.is_a?(Hash)
+            raise GeneratorError, "Non-dimensional field '#{question.xbrl_id}' received Hash value. " \
+                                  "Only dimensional fields accept country breakdown data."
+          end
+          build_fact(doc, parent, strix_ns, question, value)
+        end
       end
     end
 
     # Build a single fact element
     def build_fact(doc, parent, strix_ns, question, value)
+      build_fact_element(doc, parent, strix_ns, question, value, context_id)
+    end
+
+    # Build dimensional facts - one fact per dimension member (e.g., per country)
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the parent element
+    # @param strix_ns [Nokogiri::XML::Namespace] the strix namespace
+    # @param question [Question] the question being processed
+    # @param values [Hash] country code => value mapping (e.g., {"RU" => 9.0, "FR" => 5.0})
+    def build_dimensional_facts(doc, parent, strix_ns, question, values)
+      values.each do |country_code, value|
+        next if value.nil? && !@include_empty
+
+        # Ensure dimensional context exists for this country
+        dim_context_id = ensure_dimensional_context(doc, parent, country_code)
+
+        # Build fact referencing the dimensional context
+        build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+      end
+    end
+
+    # Ensure a dimensional context exists for the given country, creating if needed.
+    # Dimensional contexts are lazily created and cached to avoid duplicates.
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the root element to add context to
+    # @param country_code [String] ISO country code (e.g., "RU", "FR")
+    # @return [String] the dimensional context ID
+    def ensure_dimensional_context(doc, parent, country_code)
+      cache_key = country_code.to_s.upcase
+
+      return @dimensional_contexts[cache_key] if @dimensional_contexts[cache_key]
+
+      dim_context_id = build_dimensional_context(doc, parent, cache_key)
+      @dimensional_contexts[cache_key] = dim_context_id
+      dim_context_id
+    end
+
+    # Get the base context node, caching the XPath lookup for performance.
+    # Called once per country when building dimensional contexts.
+    #
+    # @param parent [Nokogiri::XML::Node] the root element
+    # @return [Nokogiri::XML::Node] the base context element
+    # @raise [GeneratorError] if base context doesn't exist
+    def cached_base_context(parent)
+      @base_context ||= begin
+        ctx = parent.at_xpath("xbrli:context", "xbrli" => XBRLI_NS)
+        raise GeneratorError, "Base context must exist before creating dimensional contexts" unless ctx
+        ctx
+      end
+    end
+
+    # Build a dimensional context with country segment
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the root element
+    # @param country_code [String] ISO country code (uppercase)
+    # @return [String] the created context ID
+    def build_dimensional_context(doc, parent, country_code)
+      xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+      xbrldi_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrldi" }
+      strix_ns = parent.namespace_definitions.find { |ns| ns.prefix == "strix" }
+
+      dim_context_id = "#{context_id}_#{country_code}"
+
+      # Context element
+      context = Nokogiri::XML::Node.new("context", doc)
+      context.namespace = xbrli_ns
+      context["id"] = dim_context_id
+
+      # Entity element with segment for dimension
+      entity = Nokogiri::XML::Node.new("entity", doc)
+      entity.namespace = xbrli_ns
+
+      # Identifier element
+      identifier = Nokogiri::XML::Node.new("identifier", doc)
+      identifier.namespace = xbrli_ns
+      identifier["scheme"] = ENTITY_SCHEME
+      identifier.content = submission.entity_id
+      entity.add_child(identifier)
+
+      # Segment element containing the dimension member
+      segment = Nokogiri::XML::Node.new("segment", doc)
+      segment.namespace = xbrli_ns
+
+      # Explicit dimension member
+      explicit_member = Nokogiri::XML::Node.new("explicitMember", doc)
+      explicit_member.namespace = xbrldi_ns
+      explicit_member["dimension"] = "strix:#{dimension_name}"
+      explicit_member.content = "strix:#{member_prefix}#{country_code}"
+
+      segment.add_child(explicit_member)
+      entity.add_child(segment)
+      context.add_child(entity)
+
+      # Period element
+      period = Nokogiri::XML::Node.new("period", doc)
+      period.namespace = xbrli_ns
+
+      instant = Nokogiri::XML::Node.new("instant", doc)
+      instant.namespace = xbrli_ns
+      instant.content = format_date(submission.period)
+
+      period.add_child(instant)
+      context.add_child(period)
+
+      # Insert dimensional context after the base context.
+      # Base context must exist (created by build_context before build_facts).
+      base_context = cached_base_context(parent)
+      base_context.add_next_sibling(context)
+
+      dim_context_id
+    end
+
+    # Build a single dimensional fact
+    def build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+      build_fact_element(doc, parent, strix_ns, question, value, dim_context_id)
+    end
+
+    # Build a fact element with the specified context reference.
+    # Common implementation for both regular and dimensional facts.
+    #
+    # @param doc [Nokogiri::XML::Document] the XML document
+    # @param parent [Nokogiri::XML::Node] the parent element
+    # @param strix_ns [Nokogiri::XML::Namespace] the strix namespace
+    # @param question [Question] the question
+    # @param value [Object] the value for the fact
+    # @param ctx_id [String] the context ID to reference
+    def build_fact_element(doc, parent, strix_ns, question, value, ctx_id)
       fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
-      fact["contextRef"] = context_id
+      fact["contextRef"] = ctx_id
 
       # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
       # XBRL requires unitRef and content when decimals is present.
@@ -242,6 +409,28 @@ module AmsfSurvey
       fact.content = format_value(value, question.type)
 
       parent.add_child(fact)
+    end
+
+    # Check if a value is empty (nil or empty hash for dimensional fields).
+    # Empty hashes are treated as unanswered for completeness tracking.
+    #
+    # @param value [Object] the value to check
+    # @return [Boolean] true if value is nil or empty hash
+    def empty_value?(value)
+      value.nil? || (value.is_a?(Hash) && value.empty?)
+    end
+
+    # Validate that dimensional fields receive Hash values.
+    # Scalar values for dimensional fields would generate incorrect XBRL.
+    #
+    # @param question [Question] the dimensional question
+    # @param value [Object] the value to validate
+    # @raise [GeneratorError] if value is not a Hash
+    def validate_dimensional_value!(question, value)
+      return if value.is_a?(Hash)
+
+      raise GeneratorError, "Dimensional field '#{question.xbrl_id}' requires Hash value " \
+                            "(e.g., {\"FR\" => 40.0}), got #{value.class}: #{value.inspect}"
     end
 
     # Check if type is numeric (requires unitRef)

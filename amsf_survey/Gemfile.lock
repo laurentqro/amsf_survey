@@ -2,11 +2,13 @@ PATH
   remote: .
   specs:
     amsf_survey (0.1.0)
+      bigdecimal
       nokogiri (~> 1.15)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    bigdecimal (4.0.1)
     diff-lcs (1.6.2)
     docile (1.4.1)
     nokogiri (1.18.10-aarch64-linux-gnu)

@@ -16,6 +16,17 @@ module AmsfSurvey
   # For regulatory compliance, validation is delegated to Arelle (external XBRL validator).
   # The gem tracks completeness via Submission#complete? and Submission#unanswered_questions.
   #
+  # ## Dimensional Fields (Country Breakdowns)
+  #
+  # Percentage fields can accept Hash values for dimensional breakdowns:
+  #   { "FR" => 40.0, "DE" => 30.0 }
+  #
+  # Hash handling:
+  # - Keys are normalized to uppercase strings (e.g., :fr → "FR")
+  # - Values are cast to BigDecimal
+  # - Empty hashes ({}) are treated as unanswered (equivalent to nil)
+  # - Duplicate keys after normalization raise DuplicateKeyError
+  #
   # @see Submission#complete? For checking if all visible questions are filled
   # @see Submission#unanswered_questions For listing unfilled visible questions
   module TypeCaster
@@ -28,7 +39,7 @@ module AmsfSurvey
     # Cast a value to the appropriate type based on field type.
     #
     # @param value [Object] the value to cast
-    # @param field_type [Symbol] the field type (:integer, :monetary, :boolean, :enum, :string)
+    # @param field_type [Symbol] the field type (:integer, :monetary, :boolean, :enum, :string, :percentage)
     # @return [Object, nil] the cast value, or nil for empty/invalid values
     def cast(value, field_type)
       return nil if value.nil?
@@ -38,6 +49,8 @@ module AmsfSurvey
         cast_integer(value)
       when :monetary
         cast_monetary(value)
+      when :percentage
+        cast_percentage(value)
       when :boolean
         cast_boolean(value)
       when :enum
@@ -105,6 +118,58 @@ module AmsfSurvey
 
       str = value.to_s.strip
       str.empty? ? nil : str
+    end
+
+    # Percentage fields handle both scalar values and Hash values (for dimensional breakdowns).
+    # Hash values have their keys normalized (uppercase country codes), scalar values are cast to BigDecimal.
+    #
+    # @param value [Object] the value to cast
+    # @return [BigDecimal, Hash, nil] the cast value
+    def cast_percentage(value)
+      return nil if value.nil?
+
+      # Hash values for dimensional fields - normalize keys to uppercase
+      return normalize_dimensional_hash(value) if value.is_a?(Hash)
+
+      cast_percentage_scalar(value)
+    end
+
+    # Normalize dimensional hash keys to uppercase strings.
+    # Raises an error if duplicate keys are detected after normalization
+    # (e.g., "fr" and "FR" would both normalize to "FR").
+    # Also casts each value to BigDecimal.
+    #
+    # @param hash [Hash] country code => value mapping
+    # @return [Hash{String => BigDecimal}] normalized hash
+    # @raise [DuplicateKeyError] if duplicate keys exist after normalization
+    def normalize_dimensional_hash(hash)
+      result = {}
+      hash.each do |key, value|
+        normalized_key = key.to_s.upcase
+        if result.key?(normalized_key)
+          raise DuplicateKeyError, "Duplicate country code after normalization: " \
+                                   "#{key.inspect} conflicts with existing key #{normalized_key}"
+        end
+        result[normalized_key] = cast_percentage_scalar(value)
+      end
+      result
+    end
+
+    # Cast a single percentage value to BigDecimal.
+    #
+    # @param value [Object] the value to cast
+    # @return [BigDecimal, nil] the cast value
+    def cast_percentage_scalar(value)
+      return value if value.is_a?(BigDecimal)
+      return nil if value.nil?
+
+      str = value.to_s.strip
+      return nil if str.empty?
+      return nil if str.length > MAX_INPUT_LENGTH
+
+      BigDecimal(str)
+    rescue ArgumentError, FloatDomainError
+      nil
     end
   end
 end

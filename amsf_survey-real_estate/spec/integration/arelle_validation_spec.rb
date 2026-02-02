@@ -115,13 +115,14 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
 
     it "validates sum-of-children constraint" do
       # Test the sum validation rule: a1101 >= a1102 + a1103 + a1104 + a1501 + a1802TOLA
+      # Note: a1501 is a dimensional field requiring Hash value for country breakdown
       submission = build_submission(
         aACTIVE: "Oui",
         a1101: 5,                # Total clients = 5
         a1102: 3,                # Monaco nationals = 3
         a1103: 2,                # Monaco residents = 2
         a1104: 2,                # Non-residents = 2
-        a1501: 2,                # Legal persons = 2
+        a1501: { "FR" => 2 },    # Legal persons = 2 (dimensional - requires Hash)
         a1802TOLA: 1,            # TOLA = 1
         # Sum = 3+2+2+2+1 = 10 > 5 (invalid!)
         # Unconditionally required fields
@@ -141,6 +142,137 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
       # Should detect sum constraint violation
       error_messages = result["messages"].select { |m| m["severity"] == "error" }.map { |m| m["message"] }
       expect(error_messages).to include(match(/Sum of children.*more than the parent/))
+    end
+  end
+
+  describe "dimensional facts (country breakdowns)" do
+    it "validates XBRL with dimensional country breakdown facts" do
+      # Test dimensional fields - a1204S1 is a percentage breakdown by country
+      # (Percentage of high-risk clients by country)
+      submission = build_submission(
+        aACTIVE: "Oui",
+        # Dimensional breakdown: a1204S1 with country dimension
+        a1204S1: { "FR" => 40.0, "MC" => 30.0, "IT" => 30.0 },
+        # Unconditionally required fields
+        a14801: "Non",
+        a3101: "Non",
+        a3103: "Non",
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+
+      # Verify dimensional contexts are generated in the XML
+      doc = Nokogiri::XML(xml)
+      contexts = doc.xpath("//xbrli:context", "xbrli" => "http://www.xbrl.org/2003/instance")
+
+      # Should have base context + dimensional contexts for each country
+      expect(contexts.size).to be >= 4 # base + FR + MC + IT
+
+      # Verify dimensional facts reference correct contexts
+      result = validate_xbrl(xml)
+
+      # Log any dimensional-related errors for debugging
+      dim_errors = result["messages"].select do |m|
+        m["severity"] == "error" && m["message"].to_s.match?(/dimension|context|a1204S1/i)
+      end
+
+      if dim_errors.any?
+        puts "\n=== Dimensional Validation Errors ==="
+        dim_errors.each { |e| puts "ERROR: #{e['message']}" }
+        puts "=====================================\n"
+      end
+
+      # The submission may have other errors (missing fields for active entity)
+      # but should not have dimensional structure errors
+      expect(dim_errors).to be_empty, "Expected no dimensional errors, got: #{dim_errors.map { |e| e['message'] }}"
+    end
+
+    it "handles normalized country codes correctly" do
+      # Test that lowercase country codes are normalized to uppercase
+      # and generate valid XBRL dimension members
+      # Using a1204S1 which is a dimensional percentage field
+      submission = build_submission(
+        aACTIVE: "Non",
+        # Use lowercase codes - should be normalized to uppercase
+        a1204S1: { "fr" => 50.0, "de" => 50.0 },
+        # Unconditionally required fields
+        a14801: "Non",
+        a3101: "Non",
+        a3103: "Non",
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+
+      # Verify country codes are uppercase in the XML
+      expect(xml).to include("sdlFR")
+      expect(xml).to include("sdlDE")
+      expect(xml).not_to include("sdlfr")
+      expect(xml).not_to include("sdlde")
+
+      result = validate_xbrl(xml)
+
+      # Check for dimension member validation errors
+      member_errors = result["messages"].select do |m|
+        m["severity"] == "error" && m["message"].to_s.match?(/member|sdl/i)
+      end
+
+      expect(member_errors).to be_empty, "Expected valid dimension members, got: #{member_errors.map { |e| e['message'] }}"
+    end
+
+    it "validates dimensional field with many countries" do
+      # Test a dimensional field with many countries to ensure context generation scales
+      submission = build_submission(
+        aACTIVE: "Oui",
+        # Dimensional percentage field with 5 countries
+        a1204S1: {
+          "FR" => 25.0,
+          "DE" => 20.0,
+          "IT" => 20.0,
+          "ES" => 20.0,
+          "PT" => 15.0
+        },
+        # Unconditionally required fields
+        a14801: "Non",
+        a3101: "Non",
+        a3103: "Non",
+        a3201: "Non",
+        a3209: "Non",
+        a3210: "Non",
+        a3210B: "Non",
+        a3301: 1
+      )
+
+      xml = AmsfSurvey.to_xbrl(submission, include_empty: false)
+      doc = Nokogiri::XML(xml)
+
+      # Count contexts: 1 base + 5 dimensional
+      contexts = doc.xpath("//xbrli:context", "xbrli" => "http://www.xbrl.org/2003/instance")
+      expect(contexts.size).to eq(6)
+
+      # Verify each country has exactly one fact
+      %w[FR DE IT ES PT].each do |country|
+        country_facts = doc.xpath("//*[contains(@contextRef, '_#{country}')]")
+        expect(country_facts.size).to eq(1), "Expected 1 fact for #{country}, got #{country_facts.size}"
+      end
+
+      result = validate_xbrl(xml)
+
+      # Should not have dimensional structure errors
+      dim_errors = result["messages"].select do |m|
+        m["severity"] == "error" && m["message"].to_s.match?(/dimension|context/i)
+      end
+
+      expect(dim_errors).to be_empty, "Expected no dimensional errors, got: #{dim_errors.map { |e| e['message'] }}"
     end
   end
 end

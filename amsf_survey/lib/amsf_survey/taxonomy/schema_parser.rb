@@ -34,7 +34,8 @@ module AmsfSurvey
         "xbrli:integerItemType" => :integer,
         "xbrli:stringItemType" => :string,
         "xbrli:monetaryItemType" => :monetary,
-        "xbrli:booleanItemType" => :boolean
+        "xbrli:booleanItemType" => :boolean,
+        "xbrli:pureItemType" => :percentage
       }.freeze
 
       MAX_FIELDS = 10_000
@@ -104,6 +105,10 @@ module AmsfSurvey
         # Symbols are appropriate: bounded set from official taxonomy, cached, fast lookup
         id = name.to_sym
         type_attr = element["type"]
+
+        # Handle inline complexType restrictions (e.g., a1204S1 with pureItemType)
+        type_attr ||= extract_inline_restriction_base(element)
+
         enumeration_values = extract_enumeration(element)
 
         type, xbrl_type = determine_type(type_attr, enumeration_values)
@@ -114,6 +119,20 @@ module AmsfSurvey
           xbrl_type: xbrl_type,
           valid_values: enumeration_values
         }
+      end
+
+      # Extracts the base type from inline complexType/simpleContent/restriction.
+      # Some fields like a1204S1 don't have a type attribute but instead define
+      # the type inline with a restriction.
+      #
+      # @param element [Nokogiri::XML::Element] the XSD element
+      # @return [String, nil] the base type (e.g., "xbrli:pureItemType") or nil
+      def extract_inline_restriction_base(element)
+        restriction = element.at_xpath(
+          ".//xs:restriction/@base",
+          "xs" => "http://www.w3.org/2001/XMLSchema"
+        )
+        restriction&.value
       end
 
       def extract_enumeration(element)

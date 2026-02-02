@@ -224,6 +224,61 @@ RSpec.describe AmsfSurvey::TypeCaster do
       end
     end
 
+    context "with percentage fields" do
+      it "casts scalar string to BigDecimal" do
+        result = described_class.cast("12.5", :percentage)
+        expect(result).to be_a(BigDecimal)
+        expect(result).to eq(BigDecimal("12.5"))
+      end
+
+      it "returns nil for nil" do
+        expect(described_class.cast(nil, :percentage)).to be_nil
+      end
+
+      context "with dimensional Hash values (country breakdowns)" do
+        it "normalizes lowercase country codes to uppercase" do
+          result = described_class.cast({ "fr" => 5.0, "ru" => 9.0 }, :percentage)
+          expect(result.keys).to contain_exactly("FR", "RU")
+        end
+
+        it "normalizes symbol country codes to uppercase strings" do
+          result = described_class.cast({ fr: 5.0, RU: 9.0 }, :percentage)
+          expect(result.keys).to contain_exactly("FR", "RU")
+          expect(result.keys).to all(be_a(String))
+        end
+
+        it "raises DuplicateKeyError for duplicate keys after normalization" do
+          expect {
+            described_class.cast({ "fr" => 5.0, "FR" => 10.0 }, :percentage)
+          }.to raise_error(AmsfSurvey::DuplicateKeyError, /Duplicate country code.*"FR".*conflicts/)
+        end
+
+        it "raises DuplicateKeyError for symbol and string duplicates" do
+          expect {
+            described_class.cast({ fr: 5.0, "FR" => 10.0 }, :percentage)
+          }.to raise_error(AmsfSurvey::DuplicateKeyError)
+        end
+
+        it "casts Hash values to BigDecimal" do
+          result = described_class.cast({ "FR" => "5.5", "RU" => 9 }, :percentage)
+          expect(result["FR"]).to be_a(BigDecimal)
+          expect(result["FR"]).to eq(BigDecimal("5.5"))
+          expect(result["RU"]).to be_a(BigDecimal)
+          expect(result["RU"]).to eq(BigDecimal("9"))
+        end
+
+        it "returns nil for invalid numeric values in Hash" do
+          result = described_class.cast({ "FR" => "invalid" }, :percentage)
+          expect(result["FR"]).to be_nil
+        end
+
+        it "handles empty Hash" do
+          result = described_class.cast({}, :percentage)
+          expect(result).to eq({})
+        end
+      end
+    end
+
     context "with unknown field type" do
       it "returns value unchanged" do
         expect(described_class.cast("test", :unknown)).to eq("test")

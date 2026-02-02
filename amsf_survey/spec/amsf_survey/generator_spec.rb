@@ -311,6 +311,36 @@ RSpec.describe AmsfSurvey::Generator do
         # With include_empty:false, nil fields should be omitted
         expect(t001_fact).to be_nil
       end
+
+      it "treats empty hash as empty value when include_empty:false" do
+        submission = build_submission(tGATE: "Oui")
+        # Manually set an empty hash to simulate dimensional field with no data
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: {} # Empty dimensional hash
+        })
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Add to questionnaire's questions
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        xml = described_class.new(submission, include_empty: false).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        dim_fact = doc.at_xpath("//strix:tDIM", ns)
+
+        # Empty hash should be treated as empty/nil and omitted
+        expect(dim_fact).to be_nil
+      end
     end
 
     # =========================================================================
@@ -583,6 +613,126 @@ RSpec.describe AmsfSurvey::Generator do
 
         expect { described_class.new(submission).generate }
           .to raise_error(AmsfSurvey::GeneratorError, /questionnaire is not available/)
+      end
+    end
+
+    # =========================================================================
+    # Dimensional Value Validation
+    # =========================================================================
+    context "dimensional value validation" do
+      it "raises GeneratorError when dimensional field receives scalar value" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Stub data to return a scalar for the dimensional field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: BigDecimal("42.0") # Scalar instead of Hash
+        })
+
+        # Add to questionnaire's questions
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /Dimensional field 'tDIM' requires Hash value/)
+      end
+
+      it "raises GeneratorError when non-dimensional field receives Hash value" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Stub data to return a Hash for a non-dimensional integer field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          t001: { "FR" => 50 } # Hash instead of scalar
+        })
+
+        expect { described_class.new(submission).generate }
+          .to raise_error(AmsfSurvey::GeneratorError, /Non-dimensional field 't001' received Hash value/)
+      end
+
+      it "accepts Hash value for dimensional field" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Stub data with valid Hash for dimensional field
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: { "FR" => BigDecimal("40.0"), "DE" => BigDecimal("60.0") }
+        })
+
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        dim_facts = doc.xpath("//strix:tDIM", ns)
+
+        expect(dim_facts.size).to eq(2)
+      end
+
+      it "accepts scalar value for non-dimensional field" do
+        submission = build_submission(tGATE: "Oui", t001: 100)
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        t001_fact = doc.at_xpath("//strix:t001", ns)
+
+        expect(t001_fact).not_to be_nil
+        expect(t001_fact.text).to eq("100")
+      end
+    end
+
+    context "dimension metadata" do
+      it "uses dimension_name from questionnaire when available" do
+        custom_questionnaire = AmsfSurvey::Questionnaire.new(
+          industry: :test_industry,
+          year: 2025,
+          sections: [],
+          taxonomy_namespace: "https://example.com/test",
+          dimension_name: "CustomDimension",
+          member_prefix: "cd"
+        )
+        submission = build_submission
+        allow(submission).to receive(:questionnaire).and_return(custom_questionnaire)
+
+        generator = described_class.new(submission)
+        # Access private method to verify
+        expect(generator.send(:dimension_name)).to eq("CustomDimension")
+        expect(generator.send(:member_prefix)).to eq("cd")
+      end
+
+      it "falls back to defaults when questionnaire has no dimension metadata" do
+        custom_questionnaire = AmsfSurvey::Questionnaire.new(
+          industry: :test_industry,
+          year: 2025,
+          sections: [],
+          taxonomy_namespace: "https://example.com/test"
+        )
+        submission = build_submission
+        allow(submission).to receive(:questionnaire).and_return(custom_questionnaire)
+
+        generator = described_class.new(submission)
+        expect(generator.send(:dimension_name)).to eq("CountryDimension")
+        expect(generator.send(:member_prefix)).to eq("sdl")
       end
     end
   end

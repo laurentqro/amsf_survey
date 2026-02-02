@@ -7,6 +7,17 @@ module AmsfSurvey
   #
   # Public API uses lowercase question IDs for convenience.
   # Internal storage uses original XBRL IDs for consistency with taxonomy.
+  #
+  # ## Dimensional Fields (Country Breakdowns)
+  #
+  # For dimensional questions (those requiring country breakdowns), values
+  # should be provided as a Hash with country codes as keys:
+  #
+  #   submission[:a1204S1] = { "FR" => 40.0, "DE" => 30.0, "IT" => 30.0 }
+  #
+  # Country codes are automatically normalized to uppercase. An empty hash ({})
+  # is treated as unanswered and will be excluded from XBRL generation when
+  # include_empty:false is set.
   class Submission
     attr_reader :industry, :year, :entity_id, :period
 

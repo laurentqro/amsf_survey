@@ -43,6 +43,10 @@ module AmsfSurvey
   # Raised when XBRL generation fails due to invalid submission data
   class GeneratorError < Error; end
 
+  # Raised when dimensional data contains duplicate keys after normalization
+  # (e.g., both "fr" and "FR" in the same hash)
+  class DuplicateKeyError < Error; end
+
   # Raised when questionnaire_structure.yml is not found
   class MissingStructureFileError < TaxonomyLoadError
     attr_reader :file_path
