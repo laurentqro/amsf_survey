@@ -242,8 +242,9 @@ module AmsfSurvey
         # Use xbrl_id for data lookup (internal storage uses XBRL IDs)
         value = data[question.xbrl_id]
 
-        # Skip nil values if include_empty is false
-        next if value.nil? && !@include_empty
+        # Skip nil/empty values if include_empty is false
+        # Empty hashes for dimensional fields are treated as unanswered
+        next if empty_value?(value) && !@include_empty
 
         # Hash values indicate dimensional fields (e.g., country breakdowns)
         if value.is_a?(Hash) && question.dimensional?
@@ -390,6 +391,15 @@ module AmsfSurvey
       fact.content = format_value(value, question.type)
 
       parent.add_child(fact)
+    end
+
+    # Check if a value is empty (nil or empty hash for dimensional fields).
+    # Empty hashes are treated as unanswered for completeness tracking.
+    #
+    # @param value [Object] the value to check
+    # @return [Boolean] true if value is nil or empty hash
+    def empty_value?(value)
+      value.nil? || (value.is_a?(Hash) && value.empty?)
     end
 
     # Check if type is numeric (requires unitRef)

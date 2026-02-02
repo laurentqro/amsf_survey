@@ -311,6 +311,36 @@ RSpec.describe AmsfSurvey::Generator do
         # With include_empty:false, nil fields should be omitted
         expect(t001_fact).to be_nil
       end
+
+      it "treats empty hash as empty value when include_empty:false" do
+        submission = build_submission(tGATE: "Oui")
+        # Manually set an empty hash to simulate dimensional field with no data
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          tDIM: {} # Empty dimensional hash
+        })
+
+        # Create a dimensional question mock
+        dim_question = instance_double(AmsfSurvey::Question,
+          xbrl_id: :tDIM,
+          type: :percentage,
+          dimensional?: true,
+          visible?: true
+        )
+
+        # Add to questionnaire's questions
+        questions = questionnaire.questions + [dim_question]
+        allow(questionnaire).to receive(:questions).and_return(questions)
+
+        xml = described_class.new(submission, include_empty: false).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        dim_fact = doc.at_xpath("//strix:tDIM", ns)
+
+        # Empty hash should be treated as empty/nil and omitted
+        expect(dim_fact).to be_nil
+      end
     end
 
     # =========================================================================
