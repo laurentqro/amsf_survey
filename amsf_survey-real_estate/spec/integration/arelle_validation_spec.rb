@@ -115,13 +115,14 @@ RSpec.describe "Arelle XBRL Validation", :arelle do
 
     it "validates sum-of-children constraint" do
       # Test the sum validation rule: a1101 >= a1102 + a1103 + a1104 + a1501 + a1802TOLA
+      # Note: a1501 is a dimensional field requiring Hash value for country breakdown
       submission = build_submission(
         aACTIVE: "Oui",
         a1101: 5,                # Total clients = 5
         a1102: 3,                # Monaco nationals = 3
         a1103: 2,                # Monaco residents = 2
         a1104: 2,                # Non-residents = 2
-        a1501: 2,                # Legal persons = 2
+        a1501: { "FR" => 2 },    # Legal persons = 2 (dimensional - requires Hash)
         a1802TOLA: 1,            # TOLA = 1
         # Sum = 3+2+2+2+1 = 10 > 5 (invalid!)
         # Unconditionally required fields
