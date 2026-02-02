@@ -247,10 +247,16 @@ RSpec.describe AmsfSurvey::TypeCaster do
           expect(result.keys).to all(be_a(String))
         end
 
-        it "merges duplicate keys from mixed casing (last wins)" do
-          result = described_class.cast({ "fr" => 5.0, "FR" => 10.0 }, :percentage)
-          expect(result.keys).to eq(["FR"])
-          expect(result["FR"]).to eq(BigDecimal("10.0"))
+        it "raises DuplicateKeyError for duplicate keys after normalization" do
+          expect {
+            described_class.cast({ "fr" => 5.0, "FR" => 10.0 }, :percentage)
+          }.to raise_error(AmsfSurvey::DuplicateKeyError, /Duplicate country code.*"FR".*conflicts/)
+        end
+
+        it "raises DuplicateKeyError for symbol and string duplicates" do
+          expect {
+            described_class.cast({ fr: 5.0, "FR" => 10.0 }, :percentage)
+          }.to raise_error(AmsfSurvey::DuplicateKeyError)
         end
 
         it "casts Hash values to BigDecimal" do

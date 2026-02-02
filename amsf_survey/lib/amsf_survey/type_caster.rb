@@ -124,16 +124,24 @@ module AmsfSurvey
     end
 
     # Normalize dimensional hash keys to uppercase strings.
-    # Merges duplicate keys (e.g., "fr" and "FR" become one "FR" entry).
+    # Raises an error if duplicate keys are detected after normalization
+    # (e.g., "fr" and "FR" would both normalize to "FR").
     # Also casts each value to BigDecimal.
     #
     # @param hash [Hash] country code => value mapping
     # @return [Hash{String => BigDecimal}] normalized hash
+    # @raise [DuplicateKeyError] if duplicate keys exist after normalization
     def normalize_dimensional_hash(hash)
-      hash.each_with_object({}) do |(key, value), result|
+      result = {}
+      hash.each do |key, value|
         normalized_key = key.to_s.upcase
+        if result.key?(normalized_key)
+          raise DuplicateKeyError, "Duplicate country code after normalization: " \
+                                   "#{key.inspect} conflicts with existing key #{normalized_key}"
+        end
         result[normalized_key] = cast_percentage_scalar(value)
       end
+      result
     end
 
     # Cast a single percentage value to BigDecimal.
