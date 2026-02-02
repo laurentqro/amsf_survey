@@ -256,20 +256,7 @@ module AmsfSurvey
 
     # Build a single fact element
     def build_fact(doc, parent, strix_ns, question, value)
-      fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
-      fact.namespace = strix_ns
-      fact["contextRef"] = context_id
-
-      # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
-      # XBRL requires unitRef and content when decimals is present.
-      if numeric_type?(question.type) && !value.nil?
-        fact["unitRef"] = PURE_UNIT_ID
-        fact["decimals"] = decimals_for(question.type)
-      end
-
-      fact.content = format_value(value, question.type)
-
-      parent.add_child(fact)
+      build_fact_element(doc, parent, strix_ns, question, value, context_id)
     end
 
     # Build dimensional facts - one fact per dimension member (e.g., per country)
@@ -375,18 +362,26 @@ module AmsfSurvey
     end
 
     # Build a single dimensional fact
+    def build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+      build_fact_element(doc, parent, strix_ns, question, value, dim_context_id)
+    end
+
+    # Build a fact element with the specified context reference.
+    # Common implementation for both regular and dimensional facts.
     #
     # @param doc [Nokogiri::XML::Document] the XML document
     # @param parent [Nokogiri::XML::Node] the parent element
     # @param strix_ns [Nokogiri::XML::Namespace] the strix namespace
     # @param question [Question] the question
-    # @param value [Object] the value for this dimension
-    # @param dim_context_id [String] the dimensional context ID
-    def build_dimensional_fact(doc, parent, strix_ns, question, value, dim_context_id)
+    # @param value [Object] the value for the fact
+    # @param ctx_id [String] the context ID to reference
+    def build_fact_element(doc, parent, strix_ns, question, value, ctx_id)
       fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
-      fact["contextRef"] = dim_context_id
+      fact["contextRef"] = ctx_id
 
+      # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
+      # XBRL requires unitRef and content when decimals is present.
       if numeric_type?(question.type) && !value.nil?
         fact["unitRef"] = PURE_UNIT_ID
         fact["decimals"] = decimals_for(question.type)
