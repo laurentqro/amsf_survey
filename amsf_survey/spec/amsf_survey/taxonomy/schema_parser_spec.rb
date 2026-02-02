@@ -35,6 +35,46 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
         expect(result[:t003][:xbrl_type]).to eq("xbrli:monetaryItemType")
       end
 
+      it "maps decimal types correctly" do
+        decimal_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_decimal" name="decimal_field"
+                     type="xbrli:decimalItemType"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant"/>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_decimal.xsd")
+        File.write(temp_path, decimal_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:decimal_field][:type]).to eq(:decimal)
+        expect(result[:decimal_field][:xbrl_type]).to eq("xbrli:decimalItemType")
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
+      end
+
+      it "maps date types correctly" do
+        date_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_date" name="date_field"
+                     type="xbrli:dateItemType"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant"/>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_date.xsd")
+        File.write(temp_path, date_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:date_field][:type]).to eq(:date)
+        expect(result[:date_field][:xbrl_type]).to eq("xbrli:dateItemType")
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
+      end
+
       it "maps Oui/Non enum to boolean (French)" do
         expect(result[:tGATE][:type]).to eq(:boolean)
         expect(result[:tGATE][:valid_values]).to eq(%w[Oui Non])
@@ -122,6 +162,33 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
       it "maps multi-value enum correctly" do
         expect(result[:t004][:type]).to eq(:enum)
         expect(result[:t004][:valid_values]).to eq(["Option A", "Option B", "Option C"])
+      end
+
+      it "decodes HTML entities in enum values" do
+        html_encoded_xsd = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xbrli="http://www.xbrl.org/2003/instance">
+            <element abstract="false" id="test_html" name="html_enum"
+                     substitutionGroup="xbrli:item" xbrli:periodType="instant">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="&gt; 10%"/>
+                  <enumeration value="&lt;= 10%"/>
+                  <enumeration value="5% &amp; above"/>
+                </restriction>
+              </simpleType>
+            </element>
+          </schema>
+        XML
+        temp_path = File.join(fixtures_path, "temp_html_enum.xsd")
+        File.write(temp_path, html_encoded_xsd)
+
+        result = described_class.new(temp_path).parse
+        expect(result[:html_enum][:type]).to eq(:enum)
+        expect(result[:html_enum][:valid_values]).to eq(["> 10%", "<= 10%", "5% & above"])
+      ensure
+        File.delete(temp_path) if File.exist?(temp_path)
       end
 
       it "falls back to string for unknown types" do

@@ -49,10 +49,12 @@ module AmsfSurvey
     # Type predicates
     def boolean? = type == :boolean
     def integer? = type == :integer
+    def decimal? = type == :decimal
     def string? = type == :string
     def monetary? = type == :monetary
     def enum? = type == :enum
     def percentage? = type == :percentage
+    def date? = type == :date
 
     # Dimensional predicate
     def dimensional? = dimensional

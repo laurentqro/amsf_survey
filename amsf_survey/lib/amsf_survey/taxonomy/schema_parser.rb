@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cgi"
 require "nokogiri"
 
 module AmsfSurvey
@@ -32,10 +33,12 @@ module AmsfSurvey
 
       TYPE_MAPPING = {
         "xbrli:integerItemType" => :integer,
+        "xbrli:decimalItemType" => :decimal,
         "xbrli:stringItemType" => :string,
         "xbrli:monetaryItemType" => :monetary,
         "xbrli:booleanItemType" => :boolean,
-        "xbrli:pureItemType" => :percentage
+        "xbrli:pureItemType" => :percentage,
+        "xbrli:dateItemType" => :date
       }.freeze
 
       MAX_FIELDS = 10_000
@@ -139,7 +142,7 @@ module AmsfSurvey
         enums = element.xpath(".//xs:enumeration/@value", "xs" => "http://www.w3.org/2001/XMLSchema")
         return nil if enums.empty?
 
-        enums.map(&:value)
+        enums.map { |e| CGI.unescape_html(e.value) }
       end
 
       # Boolean patterns for Yes/No fields (case-insensitive matching).

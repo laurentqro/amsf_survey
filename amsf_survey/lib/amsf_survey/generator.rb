@@ -31,12 +31,19 @@ module AmsfSurvey
     LINK_NS = "http://www.xbrl.org/2003/linkbase"
     XLINK_NS = "http://www.w3.org/1999/xlink"
     XBRLDI_NS = "http://xbrl.org/2006/xbrldi"
+    XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 
     # Entity identifier scheme for Monaco AMSF (matches regulatory requirements)
     ENTITY_SCHEME = "https://amlcft.amsf.mc"
 
     # Unit ID for dimensionless numeric values (counts, percentages as ratios)
     PURE_UNIT_ID = "pure"
+
+    # Unit ID for monetary values (ISO 4217 currency code)
+    MONETARY_UNIT_ID = "EUR"
+
+    # ISO 4217 namespace for currency codes
+    ISO4217_NS = "http://www.xbrl.org/2003/iso4217"
 
     # Default dimension name (fallback if not parsed from taxonomy)
     DEFAULT_DIMENSION_NAME = "CountryDimension"
@@ -131,6 +138,8 @@ module AmsfSurvey
       root.add_namespace_definition("link", LINK_NS)
       root.add_namespace_definition("xlink", XLINK_NS)
       root.add_namespace_definition("xbrldi", XBRLDI_NS)
+      root.add_namespace_definition("iso4217", ISO4217_NS)
+      root.add_namespace_definition("xsi", XSI_NS)
       root.add_namespace_definition("strix", taxonomy_namespace)
       root.namespace = root.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
 
@@ -139,7 +148,7 @@ module AmsfSurvey
       # Build child elements
       build_schema_ref(doc, root)
       build_context(doc, root)
-      build_unit(doc, root)
+      build_units(doc, root)
       build_facts(doc, root)
 
       doc
@@ -216,9 +225,16 @@ module AmsfSurvey
       parent.add_child(context)
     end
 
-    # Build the XBRL unit element for numeric facts.
-    # Uses xbrli:pure (dimensionless) for counts, integers, and percentages.
-    def build_unit(doc, parent)
+    # Build XBRL unit elements for numeric facts.
+    # Creates both pure unit (for counts, integers, percentages) and
+    # monetary unit (for currency values).
+    def build_units(doc, parent)
+      build_pure_unit(doc, parent)
+      build_monetary_unit(doc, parent)
+    end
+
+    # Build the pure unit for dimensionless numeric values
+    def build_pure_unit(doc, parent)
       xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
 
       unit = Nokogiri::XML::Node.new("unit", doc)
@@ -228,6 +244,22 @@ module AmsfSurvey
       measure = Nokogiri::XML::Node.new("measure", doc)
       measure.namespace = xbrli_ns
       measure.content = "xbrli:pure"
+
+      unit.add_child(measure)
+      parent.add_child(unit)
+    end
+
+    # Build the monetary unit for currency values (EUR)
+    def build_monetary_unit(doc, parent)
+      xbrli_ns = parent.namespace_definitions.find { |ns| ns.prefix == "xbrli" }
+
+      unit = Nokogiri::XML::Node.new("unit", doc)
+      unit.namespace = xbrli_ns
+      unit["id"] = MONETARY_UNIT_ID
+
+      measure = Nokogiri::XML::Node.new("measure", doc)
+      measure.namespace = xbrli_ns
+      measure.content = "iso4217:EUR"
 
       unit.add_child(measure)
       parent.add_child(unit)
@@ -400,14 +432,17 @@ module AmsfSurvey
       fact.namespace = strix_ns
       fact["contextRef"] = ctx_id
 
-      # Add numeric attributes (unitRef, decimals) only for numeric types WITH a value.
-      # XBRL requires unitRef and content when decimals is present.
-      if numeric_type?(question.type) && !value.nil?
-        fact["unitRef"] = PURE_UNIT_ID
-        fact["decimals"] = decimals_for(question.type)
+      if value.nil?
+        # Use xsi:nil="true" for empty facts (all AMSF fields are nillable)
+        fact["xsi:nil"] = "true"
+      else
+        # Add numeric attributes (unitRef, decimals) for numeric types with values
+        if numeric_type?(question.type)
+          fact["unitRef"] = unit_for(question.type)
+          fact["decimals"] = decimals_for(question.type)
+        end
+        fact.content = format_value(value, question.type)
       end
-
-      fact.content = format_value(value, question.type)
 
       parent.add_child(fact)
     end
@@ -437,7 +472,15 @@ module AmsfSurvey
 
     # Check if type is numeric (requires unitRef)
     def numeric_type?(type)
-      %i[integer monetary percentage].include?(type)
+      %i[integer decimal monetary percentage].include?(type)
+    end
+
+    # Determine the appropriate unit for a field type
+    #
+    # @param type [Symbol] the field type
+    # @return [String] the unit ID (MONETARY_UNIT_ID for monetary, PURE_UNIT_ID otherwise)
+    def unit_for(type)
+      type == :monetary ? MONETARY_UNIT_ID : PURE_UNIT_ID
     end
 
     # Determine decimals attribute based on field type
@@ -448,10 +491,10 @@ module AmsfSurvey
       case type
       when :integer
         "0"
-      when :monetary, :percentage
+      when :decimal, :monetary, :percentage
         "2"
       else
-        nil # No decimals for boolean, string, enum
+        nil # No decimals for boolean, string, enum, date
       end
     end
 
@@ -464,8 +507,10 @@ module AmsfSurvey
       return "" if value.nil?
 
       case type
-      when :monetary, :percentage
+      when :decimal, :monetary, :percentage
         format_decimal(value)
+      when :date
+        format_date_value(value)
       else
         # Booleans, strings, enums, integers - all convert to string
         # Booleans are already stored as "Oui"/"Non" strings by TypeCaster
@@ -490,6 +535,17 @@ module AmsfSurvey
     # @return [String] YYYY-MM-DD format
     def format_date(date)
       date.strftime("%Y-%m-%d")
+    end
+
+    # Format date value for XBRL date fields
+    # Handles both Date objects and string values
+    #
+    # @param value [Date, String] the date value
+    # @return [String] YYYY-MM-DD format
+    def format_date_value(value)
+      return value if value.is_a?(String)
+
+      value.strftime("%Y-%m-%d")
     end
 
     # Format the output based on pretty option

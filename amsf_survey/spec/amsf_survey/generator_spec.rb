@@ -60,7 +60,7 @@ RSpec.describe AmsfSurvey::Generator do
       # -----------------------------------------------------------------------
       # T009: includes required XBRL namespaces
       # -----------------------------------------------------------------------
-      it "includes required XBRL namespaces (xbrli, link, xlink, strix)" do
+      it "includes required XBRL namespaces (xbrli, link, xlink, iso4217, xsi, strix)" do
         submission = build_submission(tGATE: "Oui")
         xml = described_class.new(submission).generate
         doc = Nokogiri::XML(xml)
@@ -74,7 +74,62 @@ RSpec.describe AmsfSurvey::Generator do
         expect(namespaces["xmlns:xbrli"]).to eq("http://www.xbrl.org/2003/instance")
         expect(namespaces["xmlns:link"]).to eq("http://www.xbrl.org/2003/linkbase")
         expect(namespaces["xmlns:xlink"]).to eq("http://www.w3.org/1999/xlink")
+        expect(namespaces["xmlns:iso4217"]).to eq("http://www.xbrl.org/2003/iso4217")
+        expect(namespaces["xmlns:xsi"]).to eq("http://www.w3.org/2001/XMLSchema-instance")
         expect(namespaces["xmlns:strix"]).to eq(questionnaire.taxonomy_namespace)
+      end
+    end
+
+    # -------------------------------------------------------------------------
+    # XBRL units (pure and monetary)
+    # -------------------------------------------------------------------------
+    context "XBRL units" do
+      it "generates pure unit for dimensionless values" do
+        submission = build_submission(tGATE: "Oui")
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "xbrli" => "http://www.xbrl.org/2003/instance" }
+        pure_unit = doc.at_xpath("//xbrli:unit[@id='pure']", ns)
+
+        expect(pure_unit).not_to be_nil
+        measure = pure_unit.at_xpath("xbrli:measure", ns)
+        expect(measure.text).to eq("xbrli:pure")
+      end
+
+      it "generates monetary unit for currency values" do
+        submission = build_submission(tGATE: "Oui")
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "xbrli" => "http://www.xbrl.org/2003/instance" }
+        monetary_unit = doc.at_xpath("//xbrli:unit[@id='EUR']", ns)
+
+        expect(monetary_unit).not_to be_nil
+        measure = monetary_unit.at_xpath("xbrli:measure", ns)
+        expect(measure.text).to eq("iso4217:EUR")
+      end
+
+      it "monetary fields use EUR unitRef" do
+        submission = build_submission(tGATE: "Oui", t003: 1234.56)
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        t003_fact = doc.at_xpath("//strix:t003", ns)
+
+        expect(t003_fact["unitRef"]).to eq("EUR")
+      end
+
+      it "integer fields use pure unitRef" do
+        submission = build_submission(tGATE: "Oui", t001: 100)
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = { "strix" => questionnaire.taxonomy_namespace }
+        t001_fact = doc.at_xpath("//strix:t001", ns)
+
+        expect(t001_fact["unitRef"]).to eq("pure")
       end
     end
 
@@ -283,18 +338,22 @@ RSpec.describe AmsfSurvey::Generator do
     # User Story 3: Empty Field Handling (T035-T039)
     # =========================================================================
     context "empty field handling option" do
-      # T035: include_empty:true (default) includes empty facts for nil values
-      it "includes empty facts for nil values by default" do
+      # T035: include_empty:true (default) includes empty facts for nil values with xsi:nil
+      it "includes nil facts with xsi:nil='true' by default" do
         submission = build_submission(tGATE: "Oui")
         # t001 is visible (depends on tGATE=Oui) but not set
         xml = described_class.new(submission).generate
         doc = Nokogiri::XML(xml)
 
-        ns = { "strix" => questionnaire.taxonomy_namespace }
+        ns = {
+          "strix" => questionnaire.taxonomy_namespace,
+          "xsi" => "http://www.w3.org/2001/XMLSchema-instance"
+        }
         t001_fact = doc.at_xpath("//strix:t001", ns)
 
-        # By default, nil fields should be included as empty elements
+        # By default, nil fields should be included with xsi:nil="true"
         expect(t001_fact).not_to be_nil
+        expect(t001_fact["xsi:nil"]).to eq("true")
         expect(t001_fact.text).to eq("")
       end
 
