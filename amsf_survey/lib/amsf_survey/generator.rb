@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cgi"
 require "nokogiri"
 require "bigdecimal"
 require "uri"
@@ -515,11 +516,34 @@ module AmsfSurvey
         format_decimal(value)
       when :date
         format_date_value(value)
+      when :enum
+        # Encode for XBRL/Arelle compatibility - must match XSD enum values
+        # Apps use human-readable values (e.g., "Par l'entité"), but XSD
+        # contains HTML entities (e.g., "Par l&#39;entit&#233;")
+        encode_for_xbrl(value.to_s)
       else
-        # Booleans, strings, enums, integers - all convert to string
+        # Booleans, strings, integers - all convert to string
         # Booleans are already stored as "Oui"/"Non" strings by TypeCaster
         value.to_s
       end
+    end
+
+    # Encode string for XBRL to match XSD enum values.
+    # The AMSF XSD uses HTML numeric entities for special characters.
+    # We encode non-ASCII and apostrophes to match what Arelle validates against.
+    #
+    # @param str [String] the string to encode
+    # @return [String] encoded string with HTML numeric entities
+    def encode_for_xbrl(str)
+      str.each_char.map do |char|
+        if char == "'"
+          "&#39;"
+        elsif char.ord > 127
+          "&##{char.ord};"
+        else
+          char
+        end
+      end.join
     end
 
     # Format decimal values with 2 decimal places.

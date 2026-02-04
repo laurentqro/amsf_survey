@@ -28,3 +28,7 @@ parts:
                   Enter total monetary value.
               - field_id: t004
                 question_number: 5
+              - field_id: t005
+                question_number: 6
+                instructions: |
+                  Tests HTML-encoded enum values.

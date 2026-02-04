@@ -142,6 +142,8 @@ module AmsfSurvey
         enums = element.xpath(".//xs:enumeration/@value", "xs" => "http://www.w3.org/2001/XMLSchema")
         return nil if enums.empty?
 
+        # Decode HTML entities so apps use human-readable values (e.g., "Par l'entité")
+        # The generator re-encodes when writing XBRL for Arelle compatibility
         enums.map { |e| CGI.unescape_html(e.value) }
       end
 

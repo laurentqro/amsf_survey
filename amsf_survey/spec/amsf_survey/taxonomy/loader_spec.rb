@@ -74,7 +74,7 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
       it "preserves explicit question numbers from YAML" do
         # With parts-based structure, questions use explicit numbers from YAML
         questions = questionnaire.questions
-        expect(questions.map(&:number)).to eq([1, 2, 3, 4, 5])
+        expect(questions.map(&:number)).to eq([1, 2, 3, 4, 5, 6])
       end
 
       it "includes instructions from structure file" do
@@ -179,7 +179,7 @@ RSpec.describe AmsfSurvey::Taxonomy::Loader do
 
     describe "question_count" do
       it "returns total questions across all sections" do
-        expect(questionnaire.question_count).to eq(5)
+        expect(questionnaire.question_count).to eq(6)
       end
     end
   end

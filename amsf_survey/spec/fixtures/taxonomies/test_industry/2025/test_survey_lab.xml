@@ -98,5 +98,21 @@
           xlink:role="http://www.xbrl.org/2003/role/label"
           xlink:type="resource"
           xml:lang="fr">Type de service</label>
+        <!-- t005 labels (HTML-encoded enum test) -->
+        <loc
+          xlink:href="test_survey.xsd#test_t005"
+          xlink:label="test_t005"
+          xlink:type="locator"/>
+        <labelArc
+          order="1"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label"
+          xlink:from="test_t005"
+          xlink:to="label_test_t005"
+          xlink:type="arc"/>
+        <label
+          xlink:label="label_test_t005"
+          xlink:role="http://www.xbrl.org/2003/role/label"
+          xlink:type="resource"
+          xml:lang="fr">Fonction de conformite</label>
     </labelLink>
 </linkbase>

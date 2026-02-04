@@ -123,4 +123,24 @@
             </simpleContent>
         </complexType>
     </element>
+    <!-- Field 6: Enum with HTML-encoded characters (like aC1208) -->
+    <!-- Note: The XSD uses double-encoding: &amp;#39; which XML-parses to &#39; -->
+    <element
+      abstract="false"
+      id="test_t005"
+      name="t005"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      xbrli:periodType="instant">
+        <complexType>
+            <simpleContent>
+                <restriction base="xbrli:stringItemType">
+                    <enumeration value="Par des consultants externes"/>
+                    <enumeration value="Par un autre membre du groupe"/>
+                    <enumeration value="Par l&amp;#39;entit&amp;#233;"/>
+                    <enumeration value="Combinaison de soi, membre ou externe"/>
+                </restriction>
+            </simpleContent>
+        </complexType>
+    </element>
 </schema>

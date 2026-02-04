@@ -119,4 +119,36 @@ RSpec.describe "XBRL Generation Integration" do
       expect(xml_minified.split("\n")[1]).not_to match(/\A\s+</)
     end
   end
+
+  # Regression test for aC1208 validation error
+  # XSD contains double-encoded values like Par l&amp;#39;entit&amp;#233;
+  # After XML parsing + CGI.unescape_html, valid_values contains: Par l'entité
+  # Apps use human-readable values; generator encodes for XBRL output
+  describe "HTML-encoded enum values" do
+    it "accepts human-readable values and encodes for XBRL" do
+      # App uses decoded value
+      human_value = "Par l'entité"
+      submission = build_submission(tGATE: "Oui", t005: human_value)
+
+      xml = AmsfSurvey.to_xbrl(submission)
+
+      # Generator encodes for XBRL, then Nokogiri XML-escapes the &
+      # Result: Par l&amp;#39;entit&amp;#233; in raw XML
+      # When Arelle parses this, it gets: Par l&#39;entit&#233;
+      # Which matches what Arelle sees in the XSD
+      expect(xml).to include("Par l&amp;#39;entit&amp;#233;")
+
+      # Verify round-trip: parsing XBRL gives the encoded form
+      doc = Nokogiri::XML(xml)
+      ns = { "strix" => questionnaire.taxonomy_namespace }
+      parsed_value = doc.at_xpath("//strix:t005", ns).text
+      expect(parsed_value).to eq("Par l&#39;entit&#233;")
+    end
+
+    it "includes human-readable values in valid_values" do
+      question = questionnaire.questions.find { |q| q.id == :t005 }
+      # valid_values contains decoded form for app use
+      expect(question.valid_values).to include("Par l'entité")
+    end
+  end
 end
