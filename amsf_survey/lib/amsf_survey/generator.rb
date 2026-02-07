@@ -284,8 +284,13 @@ module AmsfSurvey
         # Validate dimensional field values
         if question.dimensional?
           validate_dimensional_value!(question, value)
-          # Skip nil - can't build facts without data. Arelle validates completeness.
-          build_dimensional_facts(doc, parent, strix_ns, question, value) if value
+          if value.is_a?(Hash) && value.empty?
+            # Empty hash = no dimensional data, emit nil fact in base context
+            # so Arelle's existence rules (e.g., "if aACTIVE is Yes, a3204 should be present") are satisfied
+            build_fact_element(doc, parent, strix_ns, question, nil, context_id)
+          elsif value
+            build_dimensional_facts(doc, parent, strix_ns, question, value)
+          end
         else
           # Non-dimensional fields should not receive Hash values
           if value.is_a?(Hash)
@@ -446,7 +451,7 @@ module AmsfSurvey
           fact["unitRef"] = unit_for(question.type)
           fact["decimals"] = decimals_for(question.type)
         end
-        fact.content = format_value(value, question.type)
+        fact.content = format_value(value, question)
       end
 
       parent.add_child(fact)
@@ -506,21 +511,25 @@ module AmsfSurvey
     # Format a value for XBRL output
     #
     # @param value [Object] the Ruby value
-    # @param type [Symbol] the field type
+    # @param question [Question] the question/field object
     # @return [String] the formatted XBRL value
-    def format_value(value, type)
+    def format_value(value, question)
       return "" if value.nil?
 
-      case type
+      case question.type
       when :decimal, :monetary, :percentage
         format_decimal(value)
       when :date
         format_date_value(value)
       when :enum
-        # Encode for XBRL/Arelle compatibility - must match XSD enum values
-        # Apps use human-readable values (e.g., "Par l'entité"), but XSD
-        # contains HTML entities (e.g., "Par l&#39;entit&#233;")
-        encode_for_xbrl(value.to_s)
+        # Only encode if the XSD contained HTML entities for this field
+        # Some fields like aC1208 use HTML entities (e.g., "Par l&#39;entit&#233;")
+        # Others like aIR33LF use plain UTF-8 (e.g., "13. Sociétés...")
+        if question.enum_needs_encoding?
+          encode_for_xbrl(value.to_s)
+        else
+          value.to_s
+        end
       else
         # Booleans, strings, integers - all convert to string
         # Booleans are already stored as "Oui"/"Non" strings by TypeCaster
