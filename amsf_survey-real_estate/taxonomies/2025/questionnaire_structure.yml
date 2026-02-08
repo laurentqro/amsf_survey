@@ -87,13 +87,13 @@ parts:
                 instructions: ~
               - field_id: "a1204S1"
                 question_number: 11
-                instructions: "Provide the percentage breakdown of all clients' beneficial owner's primary nationalities."
+                instructions: "Provide the percentage breakdown of all clients' beneficial owner's primary nationalities, including BO's of all % ownership levels, those with direct or indirect control, and those representing a legal entity."
               - field_id: "a1202O"
                 question_number: 12
-                instructions: "Number of Beneficial Owners which have direct or indirect control of clients that are legal persons."
+                instructions: "The information requested is in relation to number of Beneficial Owners which have direct or indirect control of clients that are legal persons, and trusts and other legal arrangements."
               - field_id: "a1202OB"
                 question_number: 13
-                instructions: "Number of Beneficial Owners which represent clients that are legal persons."
+                instructions: "The information requested is in relation to number of Beneficial Owners which represent clients that are legal persons, and trusts and other legal arrangements."
               - field_id: "a1204O"
                 question_number: 14
                 instructions: ~
@@ -149,7 +149,10 @@ parts:
                 instructions: "Purchases and Sales."
               - field_id: "a1403B"
                 question_number: 27
-                instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
+                instructions: |
+                  Purchases and Sales.
+
+                  For clarity: If a client purchases one property but makes 2 transfers to achieve full payment of the property, this shall be counted as 1 property transaction. The purchase of units or shares of a real estate company constitutes as many transactions as there are purchases or sales (e.g. purchase of 10 shares = 1 transaction; a purchase of 10 shares then a another purchase of 15 shares = 2 transactions; sale of 100% of the shares of an SCI = 1 transaction).
               - field_id: "a1404B"
                 question_number: 28
                 instructions: "Purchases and Sales."
@@ -158,7 +161,7 @@ parts:
                 instructions: "Rentals."
               - field_id: "a1403R"
                 question_number: 30
-                instructions: "Rentals. For rentals, one transaction shall mean one month-rent equivalent (>= 10,000 Euros)."
+                instructions: "Rentals. For rentals, one transaction shall mean one month-rent equivalent (>= 10,000 Euros). A rental client making monthly payments for one full year would be 12 transactions. A rental client making one payment covering 12 months' rent shall be counted as 12 transactions."
               - field_id: "aIR129"
                 question_number: 31
                 instructions: ~
@@ -177,22 +180,52 @@ parts:
                 instructions: "Purchases and Sales."
               - field_id: "a1502B"
                 question_number: 34
-                instructions: "Purchases and Sales. Count transactions as the number of sides of a transaction which were represented."
+                instructions: |
+                  Purchases and Sales.
+
+                  For clarity: If a client purchases one property but makes 2 transfers to achieve full payment of the property, this shall be counted as 1 property transaction. The purchase of units or shares of a real estate company constitutes as many transactions as there are purchases or sales (e.g. purchase of 10 shares = 1 transaction; a purchase of 10 shares then a another purchase of 15 shares = 2 transactions; sale of 100% of the shares of an SCI = 1 transaction).
               - field_id: "a1503B"
                 question_number: 35
                 instructions: "Purchases and Sales."
               - field_id: "a155"
                 question_number: 36
-                instructions: ~
+                instructions: |
+                  Legal Persons types include:
+                  - Commercial Partnership SNC
+                  - Economic Interest Group GIE
+                  - Joint Stock Company SAM
+                  - Limited Liability Companies SARL
+                  - Limited Partnership SCS
+                  - Limited Partnership with Shares SCA
+                  - Monegasque Foundation
+                  - Monegasque Associations
+                  - Other Civil Companies SC-Autre
+                  - Other Commercial Companies
+                  - Other Legal Arrangements
+                  - Private Domain of the Monegasque State
+                  - Property Investment Partnership SCI
+                  - Sole Person
+                  - Special Civil-law Partnership SCP
+                  - Trusts
               - field_id: "aMLES"
                 question_number: 37
-                instructions: "Purchases and Sales. Only clients that are active for the reporting period."
+                instructions: "Purchases and Sales. Only clients that are active for the reporting period or were at some point active during the reporting period should be reported."
               - field_id: "a11206B"
                 question_number: 38
-                instructions: "Purchases and Sales. For HNWI (EUR 5 million+)."
+                instructions: |
+                  Purchases and Sales.
+
+                  The term "unique Beneficial Owner" denotes that while a Beneficial Owner might have been involved with several properties it should only be counted as one Beneficial Owner.
+
+                  For the purposes of this survey, a HNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 5 million.
               - field_id: "a112012B"
                 question_number: 39
-                instructions: "Purchases and Sales. For UHNWI (EUR 50 million+)."
+                instructions: |
+                  Purchases and Sales.
+
+                  The term "unique Beneficial Owner" denotes that while a Beneficial Owner might have been involved with several properties it should only be counted as one Beneficial Owner.
+
+                  For the purposes of this survey, an UHNWI is a Natural Person whose sum of all accounts and net assets is more than EUR 50 million.
 
           # --------------------------------------------------------------------
           # 1.7 Clients - Trusts and Other Legal Arrangements
@@ -239,22 +272,25 @@ parts:
                 instructions: ~
               - field_id: "a11302RES"
                 question_number: 50
-                instructions: "Purchases and Sales."
+                instructions: "Purchases, Sales, and Rentals."
               - field_id: "a11302"
                 question_number: 51
-                instructions: "Purchases and Sales."
+                instructions: "Purchases, Sales, and Rentals."
               - field_id: "a11304B"
                 question_number: 52
-                instructions: "Purchases, Sales, and Rentals."
+                instructions: "Purchases and Sales."
               - field_id: "a11305B"
                 question_number: 53
-                instructions: "Purchases, Sales, and Rentals."
+                instructions: "Purchases and Sales."
               - field_id: "a11307"
                 question_number: 54
-                instructions: "For the purpose of this question, Beneficial Owner should mean any Natural Person who owns or exercises effective ultimate control, directly or indirectly, over a client."
+                instructions: |
+                  For the purpose of this question, Beneficial Owner should mean any Natural Person who owns or exercises effective ultimate control, directly or indirectly, over a client or the Natural Person who exercises effective ultimate control over a Legal Person or Legal Arrangement.
+
+                  The term "unique Beneficial Owners" denotes that while a Natural Person might be the Beneficial Owners of several Legal Persons/Arrangements it should only be counted as one.
               - field_id: "a11309B"
                 question_number: 55
-                instructions: "Purchases and Sales."
+                instructions: ~
 
           # --------------------------------------------------------------------
           # 1.9 Virtual Asset Service Providers
@@ -279,52 +315,52 @@ parts:
                 instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
               - field_id: "a13601B"
                 question_number: 61
-                instructions: "Virtual Currency Exchange Providers"
+                instructions: "Custodian Wallet Providers. Purchases, Sales, and Rentals."
               - field_id: "a13601EP"
                 question_number: 62
                 instructions: "Virtual Currency Exchange Providers"
               - field_id: "a13603AB"
                 question_number: 63
-                instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
+                instructions: "Virtual Currency Exchange Providers"
               - field_id: "a13604AB"
                 question_number: 64
                 instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
               - field_id: "a13601C"
                 question_number: 65
-                instructions: "ICO"
+                instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
               - field_id: "a13601ICO"
                 question_number: 66
-                instructions: "ICO"
+                instructions: "Virtual Currency Exchange Providers. Purchases, Sales, and Rentals."
               - field_id: "a13603CACB"
                 question_number: 67
-                instructions: "ICO. Purchases, Sales, and Rentals."
+                instructions: "ICO"
               - field_id: "a13604CB"
                 question_number: 68
-                instructions: "ICO. Purchases, Sales, and Rentals."
+                instructions: "ICO"
               - field_id: "a13601C2"
                 question_number: 69
-                instructions: "Other Services"
+                instructions: "ICO. Purchases, Sales, and Rentals."
               - field_id: "a13601OTHER"
                 question_number: 70
-                instructions: "Other Services"
+                instructions: "ICO. Purchases, Sales, and Rentals."
               - field_id: "a13603DB"
                 question_number: 71
-                instructions: "Other Services. Purchases, Sales, and Rentals."
+                instructions: "ICO. Purchases, Sales, and Rentals."
               - field_id: "a13604DB"
                 question_number: 72
-                instructions: "Other Services. Purchases, Sales, and Rentals."
+                instructions: "Other Services"
               - field_id: "a13602B"
                 question_number: 73
-                instructions: ~
+                instructions: "Other Services"
               - field_id: "a13602A"
                 question_number: 74
-                instructions: ~
+                instructions: "Other Services. Purchases, Sales, and Rentals."
               - field_id: "a13602C"
                 question_number: 75
-                instructions: ~
+                instructions: "Other Services. Purchases, Sales, and Rentals."
               - field_id: "a13602D"
                 question_number: 76
-                instructions: ~
+                instructions: "Other Services. Purchases, Sales, and Rentals."
               - field_id: "a13604E"
                 question_number: 77
                 instructions: "Other Services"
@@ -472,7 +508,7 @@ parts:
                 instructions: ~
               - field_id: "a2102W"
                 question_number: 114
-                instructions: ~
+                instructions: "Purchases, Sales, and Rentals."
               - field_id: "a2102BW"
                 question_number: 115
                 instructions: "Purchases, Sales, and Rentals."
@@ -520,7 +556,7 @@ parts:
             questions:
               - field_id: "a2104B"
                 question_number: 123
-                instructions: "Electronic transfers include payments originating in an electronic form."
+                instructions: "Payments by clients are transactions initiated and performed by the client. Electronic transfers include payments originating in an electronic form, such as wire transfers, payment service provider (PSP) such as PayPal, debit cards, credit cards, virtual currency payments, etc."
               - field_id: "a2105B"
                 question_number: 124
                 instructions: "Purchases, Sales, and Rentals."
@@ -542,7 +578,7 @@ parts:
                 instructions: ~
               - field_id: "a2108W"
                 question_number: 128
-                instructions: ~
+                instructions: "Purchases, Sales, and Rentals."
               - field_id: "a2109W"
                 question_number: 129
                 instructions: "Purchases, Sales, and Rentals."
@@ -624,71 +660,75 @@ parts:
           - number: "2.8"
             title: "Services Offered, Agent for Purchases & Sales"
             questions:
-              - field_id: "a2501A"
+              - field_id: "aIR233"
                 question_number: 149
                 instructions: "Purchases and Sales."
-              - field_id: "a2501"
+              - field_id: "aIR233B"
                 question_number: 150
                 instructions: "Purchases and Sales."
-              - field_id: "aIR233B"
+              - field_id: "aIR233S"
                 question_number: 151
                 instructions: "Purchases and Sales."
-              - field_id: "aIR233S"
+              - field_id: "aIR235B_1"
                 question_number: 152
                 instructions: "Purchases and Sales."
-              - field_id: "aIR235B_1"
+              - field_id: "aIR235B_2"
                 question_number: 153
                 instructions: "Purchases and Sales."
-              - field_id: "aIR235B_2"
+              - field_id: "aIR235S"
                 question_number: 154
                 instructions: "Purchases and Sales."
-              - field_id: "aIR235S"
+              - field_id: "aIR237B"
                 question_number: 155
                 instructions: "Purchases and Sales."
-              - field_id: "aIR117"
+              - field_id: "aIR238B"
                 question_number: 156
                 instructions: "Purchases and Sales."
-              - field_id: "aIR2391"
+              - field_id: "aIR239B"
                 question_number: 157
-                instructions: "Purchases, Sales, and Rentals. A related person should be considered a family relation."
-              - field_id: "aIR2392"
+                instructions: "Purchases and Sales."
+              - field_id: "aIR117"
                 question_number: 158
-                instructions: ~
-              - field_id: "aIR2393"
+                instructions: "Purchases, Sales, and Rentals. A related person should be considered a family relation."
+              - field_id: "aIR2391"
                 question_number: 159
                 instructions: ~
-              - field_id: "aIR234"
+              - field_id: "aIR2392"
                 question_number: 160
                 instructions: ~
-              - field_id: "aIR236"
+              - field_id: "aIR2393"
                 question_number: 161
-                instructions: ~
-              - field_id: "aIR2313"
-                question_number: 162
-                instructions: ~
-              - field_id: "aIR2316"
-                question_number: 163
-                instructions: ~
-              - field_id: "aIR237B"
-                question_number: 164
-                instructions: ~
-              - field_id: "aIR238B"
-                question_number: 165
-                instructions: ~
-              - field_id: "aIR239B"
-                question_number: 166
-                instructions: ~
-              - field_id: "aIR233"
-                question_number: 167
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 2.9 Comments & Feedback
+          # 2.9 Services Offered, Agent for Rentals
           # --------------------------------------------------------------------
           - number: "2.9"
+            title: "Services Offered, Agent for Rentals"
+            questions:
+              - field_id: "aIR234"
+                question_number: 162
+                instructions: "Rentals."
+              - field_id: "aIR236"
+                question_number: 163
+                instructions: "Rentals."
+              - field_id: "aIR2313"
+                question_number: 164
+                instructions: "Rentals."
+              - field_id: "aIR2316"
+                question_number: 165
+                instructions: "Rentals."
+
+          # --------------------------------------------------------------------
+          # 2.10 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "2.10"
             title: "Comments & Feedback"
             questions:
-              - field_id: "aIR33LF"
+              - field_id: "a2501A"
+                question_number: 166
+                instructions: ~
+              - field_id: "a2501"
                 question_number: 167
                 instructions: ~
 
@@ -726,53 +766,47 @@ parts:
           - number: "3.2"
             title: "Onboarding"
             questions:
-              - field_id: "a3201"
+              - field_id: "aB3206"
                 question_number: 173
                 instructions: ~
-              - field_id: "a3202"
+              - field_id: "aB3207"
                 question_number: 174
                 instructions: ~
-              - field_id: "a3203"
+              - field_id: "a3208TOLA"
                 question_number: 175
                 instructions: ~
-              - field_id: "a3204"
+              - field_id: "a3209"
                 question_number: 176
                 instructions: ~
-              - field_id: "a3205"
+              - field_id: "a3210C"
                 question_number: 177
-                instructions: "The reporting entity should disclose whether clients are onboarded (for CDD purposes) on a non-face-to-face basis."
-              - field_id: "aB3206"
+                instructions: "The reporting entity should disclose whether clients are onboarded (for CDD purposes) on a non-face-to-face basis (not physically present)."
+              - field_id: "a3211C"
                 question_number: 178
                 instructions: ~
-              - field_id: "aB3207"
+              - field_id: "a3212CTOLA"
                 question_number: 179
                 instructions: ~
-              - field_id: "a3208TOLA"
+              - field_id: "a3201"
                 question_number: 180
-                instructions: "An introducer is a Financial Institution / Designated Non-Financial Businesses and Professions who has a direct relationship with a client."
-              - field_id: "a3209"
+                instructions: "An introducer is a Financial Institution / Designated Non-Financial Businesses and Professions who has a direct relationship with a client but delegates the financial transaction execution to another obliged entity (i.e. an introducer is a company that brings a client to the licensed entity)."
+              - field_id: "a3501B"
                 question_number: 181
                 instructions: ~
-              - field_id: "a3210"
+              - field_id: "a3202"
                 question_number: 182
                 instructions: ~
-              - field_id: "a3210B"
+              - field_id: "a3204"
                 question_number: 183
                 instructions: ~
-              - field_id: "a3210C"
+              - field_id: "a3501C"
                 question_number: 184
                 instructions: ~
-              - field_id: "a3211"
+              - field_id: "a3203"
                 question_number: 185
                 instructions: ~
-              - field_id: "a3211B"
+              - field_id: "a3205"
                 question_number: 186
-                instructions: ~
-              - field_id: "a3211C"
-                question_number: 187
-                instructions: ~
-              - field_id: "a3212CTOLA"
-                question_number: 188
                 instructions: ~
 
           # --------------------------------------------------------------------
@@ -781,53 +815,80 @@ parts:
           - number: "3.3"
             title: "Structure"
             questions:
+              - field_id: "aIR33LF"
+                question_number: 187
+                instructions: |
+                  Legal Persons types include:
+                  - Commercial Partnership SNC
+                  - Economic Interest Group GIE
+                  - Joint Stock Company SAM
+                  - Limited Liability Companies SARL
+                  - Limited Partnership SCS
+                  - Limited Partnership with Shares SCA
+                  - Monegasque Foundation
+                  - Monegasque Associations
+                  - Other Civil Companies SC-Autre
+                  - Other Commercial Companies
+                  - Other Legal Arrangements
+                  - Private Domain of the Monegasque State
+                  - Property Investment Partnership SCI
+                  - Sole Person
+                  - Special Civil-law Partnership SCP
+                  - Trusts
+              - field_id: "aIR328"
+                question_number: 188
+                instructions: "The reporting entity has to disclose the number of all personnel employed: employees, associates and owners, regardless of their function."
               - field_id: "a3301"
                 question_number: 189
                 instructions: ~
-              - field_id: "aIR328"
-                question_number: 190
-                instructions: "The reporting entity has to disclose the number of all personnel employed: employees, associates and owners, regardless of their function."
               - field_id: "a3302"
-                question_number: 191
+                question_number: 190
                 instructions: ~
               - field_id: "a3303"
-                question_number: 192
+                question_number: 191
                 instructions: ~
               - field_id: "a3304"
+                question_number: 192
+                instructions: "For the purpose of this question, branch should be understood as a secondary establishment of the parent company. Please do not include offices/client service locations which are sometimes informally referred to as \"branches\"."
+              - field_id: "a3304C"
                 question_number: 193
                 instructions: ~
-              - field_id: "a3304C"
+              - field_id: "a3305"
                 question_number: 194
                 instructions: ~
-              - field_id: "a3305"
+              - field_id: "a3306"
                 question_number: 195
                 instructions: ~
-              - field_id: "a3306"
-                question_number: 196
-                instructions: "For the purpose of this question, branch should be understood as a secondary establishment of the parent company."
               - field_id: "a3306A"
-                question_number: 197
+                question_number: 196
                 instructions: ~
               - field_id: "a3306B"
-                question_number: 198
+                question_number: 197
                 instructions: ~
               - field_id: "a3307"
+                question_number: 198
+                instructions: |
+                  A change in the legal manager(s), members of senior management or board of directors or supervisory board, partners/shareholders, beneficial owners, any other person exercising direct or indirect control over your entity or the conduct of its activity?
+
+                  Undergone a significant evolution or modification of activities?
+
+                  Any other statutory changes?
+
+                  Change of AML/CFT/CPF responsible persons?
+              - field_id: "a3308"
                 question_number: 199
                 instructions: ~
-              - field_id: "a3308"
+              - field_id: "a3210B"
                 question_number: 200
                 instructions: ~
-              - field_id: "a381"
+              - field_id: "a3211B"
                 question_number: 201
                 instructions: ~
-              - field_id: "a3802"
+              - field_id: "a3210"
                 question_number: 202
                 instructions: ~
-              - field_id: "a3803"
+              - field_id: "a3211"
                 question_number: 203
-                instructions: ~
-              - field_id: "a3804"
-                question_number: 204
                 instructions: ~
 
           # --------------------------------------------------------------------
@@ -836,24 +897,18 @@ parts:
           - number: "3.4"
             title: "Entity Finances"
             questions:
-              - field_id: "a3401"
+              - field_id: "a381"
+                question_number: 204
+                instructions: ~
+              - field_id: "a3802"
                 question_number: 205
                 instructions: ~
-              - field_id: "a3402"
+              - field_id: "a3803"
                 question_number: 206
                 instructions: ~
-              - field_id: "a3403"
+              - field_id: "a3804"
                 question_number: 207
-                instructions: ~
-              - field_id: "a3414"
-                question_number: 208
                 instructions: "Total of twelve monthly payments. In case of negative VAT, provide details in the next comment box."
-              - field_id: "a3415"
-                question_number: 209
-                instructions: ~
-              - field_id: "a3416"
-                question_number: 210
-                instructions: ~
 
           # --------------------------------------------------------------------
           # 3.5 Rejected Relationships
@@ -861,24 +916,43 @@ parts:
           - number: "3.5"
             title: "Rejected Relationships"
             questions:
-              - field_id: "a3501B"
-                question_number: 211
+              - field_id: "a3401"
+                question_number: 208
                 instructions: ~
-              - field_id: "a3501C"
-                question_number: 212
+              - field_id: "a3402"
+                question_number: 209
+                instructions: ~
+              - field_id: "a3403"
+                question_number: 210
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 3.6 Comments & Feedback
+          # 3.6 Terminated Relationships
           # --------------------------------------------------------------------
           - number: "3.6"
-            title: "Comments & Feedback"
+            title: "Terminated Relationships"
             questions:
-              - field_id: "a3701"
+              - field_id: "a3414"
+                question_number: 211
+                instructions: ~
+              - field_id: "a3415"
+                question_number: 212
+                instructions: ~
+              - field_id: "a3416"
                 question_number: 213
                 instructions: ~
+
+          # --------------------------------------------------------------------
+          # 3.7 Comments & Feedback
+          # --------------------------------------------------------------------
+          - number: "3.7"
+            title: "Comments & Feedback"
+            questions:
               - field_id: "a3701A"
                 question_number: 214
+                instructions: ~
+              - field_id: "a3701"
+                question_number: 215
                 instructions: ~
 
   # ============================================================================
@@ -900,13 +974,32 @@ parts:
                 instructions: "Reuse the response from Q188. The reporting entity has to disclose the number of all personnel employed."
               - field_id: "aC1102"
                 question_number: 2
-                instructions: "Provide the estimate as a decimal of FTE time. 1 full-time employee = 1 FTE."
+                instructions: |
+                  The reporting entity should disclose the number of full-time equivalent employees and non-employee partners and owners, irrespective of their function.
+
+                  Provide the estimate as a decimal of FTE time. For example if there is one full time employee and two 1/4 time employees, then the total would be 1.5 FTE.
+
+                  1 full-time employee = 1 FTE.
+                  One half-time employee = 0.5 FTE.
+                  One 1/4 time employee = 0.25 FTE.
               - field_id: "aC1101Z"
                 question_number: 3
                 instructions: ~
               - field_id: "aC114"
                 question_number: 4
-                instructions: "This question distinguishes if the entity is of a sufficient size to have separated either governance or functions of responsibility."
+                instructions: |
+                  This question distinguishes if the entity is of a sufficient size to have separated either governance or functions of responsibility.
+
+                  Examples of a board or senior management, would be an entity having:
+                  - Chief Officers (CEO, CFO, CTO...)
+                  - Distribution of decision-making authority, such as given by a Director or when more than one layer of management exists
+                  - Policies or procedures which require approval by a specified role or individual
+                  - A legal requirement for a board or specific role needed to achieve compliance
+
+                  Examples of an entity that does not have a board or senior management:
+                  - A sole proprietor
+                  - A partnership
+                  - A small business with a single layer of management
               - field_id: "aC1106"
                 question_number: 5
                 instructions: ~
@@ -922,10 +1015,10 @@ parts:
             questions:
               - field_id: "aC1201"
                 question_number: 7
-                instructions: "The reporting entity should disclose whether it has written policies and procedures in place."
+                instructions: "The reporting entity should disclose whether it has written policies and procedures in place that outline how the reporting entity implements AML/CFT legal requirements."
               - field_id: "aC1202"
                 question_number: 8
-                instructions: "The reporting entity should disclose whether its written AML/CFT policies and procedures have been formally approved by senior management."
+                instructions: "The reporting entity should disclose whether its written AML/CFT policies and procedures have been formally approved by the senior management (be it the Board of Directors or any other person that executes control over the entity and/or has decision-making power)."
               - field_id: "aC1203"
                 question_number: 9
                 instructions: "If only one employee, answer Yes."
@@ -937,7 +1030,7 @@ parts:
                 instructions: ~
               - field_id: "aC1206"
                 question_number: 12
-                instructions: ~
+                instructions: "The reporting entity should disclose whether it has a systematic practice of tracking and managing changes to AML/CFT Policies and Procedures, such as version control, or a log/list which allows someone to see the frequency of updates and review processes."
               - field_id: "aC1207"
                 question_number: 13
                 instructions: "Such as version control, or a log/list which allows someone to see the frequency of updates and review processes."
@@ -949,7 +1042,7 @@ parts:
                 instructions: ~
               - field_id: "aC1208"
                 question_number: 16
-                instructions: ~
+                instructions: "The reporting entity should disclose whether its Policies and Procedures were prepared by the entity themselves or by external advisors."
               - field_id: "aC1209"
                 question_number: 17
                 instructions: ~
@@ -962,13 +1055,38 @@ parts:
             questions:
               - field_id: "aC1301"
                 question_number: 18
-                instructions: ~
+                instructions: |
+                  Actions taken by the Board and/or senior management that could demonstrate board's and senior management's engagement in AML/CFT matters could include:
+
+                  (1) senior management includes AML/CFT matters into the daily/weekly/monthly/quarterly/yearly agenda;
+
+                  (2) senior management receives regular reports on ML/TF risks, trends and vulnerabilities and take immediate decisions to manage and mitigate the risks;
+
+                  (3) senior management requests ad-hoc reporting on AML/CFT matters whenever issues arise; orders internal or external audit to test AML/CFT controls;
+
+                  (4) on the basis of internal business wide ML/TF risk assessment results, senior management takes decisions to mitigate higher risks by increasing human resources (hiring more employees for AML/CFT), buying AML/CFT monitoring software or sanction screening software, etc.;
+
+                  (5) senior management formally approves written policies, procedures and amendments to them whenever changes to AML/CFT legislation are introduced;
+
+                  (6) senior management requests regular reports on implementation of risk mitigation measures on the basis of ML/TF risk assessment, internal audit findings, etc.
               - field_id: "aC1302"
                 question_number: 19
-                instructions: ~
+                instructions: |
+                  The reporting entity should disclose whether the board and/or senior management receive regular reports on ML/TF risks and vulnerabilities, trends and overall AML/CFT compliance.
+
+                  Senior management of the reporting entity, being responsible of overall risk management and control, should also oversee ML/FT risk and trends.
               - field_id: "aC1303"
                 question_number: 20
-                instructions: ~
+                instructions: |
+                  The reporting entity should disclose whether Senior management of the reporting entity, being responsible of overall risk management and control, take actions to rectify shortcomings in AML/CFT compliance areas and mitigate ML/TF risks.
+
+                  The necessity of actions can be determined based on ML/TF business risk assessment results, periodic AML/CFT reporting, supervisory onsite examination reports, etc. Examples of such actions might include:
+
+                  (a) approving budgetary resources to hire more employees for AML/CFT Compliance, investing in employees' knowledge and expertise through training, seminars, certifications
+
+                  (b) buying necessary IT (technical resources), such as monitoring systems, automated screening solutions,
+
+                  (c) prioritizing AML/CFT area for internal audit, etc.
               - field_id: "aC1304"
                 question_number: 21
                 instructions: "In the case of Enhanced Due Diligence, the senior management might be required to approve the business relationships with the higher risk clients."
@@ -984,7 +1102,7 @@ parts:
                 instructions: "The reporting entity should disclose whether it had any AML/CFT related compliance failures, including minor shortcomings, within the past 5 years."
               - field_id: "aC1402"
                 question_number: 23
-                instructions: ~
+                instructions: "Any AML/CFT related compliance failures, including minor shortcomings, should be counted under this question."
               - field_id: "aC1403"
                 question_number: 24
                 instructions: ~
@@ -1031,7 +1149,7 @@ parts:
                 instructions: ~
               - field_id: "aC1601"
                 question_number: 34
-                instructions: ~
+                instructions: "If any of these items are not kept on file, answer No."
               - field_id: "aC1602"
                 question_number: 35
                 instructions: ~
@@ -1046,7 +1164,7 @@ parts:
                 instructions: ~
               - field_id: "aC1635"
                 question_number: 39
-                instructions: "If any of these items are not kept on file, answer No."
+                instructions: ~
               - field_id: "aC1636"
                 question_number: 40
                 instructions: ~
@@ -1058,7 +1176,7 @@ parts:
                 instructions: ~
               - field_id: "aC1635A"
                 question_number: 43
-                instructions: ~
+                instructions: "This question relates to the license holder having an organized system to retain records, and that records are centrally stored (not widely distributed), such that records can be easily retrieved and provided upon request."
               - field_id: "aC1638A"
                 question_number: 44
                 instructions: ~
@@ -1079,13 +1197,13 @@ parts:
                 instructions: ~
               - field_id: "aC1610"
                 question_number: 50
-                instructions: ~
+                instructions: "(e.g. simplified, standard and enhanced due diligence)"
               - field_id: "aC1611"
                 question_number: 51
-                instructions: ~
+                instructions: "Please repeat the answer provided in Q4."
               - field_id: "aC1612A"
                 question_number: 52
-                instructions: ~
+                instructions: "Please note that Simplified Due Diligence (SDD) constitute a specific framework defined in articles 11 et seq. of law 1.362."
               - field_id: "aC1612"
                 question_number: 53
                 instructions: ~
@@ -1097,7 +1215,7 @@ parts:
                 instructions: ~
               - field_id: "aC1622F"
                 question_number: 56
-                instructions: "This question relates to the license holder having an organized system to retain records."
+                instructions: ~
               - field_id: "aC1622A"
                 question_number: 57
                 instructions: ~
@@ -1124,10 +1242,10 @@ parts:
                 instructions: ~
               - field_id: "aC1616C"
                 question_number: 65
-                instructions: "e.g. simplified, standard and enhanced due diligence"
+                instructions: ~
               - field_id: "aC1621"
                 question_number: 66
-                instructions: "Please repeat the answer provided in Q4."
+                instructions: ~
 
           # --------------------------------------------------------------------
           # 4.7 EDD
@@ -1206,7 +1324,11 @@ parts:
                 instructions: ~
               - field_id: "aC11104"
                 question_number: 83
-                instructions: ~
+                instructions: |
+                  When providing its response, the reporting entity should consider the following factors:
+                  (1) is the above data collected in electronic format and easily retrievable from the IT systems?
+                  (2) does the IT system have the functionality to filter and sort records so that they can be retrieved promptly?
+                  (3) is there manual effort required to find clients' data, e.g., if files are stored only in paper format; or, when they are stored in electronic format, IT systems are not configured to enable easy access to the required data.
               - field_id: "aC11105"
                 question_number: 84
                 instructions: ~
@@ -1247,7 +1369,14 @@ parts:
                 instructions: ~
               - field_id: "aC11303"
                 question_number: 92
-                instructions: ~
+                instructions: |
+                  The reporting entity should provide a list of specific and enhanced measures that are additionally being taken for PEPs, compared to standard risk clients. For example:
+
+                  (a) before establishing a business relationship
+
+                  (b) during the course of a business relationship.
+
+                  If the above measures differ for domestic and foreign PEPs, please indicate which measure applies to a domestic PEP and which to a foreign PEP.
               - field_id: "aC11304"
                 question_number: 93
                 instructions: ~
@@ -1288,10 +1417,10 @@ parts:
                 instructions: "(not necessarily filed to the FIU)"
               - field_id: "aC11502"
                 question_number: 101
-                instructions: ~
+                instructions: "The reporting entity should disclose the number of Suspicious Transactions, related to Terrorism Financing, it has reported to Monaco's FIU (https://amsf.mc)."
               - field_id: "aC11504"
                 question_number: 102
-                instructions: ~
+                instructions: "The reporting entity should disclose the number of Suspicious Transactions, related to Money Laundering, it has reported to Monaco's FIU (https://amsf.mc)."
               - field_id: "aC11508"
                 question_number: 103
                 instructions: ~
@@ -1331,4 +1460,4 @@ parts:
                 instructions: ~
               - field_id: "aINCOMPLETE"
                 question_number: 3
-                instructions: "If no, please write 'Complete'. If yes, provide the reason for submitting incomplete."
+                instructions: "If no, please write 'Complete'. If yes, provide the reason for submitting incomplete. An incomplete submission may result in enhanced oversight or other action."
