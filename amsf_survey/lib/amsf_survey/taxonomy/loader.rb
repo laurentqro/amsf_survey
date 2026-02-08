@@ -126,7 +126,8 @@ module AmsfSurvey
           valid_values: schema[:valid_values],
           depends_on: depends_on,
           gate: is_gate,
-          dimensional: is_dimensional
+          dimensional: is_dimensional,
+          enum_needs_encoding: schema[:enum_needs_encoding] || false
         )
       end
 

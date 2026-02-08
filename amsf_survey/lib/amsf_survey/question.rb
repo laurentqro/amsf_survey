@@ -25,6 +25,7 @@ module AmsfSurvey
     def gate? = field.gate?
     def depends_on = field.depends_on
     def dimensional? = field.dimensional?
+    def enum_needs_encoding? = field.enum_needs_encoding
 
     # Cast a value to the appropriate type for this question
     def cast(value) = field.cast(value)

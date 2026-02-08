@@ -7,7 +7,7 @@ module AmsfSurvey
     attr_reader :xbrl_id, :type, :xbrl_type, :label,
                 :verbose_label, :valid_values,
                 :depends_on, :gate, :min, :max,
-                :dimensional
+                :dimensional, :enum_needs_encoding
 
     def initialize(
       id:,
@@ -20,7 +20,8 @@ module AmsfSurvey
       depends_on: {},
       min: nil,
       max: nil,
-      dimensional: false
+      dimensional: false,
+      enum_needs_encoding: false
     )
       @xbrl_id = id
       @id = id.to_s.downcase.to_sym
@@ -34,6 +35,7 @@ module AmsfSurvey
       @min = min
       @max = max
       @dimensional = dimensional
+      @enum_needs_encoding = enum_needs_encoding
     end
 
     # Returns lowercase ID for API usage (e.g., :aactive, :a1101)

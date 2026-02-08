@@ -112,16 +112,22 @@ module AmsfSurvey
         # Handle inline complexType restrictions (e.g., a1204S1 with pureItemType)
         type_attr ||= extract_inline_restriction_base(element)
 
-        enumeration_values = extract_enumeration(element)
+        enumeration_values, enum_needs_encoding = extract_enumeration(element)
 
         type, xbrl_type = determine_type(type_attr, enumeration_values)
 
-        {
+        result = {
           id: id,
           type: type,
           xbrl_type: xbrl_type,
           valid_values: enumeration_values
         }
+
+        # Track if enum values need HTML encoding for XBRL output
+        # Only set when true to keep hash minimal for non-enum fields
+        result[:enum_needs_encoding] = true if enum_needs_encoding
+
+        result
       end
 
       # Extracts the base type from inline complexType/simpleContent/restriction.
@@ -140,11 +146,18 @@ module AmsfSurvey
 
       def extract_enumeration(element)
         enums = element.xpath(".//xs:enumeration/@value", "xs" => "http://www.w3.org/2001/XMLSchema")
-        return nil if enums.empty?
+        return nil, false if enums.empty?
+
+        # Check if any raw XSD value contains HTML entities (e.g., &#39; or &#233;)
+        # This determines whether the generator needs to encode values for this field
+        raw_values = enums.map(&:value)
+        needs_encoding = raw_values.any? { |v| v.include?("&#") }
 
         # Decode HTML entities so apps use human-readable values (e.g., "Par l'entité")
-        # The generator re-encodes when writing XBRL for Arelle compatibility
-        enums.map { |e| CGI.unescape_html(e.value) }
+        # The generator re-encodes when writing XBRL only if the XSD was encoded
+        decoded_values = raw_values.map { |v| CGI.unescape_html(v) }
+
+        [decoded_values, needs_encoding]
       end
 
       # Boolean patterns for Yes/No fields (case-insensitive matching).
