@@ -108,11 +108,11 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
 
     it "has correct question counts per part" do
       counts = questionnaire.parts.map(&:question_count)
-      expect(counts).to eq([214, 105, 3]) # Total: 322
+      expect(counts).to eq([215, 105, 3]) # Total: 323
     end
 
-    it "has 322 total questions" do
-      expect(questionnaire.question_count).to eq(322)
+    it "has 323 total questions" do
+      expect(questionnaire.question_count).to eq(323)
     end
   end
 
@@ -129,7 +129,7 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
     it "has sequential question numbers within Inherent Risk" do
       inherent_risk = questionnaire.parts.find { |p| p.name == "Inherent Risk" }
       numbers = inherent_risk.questions.map(&:number)
-      expect(numbers).to eq((1..214).to_a)
+      expect(numbers).to eq((1..215).to_a)
     end
   end
 
@@ -154,6 +154,36 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
       end
 
       expect(cache_time).to be < 0.010 # 10ms
+    end
+  end
+
+  describe "XSD/YAML cross-reference" do
+    let(:taxonomy_2025_path) { File.join(taxonomy_path, "2025") }
+
+    it "has all YAML field_ids present in XSD" do
+      questionnaire = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
+      xsd_path = Dir.glob(File.join(taxonomy_2025_path, "*.xsd")).first
+      schema_data = AmsfSurvey::Taxonomy::SchemaParser.new(xsd_path).parse
+      xsd_ids = schema_data.keys.map { |id| id.to_s.downcase.to_sym }.to_set
+
+      yaml_ids = questionnaire.questions.map(&:id).to_set
+      missing_from_xsd = yaml_ids - xsd_ids
+
+      expect(missing_from_xsd).to be_empty,
+        "YAML field_ids not found in XSD: #{missing_from_xsd.to_a.join(', ')}"
+    end
+
+    it "has all XSD concrete elements present in YAML" do
+      questionnaire = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
+      xsd_path = Dir.glob(File.join(taxonomy_2025_path, "*.xsd")).first
+      schema_data = AmsfSurvey::Taxonomy::SchemaParser.new(xsd_path).parse
+      xsd_ids = schema_data.keys.map { |id| id.to_s.downcase.to_sym }.to_set
+
+      yaml_ids = questionnaire.questions.map(&:id).to_set
+      missing_from_yaml = xsd_ids - yaml_ids
+
+      expect(missing_from_yaml).to be_empty,
+        "XSD elements not mapped in YAML: #{missing_from_yaml.to_a.join(', ')}"
     end
   end
 

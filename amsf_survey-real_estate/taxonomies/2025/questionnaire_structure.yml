@@ -956,17 +956,17 @@ parts:
                 instructions: ~
 
   # ============================================================================
-  # PART: CONTROLS (Section 4, Q1-Q105)
+  # PART: CONTROLS (Section 1, Q1-Q105)
   # ============================================================================
   - name: "Controls"
     sections:
-      - number: 4
+      - number: 1
         title: "Controls"
         subsections:
           # --------------------------------------------------------------------
-          # 4.1 Structure
+          # 1.1 Structure
           # --------------------------------------------------------------------
-          - number: "4.1"
+          - number: "1.1"
             title: "Structure"
             questions:
               - field_id: "aC1102A"
@@ -1008,9 +1008,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.2 Policies & Procedures
+          # 1.2 Policies & Procedures
           # --------------------------------------------------------------------
-          - number: "4.2"
+          - number: "1.2"
             title: "Policies & Procedures"
             questions:
               - field_id: "aC1201"
@@ -1048,9 +1048,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.3 Governance
+          # 1.3 Governance
           # --------------------------------------------------------------------
-          - number: "4.3"
+          - number: "1.3"
             title: "Governance"
             questions:
               - field_id: "aC1301"
@@ -1092,9 +1092,9 @@ parts:
                 instructions: "In the case of Enhanced Due Diligence, the senior management might be required to approve the business relationships with the higher risk clients."
 
           # --------------------------------------------------------------------
-          # 4.4 Compliance & Violations
+          # 1.4 Compliance & Violations
           # --------------------------------------------------------------------
-          - number: "4.4"
+          - number: "1.4"
             title: "Compliance & Violations"
             questions:
               - field_id: "aC1401"
@@ -1108,9 +1108,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.5 Training
+          # 1.5 Training
           # --------------------------------------------------------------------
-          - number: "4.5"
+          - number: "1.5"
             title: "Training"
             questions:
               - field_id: "aC1501"
@@ -1124,9 +1124,9 @@ parts:
                 instructions: "Employees, inclusive Directors / Management."
 
           # --------------------------------------------------------------------
-          # 4.6 CDD
+          # 1.6 CDD
           # --------------------------------------------------------------------
-          - number: "4.6"
+          - number: "1.6"
             title: "CDD"
             questions:
               - field_id: "aC1625"
@@ -1248,9 +1248,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.7 EDD
+          # 1.7 EDD
           # --------------------------------------------------------------------
-          - number: "4.7"
+          - number: "1.7"
             title: "EDD"
             questions:
               - field_id: "aC1701"
@@ -1264,9 +1264,9 @@ parts:
                 instructions: "i.e. number of enhanced due diligence clients / total number of clients."
 
           # --------------------------------------------------------------------
-          # 4.8 Risk Assessments
+          # 1.8 Risk Assessments
           # --------------------------------------------------------------------
-          - number: "4.8"
+          - number: "1.8"
             title: "Risk Assessments"
             questions:
               - field_id: "aB1801B"
@@ -1298,9 +1298,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.9 Audit / Controls
+          # 1.9 Audit / Controls
           # --------------------------------------------------------------------
-          - number: "4.9"
+          - number: "1.9"
             title: "Audit / Controls"
             questions:
               - field_id: "aC1904"
@@ -1308,9 +1308,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.10 Record Keeping
+          # 1.10 Record Keeping
           # --------------------------------------------------------------------
-          - number: "4.10"
+          - number: "1.10"
             title: "Record Keeping"
             questions:
               - field_id: "aC11101"
@@ -1334,9 +1334,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.11 Targeted Financial Sanctions (TFS)
+          # 1.11 Targeted Financial Sanctions (TFS)
           # --------------------------------------------------------------------
-          - number: "4.11"
+          - number: "1.11"
             title: "Targeted Financial Sanctions (TFS)"
             questions:
               - field_id: "aC11201"
@@ -1356,9 +1356,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.12 PEPs
+          # 1.12 PEPs
           # --------------------------------------------------------------------
-          - number: "4.12"
+          - number: "1.12"
             title: "PEPs"
             questions:
               - field_id: "aC11301"
@@ -1391,9 +1391,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.13 Cash Transactions
+          # 1.13 Cash Transactions
           # --------------------------------------------------------------------
-          - number: "4.13"
+          - number: "1.13"
             title: "Cash Transactions"
             questions:
               - field_id: "aC11401"
@@ -1407,9 +1407,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.14 Suspicious Transaction Reporting
+          # 1.14 Suspicious Transaction Reporting
           # --------------------------------------------------------------------
-          - number: "4.14"
+          - number: "1.14"
             title: "Suspicious Transaction Reporting"
             questions:
               - field_id: "aC11501B"
@@ -1426,9 +1426,9 @@ parts:
                 instructions: ~
 
           # --------------------------------------------------------------------
-          # 4.15 Comments & Feedback
+          # 1.15 Comments & Feedback
           # --------------------------------------------------------------------
-          - number: "4.15"
+          - number: "1.15"
             title: "Comments & Feedback"
             questions:
               - field_id: "aC116A"
@@ -1439,17 +1439,17 @@ parts:
                 instructions: ~
 
   # ============================================================================
-  # PART: SIGNATORIES (Section 5, Q1-Q3)
+  # PART: SIGNATORIES (Section 1, Q1-Q3)
   # ============================================================================
   - name: "Signatories"
     sections:
-      - number: 5
+      - number: 1
         title: "Signatories"
         subsections:
           # --------------------------------------------------------------------
-          # 5.1 Attestation
+          # 1.1 Attestation
           # --------------------------------------------------------------------
-          - number: "5.1"
+          - number: "1.1"
             title: "Attestation"
             questions:
               - field_id: "aS1"

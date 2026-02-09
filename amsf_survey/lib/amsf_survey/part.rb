@@ -5,11 +5,18 @@ module AmsfSurvey
   # Contains sections. Question numbers reset within each part.
   # Immutable value object built by the taxonomy loader.
   class Part
-    attr_reader :name, :sections
+    include LocaleSupport
+
+    attr_reader :sections
 
     def initialize(name:, sections:)
-      @name = name
+      @names = normalize_locale_hash(name)
       @sections = sections
+    end
+
+    # Returns part name for the given locale, with fallback
+    def name(locale = AmsfSurvey.locale)
+      resolve_locale(@names, locale)
     end
 
     # Returns all questions from all sections in order

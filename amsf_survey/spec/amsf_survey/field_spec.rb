@@ -72,6 +72,60 @@ RSpec.describe AmsfSurvey::Field do
     end
   end
 
+  describe "#label (locale-aware)" do
+    it "accepts a plain string (backward compatibility)" do
+      field = described_class.new(**minimal_attrs.merge(label: "My label"))
+      expect(field.label).to eq("My label")
+    end
+
+    it "accepts a locale hash" do
+      field = described_class.new(**minimal_attrs.merge(
+        label: { fr: "Libellé", en: "Label" }
+      ))
+      expect(field.label(:fr)).to eq("Libellé")
+      expect(field.label(:en)).to eq("Label")
+    end
+
+    it "falls back to :fr when requested locale is missing" do
+      field = described_class.new(**minimal_attrs.merge(
+        label: { fr: "Libellé" }
+      ))
+      expect(field.label(:en)).to eq("Libellé")
+    end
+
+    it "falls back to first available when :fr is also missing" do
+      field = described_class.new(**minimal_attrs.merge(
+        label: { de: "Bezeichnung" }
+      ))
+      expect(field.label(:en)).to eq("Bezeichnung")
+    end
+
+    it "uses AmsfSurvey.locale as default" do
+      field = described_class.new(**minimal_attrs.merge(
+        label: { fr: "Libellé", en: "Label" }
+      ))
+      AmsfSurvey.locale = :en
+      expect(field.label).to eq("Label")
+    ensure
+      AmsfSurvey.locale = :fr
+    end
+  end
+
+  describe "#verbose_label (locale-aware)" do
+    it "returns nil when no verbose label exists" do
+      field = described_class.new(**minimal_attrs)
+      expect(field.verbose_label).to be_nil
+    end
+
+    it "accepts a locale hash" do
+      field = described_class.new(**minimal_attrs.merge(
+        verbose_label: { fr: "Détails", en: "Details" }
+      ))
+      expect(field.verbose_label(:fr)).to eq("Détails")
+      expect(field.verbose_label(:en)).to eq("Details")
+    end
+  end
+
   describe "#has_range?" do
     it "returns false when neither min nor max is set" do
       field = described_class.new(**minimal_attrs)
@@ -156,20 +210,14 @@ RSpec.describe AmsfSurvey::Field do
       end
 
       it "returns false when gate field value is nil" do
-        # Explicit nil in data hash should not satisfy "Oui" requirement
         expect(field.send(:visible?, { tGATE: nil })).to be false
       end
 
       it "returns false when gate field value is empty string" do
-        # Empty string should not satisfy "Oui" requirement
         expect(field.send(:visible?, { tGATE: "" })).to be false
       end
 
       it "requires Symbol keys (String keys silently fail to match)" do
-        # IMPORTANT: depends_on uses Symbol keys, so String keys won't match.
-        # This is by design - Submission always uses Symbol keys internally.
-        # This test documents the behavior to prevent silent bugs if callers
-        # accidentally pass String keys.
         expect(field.send(:visible?, { "tGATE" => "Oui" })).to be false
       end
     end

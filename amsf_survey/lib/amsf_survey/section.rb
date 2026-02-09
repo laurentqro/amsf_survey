@@ -1,16 +1,23 @@
 # frozen_string_literal: true
 
 module AmsfSurvey
-  # Represents a top-level section from the PDF structure (e.g., "Inherent Risk").
+  # Represents a top-level section from the PDF structure (e.g., "Customer Risk").
   # Contains subsections which contain questions.
   # Immutable value object built by the taxonomy loader.
   class Section
-    attr_reader :number, :title, :subsections
+    include LocaleSupport
+
+    attr_reader :number, :subsections
 
     def initialize(number:, title:, subsections:)
       @number = number
-      @title = title
+      @titles = normalize_locale_hash(title)
       @subsections = subsections
+    end
+
+    # Returns section title for the given locale, with fallback
+    def title(locale = AmsfSurvey.locale)
+      resolve_locale(@titles, locale)
     end
 
     # Returns all questions from all subsections in order

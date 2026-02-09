@@ -3,6 +3,7 @@
 require_relative "amsf_survey/version"
 require_relative "amsf_survey/errors"
 require_relative "amsf_survey/type_caster"
+require_relative "amsf_survey/locale_support"
 require_relative "amsf_survey/field"
 require_relative "amsf_survey/question"
 require_relative "amsf_survey/subsection"
@@ -23,4 +24,14 @@ module AmsfSurvey
   # Core gem for AMSF regulatory survey submissions.
   # Validation is delegated to Arelle (external XBRL validator).
   # The gem provides completeness tracking via submission.complete? and submission.unanswered_questions.
+
+  # Returns the current locale (default: :fr)
+  def self.locale
+    @locale || :fr
+  end
+
+  # Sets the current locale
+  def self.locale=(locale)
+    @locale = locale&.to_sym
+  end
 end

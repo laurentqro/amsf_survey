@@ -6,9 +6,9 @@ RSpec.describe AmsfSurvey::Question do
       id: :aACTIVE,
       type: :boolean,
       xbrl_type: "test:booleanItemType",
-      label: "Are you active?",
+      label: { fr: "Êtes-vous actif?", en: "Are you active?" },
       gate: true,
-      verbose_label: "Extended label",
+      verbose_label: { fr: "Libellé détaillé", en: "Extended label" },
       valid_values: %w[Oui Non],
       depends_on: {}
     )
@@ -40,12 +40,17 @@ RSpec.describe AmsfSurvey::Question do
       expect(question.xbrl_id).to eq(:aACTIVE)
     end
 
-    it "delegates label to field" do
-      expect(question.label).to eq("Are you active?")
+    it "delegates label to field with default locale" do
+      expect(question.label).to eq("Êtes-vous actif?")
+    end
+
+    it "delegates label to field with explicit locale" do
+      expect(question.label(:en)).to eq("Are you active?")
     end
 
     it "delegates verbose_label to field" do
-      expect(question.verbose_label).to eq("Extended label")
+      expect(question.verbose_label).to eq("Libellé détaillé")
+      expect(question.verbose_label(:en)).to eq("Extended label")
     end
 
     it "delegates type to field" do
@@ -62,6 +67,26 @@ RSpec.describe AmsfSurvey::Question do
 
     it "delegates depends_on to field" do
       expect(question.depends_on).to eq({})
+    end
+  end
+
+  describe "#instructions (locale-aware)" do
+    it "returns instructions as plain string (backward compatibility)" do
+      question = described_class.new(number: 1, field: field, instructions: "Help text")
+      expect(question.instructions).to eq("Help text")
+    end
+
+    it "returns instructions from locale hash" do
+      question = described_class.new(number: 1, field: field,
+        instructions: { fr: "Aide", en: "Help" })
+      expect(question.instructions(:fr)).to eq("Aide")
+      expect(question.instructions(:en)).to eq("Help")
+    end
+
+    it "falls back to :fr when locale missing" do
+      question = described_class.new(number: 1, field: field,
+        instructions: { fr: "Aide" })
+      expect(question.instructions(:en)).to eq("Aide")
     end
   end
 

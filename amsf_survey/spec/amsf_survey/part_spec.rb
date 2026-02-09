@@ -39,6 +39,27 @@ RSpec.describe AmsfSurvey::Part do
     end
   end
 
+  describe "#name (locale-aware)" do
+    it "accepts a plain string" do
+      part = described_class.new(name: "Inherent Risk", sections: [])
+      expect(part.name).to eq("Inherent Risk")
+    end
+
+    it "accepts a locale hash" do
+      part = described_class.new(
+        name: { fr: "Risque Inhérent", en: "Inherent Risk" },
+        sections: []
+      )
+      expect(part.name(:fr)).to eq("Risque Inhérent")
+      expect(part.name(:en)).to eq("Inherent Risk")
+    end
+
+    it "falls back to :fr when locale missing" do
+      part = described_class.new(name: { fr: "Risque Inhérent" }, sections: [])
+      expect(part.name(:en)).to eq("Risque Inhérent")
+    end
+  end
+
   describe "#questions" do
     it "returns all questions from all sections" do
       part = described_class.new(name: "Inherent Risk", sections: [section])

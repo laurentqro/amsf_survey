@@ -5,9 +5,11 @@ require "nokogiri"
 module AmsfSurvey
   module Taxonomy
     # Parses XBRL label linkbase (_lab.xml) files to extract field labels.
+    # Returns locale-keyed hashes for bilingual support.
     class LabelParser
       LINK_NS = "http://www.xbrl.org/2003/linkbase"
       XLINK_NS = "http://www.w3.org/1999/xlink"
+      XML_NS = "http://www.w3.org/XML/1998/namespace"
       LABEL_ROLE = "http://www.xbrl.org/2003/role/label"
       VERBOSE_ROLE = "http://www.xbrl.org/2003/role/verboseLabel"
 
@@ -24,23 +26,25 @@ module AmsfSurvey
         # Find all locators to map label references to field IDs
         locators = extract_locators(doc)
 
-        # Extract labels and verbose labels
+        # Extract labels and verbose labels with locale
         doc.xpath("//link:label", "link" => LINK_NS).each do |label_el|
           label_ref = label_el.attribute_with_ns("label", XLINK_NS)&.value
           role = label_el.attribute_with_ns("role", XLINK_NS)&.value
+          lang = label_el.attribute_with_ns("lang", XML_NS)&.value || "fr"
           content = strip_html(label_el.text)
 
           # Find the field ID for this label
           field_id = find_field_id(locators, label_ref, doc)
           next unless field_id
 
-          labels[field_id] ||= {}
+          locale = lang.to_sym
+          labels[field_id] ||= { label: {}, verbose_label: {} }
 
           case role
           when LABEL_ROLE
-            labels[field_id][:label] = content
+            labels[field_id][:label][locale] = content
           when VERBOSE_ROLE
-            labels[field_id][:verbose_label] = content
+            labels[field_id][:verbose_label][locale] = content
           end
         end
 

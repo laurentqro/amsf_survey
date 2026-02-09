@@ -4,8 +4,10 @@ module AmsfSurvey
   # Represents a single survey question with all metadata.
   # Immutable value object built by the taxonomy loader.
   class Field
-    attr_reader :xbrl_id, :type, :xbrl_type, :label,
-                :verbose_label, :valid_values,
+    include LocaleSupport
+
+    attr_reader :xbrl_id, :type, :xbrl_type,
+                :valid_values,
                 :depends_on, :gate, :min, :max,
                 :dimensional, :enum_needs_encoding
 
@@ -27,9 +29,9 @@ module AmsfSurvey
       @id = id.to_s.downcase.to_sym
       @type = type
       @xbrl_type = xbrl_type
-      @label = label
+      @labels = normalize_locale_hash(label)
+      @verbose_labels = normalize_locale_hash(verbose_label)
       @gate = gate
-      @verbose_label = verbose_label
       @valid_values = valid_values
       @depends_on = depends_on || {}
       @min = min
@@ -41,6 +43,17 @@ module AmsfSurvey
     # Returns lowercase ID for API usage (e.g., :aactive, :a1101)
     def id
       @id
+    end
+
+    # Returns label for the given locale, with fallback chain:
+    # requested locale → :fr → first available value
+    def label(locale = AmsfSurvey.locale)
+      resolve_locale(@labels, locale)
+    end
+
+    # Returns verbose label for the given locale, with fallback chain
+    def verbose_label(locale = AmsfSurvey.locale)
+      resolve_locale(@verbose_labels, locale)
     end
 
     # Check if this field has range constraints.
@@ -65,10 +78,6 @@ module AmsfSurvey
     def gate? = gate
 
     # Cast a value to the appropriate type for this field.
-    # Delegates to TypeCaster based on field type.
-    #
-    # @param value [Object] the value to cast
-    # @return [Object, nil] the cast value
     def cast(value)
       TypeCaster.cast(value, type)
     end
@@ -78,9 +87,6 @@ module AmsfSurvey
     #
     # IMPORTANT: Data hash MUST use Symbol keys (original XBRL IDs) to match
     # depends_on. String keys will cause silent lookup failures.
-    #
-    # @param data [Hash<Symbol, Object>] submission data with Symbol keys
-    # @return [Boolean] true if all dependencies are satisfied or none exist
     def visible?(data)
       return true if depends_on.empty?
 

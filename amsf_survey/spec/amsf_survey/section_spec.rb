@@ -40,6 +40,32 @@ RSpec.describe AmsfSurvey::Section do
     end
   end
 
+  describe "#title (locale-aware)" do
+    it "accepts a plain string" do
+      section = described_class.new(number: 1, title: "Customer Risk", subsections: [])
+      expect(section.title).to eq("Customer Risk")
+    end
+
+    it "accepts a locale hash" do
+      section = described_class.new(
+        number: 1,
+        title: { fr: "Risque Client", en: "Customer Risk" },
+        subsections: []
+      )
+      expect(section.title(:fr)).to eq("Risque Client")
+      expect(section.title(:en)).to eq("Customer Risk")
+    end
+
+    it "falls back to :fr when locale missing" do
+      section = described_class.new(
+        number: 1,
+        title: { fr: "Risque Client" },
+        subsections: []
+      )
+      expect(section.title(:en)).to eq("Risque Client")
+    end
+  end
+
   describe "#questions" do
     it "returns all questions from all subsections" do
       section = described_class.new(

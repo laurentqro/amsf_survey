@@ -16,28 +16,32 @@ RSpec.describe AmsfSurvey::Taxonomy::LabelParser do
     end
 
     describe "label content" do
+      it "returns locale-keyed hashes" do
+        expect(result[:tGATE][:label]).to be_a(Hash)
+        expect(result[:tGATE][:label][:fr]).to eq("Avez-vous effectue des activites?")
+      end
+
       it "strips HTML from labels" do
-        expect(result[:tGATE][:label]).to eq("Avez-vous effectue des activites?")
-        expect(result[:t001][:label]).to eq("Nombre total de clients")
+        expect(result[:t001][:label][:fr]).to eq("Nombre total de clients")
       end
 
       it "strips HTML tags like <b> from labels" do
-        expect(result[:t003][:label]).to eq("Montant total")
+        expect(result[:t003][:label][:fr]).to eq("Montant total")
       end
 
       it "handles plain text labels without HTML" do
-        expect(result[:t002][:label]).to eq("Commentaires")
+        expect(result[:t002][:label][:fr]).to eq("Commentaires")
       end
     end
 
     describe "verbose labels" do
-      it "extracts verbose labels when present" do
-        expect(result[:tGATE][:verbose_label]).to include("Si non, veuillez expliquer pourquoi")
-        expect(result[:t001][:verbose_label]).to include("Incluez tous les clients actifs")
+      it "extracts verbose labels with locale key" do
+        expect(result[:tGATE][:verbose_label][:fr]).to include("Si non, veuillez expliquer pourquoi")
+        expect(result[:t001][:verbose_label][:fr]).to include("Incluez tous les clients actifs")
       end
 
-      it "returns nil for verbose_label when not present" do
-        expect(result[:t002][:verbose_label]).to be_nil
+      it "returns empty hash for verbose_label when not present" do
+        expect(result[:t002][:verbose_label]).to eq({})
       end
     end
   end

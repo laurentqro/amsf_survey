@@ -36,6 +36,47 @@ RSpec.describe AmsfSurvey::Subsection do
     end
   end
 
+  describe "#title (locale-aware)" do
+    it "accepts a plain string" do
+      subsection = described_class.new(number: 1, title: "Activity Status", questions: [])
+      expect(subsection.title).to eq("Activity Status")
+    end
+
+    it "accepts a locale hash" do
+      subsection = described_class.new(
+        number: 1,
+        title: { fr: "Statut d'activité", en: "Activity Status" },
+        questions: []
+      )
+      expect(subsection.title(:fr)).to eq("Statut d'activité")
+      expect(subsection.title(:en)).to eq("Activity Status")
+    end
+  end
+
+  describe "#instructions (locale-aware)" do
+    it "returns nil when no instructions" do
+      subsection = described_class.new(number: 1, title: "Test", questions: [])
+      expect(subsection.instructions).to be_nil
+    end
+
+    it "accepts a plain string" do
+      subsection = described_class.new(
+        number: 1, title: "Test", questions: [],
+        instructions: "Report only relevant info."
+      )
+      expect(subsection.instructions).to eq("Report only relevant info.")
+    end
+
+    it "accepts a locale hash" do
+      subsection = described_class.new(
+        number: 1, title: "Test", questions: [],
+        instructions: { fr: "Instructions FR", en: "Instructions EN" }
+      )
+      expect(subsection.instructions(:fr)).to eq("Instructions FR")
+      expect(subsection.instructions(:en)).to eq("Instructions EN")
+    end
+  end
+
   describe "#question_count" do
     it "returns the number of questions" do
       subsection = described_class.new(number: 1, title: "Test", questions: questions)

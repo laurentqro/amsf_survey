@@ -89,6 +89,7 @@ module AmsfSurvey
     def reset_registry! # :nodoc:
       @registry = {}
       @questionnaire_cache = {}
+      @locale = nil
     end
 
     # Register an industry plugin

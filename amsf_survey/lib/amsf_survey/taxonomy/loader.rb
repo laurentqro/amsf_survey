@@ -117,11 +117,16 @@ module AmsfSurvey
         depends_on = resolve_gate_dependencies(xule_data[:gate_rules][field_id], schema_data)
         is_dimensional = dimensional_fields.include?(field_id)
 
+        # label_data[:label] is now a locale hash (e.g., { fr: "..." })
+        # Fall back to field_id string when no label data exists at all
+        label_value = label_data[:label]
+        label_value = field_id.to_s if label_value.nil? || (label_value.is_a?(Hash) && label_value.empty?)
+
         AmsfSurvey::Field.new(
           id: field_id,
           type: schema[:type],
           xbrl_type: schema[:xbrl_type],
-          label: label_data[:label] || field_id.to_s,
+          label: label_value,
           verbose_label: label_data[:verbose_label],
           valid_values: schema[:valid_values],
           depends_on: depends_on,
