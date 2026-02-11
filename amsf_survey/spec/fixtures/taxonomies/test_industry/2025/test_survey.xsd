@@ -143,4 +143,22 @@
             </simpleContent>
         </complexType>
     </element>
+    <!-- Field 7: Enum with named HTML entities (like aC1616B) -->
+    <!-- Note: The XSD uses double-encoding: &amp;gt; which XML-parses to &gt; -->
+    <element
+      abstract="false"
+      id="test_t006"
+      name="t006"
+      nillable="true"
+      substitutionGroup="xbrli:item"
+      xbrli:periodType="instant">
+        <complexType>
+            <simpleContent>
+                <restriction base="xbrli:stringItemType">
+                    <enumeration value="&amp;gt; Annuel"/>
+                    <enumeration value="&amp;lt; Annuel"/>
+                </restriction>
+            </simpleContent>
+        </complexType>
+    </element>
 </schema>

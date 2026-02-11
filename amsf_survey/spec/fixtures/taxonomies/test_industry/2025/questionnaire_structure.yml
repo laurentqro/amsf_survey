@@ -32,3 +32,5 @@ parts:
                 question_number: 6
                 instructions: |
                   Tests HTML-encoded enum values.
+              - field_id: t006
+                question_number: 7

@@ -148,10 +148,11 @@ module AmsfSurvey
         enums = element.xpath(".//xs:enumeration/@value", "xs" => "http://www.w3.org/2001/XMLSchema")
         return nil, false if enums.empty?
 
-        # Check if any raw XSD value contains HTML entities (e.g., &#39; or &#233;)
-        # This determines whether the generator needs to encode values for this field
+        # Check if any raw XSD value contains HTML entities (numeric like &#39;
+        # or named like &gt; &lt; &amp;). This determines whether the generator
+        # needs to encode values for this field.
         raw_values = enums.map(&:value)
-        needs_encoding = raw_values.any? { |v| v.include?("&#") }
+        needs_encoding = raw_values.any? { |v| v.match?(/&(?:#\d+|#x\h+|[a-zA-Z]+);/) }
 
         # Decode HTML entities so apps use human-readable values (e.g., "Par l'entité")
         # The generator re-encodes when writing XBRL only if the XSD was encoded

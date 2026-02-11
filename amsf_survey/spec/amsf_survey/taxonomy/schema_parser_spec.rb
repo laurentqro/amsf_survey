@@ -162,6 +162,13 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
       it "maps multi-value enum correctly" do
         expect(result[:t004][:type]).to eq(:enum)
         expect(result[:t004][:valid_values]).to eq(["Option A", "Option B", "Option C"])
+        expect(result[:t004][:enum_needs_encoding]).to be_nil
+      end
+
+      it "detects named HTML entities need encoding (gt/lt)" do
+        expect(result[:t006][:type]).to eq(:enum)
+        expect(result[:t006][:valid_values]).to eq(["> Annuel", "< Annuel"])
+        expect(result[:t006][:enum_needs_encoding]).to be true
       end
 
       it "decodes HTML entities in enum values" do
@@ -187,6 +194,9 @@ RSpec.describe AmsfSurvey::Taxonomy::SchemaParser do
         result = described_class.new(temp_path).parse
         expect(result[:html_enum][:type]).to eq(:enum)
         expect(result[:html_enum][:valid_values]).to eq(["> 10%", "<= 10%", "5% & above"])
+        # Single-encoded XML entities (&gt;) don't need re-encoding — Nokogiri handles them.
+        # Only double-encoded entities (&amp;gt;) need re-encoding by the generator.
+        expect(result[:html_enum][:enum_needs_encoding]).to be_nil
       ensure
         File.delete(temp_path) if File.exist?(temp_path)
       end

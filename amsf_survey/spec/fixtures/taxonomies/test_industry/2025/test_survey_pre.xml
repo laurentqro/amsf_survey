@@ -90,5 +90,15 @@
           xlink:from="test_Abstract_Details"
           xlink:to="test_t005"
           xlink:type="arc"/>
+        <loc
+          xlink:href="test_survey.xsd#test_t006"
+          xlink:label="test_t006"
+          xlink:type="locator"/>
+        <presentationArc
+          order="4"
+          xlink:arcrole="http://www.xbrl.org/2003/arcrole/parent-child"
+          xlink:from="test_Abstract_Details"
+          xlink:to="test_t006"
+          xlink:type="arc"/>
     </presentationLink>
 </linkbase>

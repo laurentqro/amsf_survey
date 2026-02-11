@@ -151,4 +151,50 @@ RSpec.describe "XBRL Generation Integration" do
       expect(question.valid_values).to include("Par l'entité")
     end
   end
+
+  # Regression test for aC1616B validation error
+  # XSD contains double-encoded named entities like &amp;gt; which XML-parses to &gt;
+  # After CGI.unescape_html, valid_values contains: > Annuel, < Annuel
+  # Apps use human-readable values; generator must encode < and > for XBRL output
+  describe "named HTML entity enum values (gt/lt)" do
+    it "accepts human-readable values and encodes for XBRL" do
+      submission = build_submission(tGATE: "Oui", t006: "> Annuel")
+
+      xml = AmsfSurvey.to_xbrl(submission)
+
+      # Generator encodes > to &gt;, then Nokogiri XML-escapes the & to &amp;
+      # Raw XML contains: &amp;gt; Annuel
+      # When Arelle parses this, it gets: &gt; Annuel (matching the XSD)
+      expect(xml).to include("&amp;gt; Annuel")
+
+      # Verify round-trip: parsing XBRL gives the encoded form
+      doc = Nokogiri::XML(xml)
+      ns = { "strix" => questionnaire.taxonomy_namespace }
+      parsed_value = doc.at_xpath("//strix:t006", ns).text
+      expect(parsed_value).to eq("&gt; Annuel")
+    end
+
+    it "encodes < in enum values for XBRL" do
+      submission = build_submission(tGATE: "Oui", t006: "< Annuel")
+
+      xml = AmsfSurvey.to_xbrl(submission)
+
+      expect(xml).to include("&amp;lt; Annuel")
+
+      doc = Nokogiri::XML(xml)
+      ns = { "strix" => questionnaire.taxonomy_namespace }
+      parsed_value = doc.at_xpath("//strix:t006", ns).text
+      expect(parsed_value).to eq("&lt; Annuel")
+    end
+
+    it "includes human-readable values in valid_values" do
+      question = questionnaire.questions.find { |q| q.id == :t006 }
+      expect(question.valid_values).to eq(["> Annuel", "< Annuel"])
+    end
+
+    it "marks field as needing encoding" do
+      question = questionnaire.questions.find { |q| q.id == :t006 }
+      expect(question.enum_needs_encoding?).to be true
+    end
+  end
 end

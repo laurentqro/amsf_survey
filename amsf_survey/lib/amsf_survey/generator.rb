@@ -545,12 +545,13 @@ module AmsfSurvey
     # @return [String] encoded string with HTML numeric entities
     def encode_for_xbrl(str)
       str.each_char.map do |char|
-        if char == "'"
-          "&#39;"
-        elsif char.ord > 127
-          "&##{char.ord};"
+        case char
+        when "'" then "&#39;"
+        when "<" then "&lt;"
+        when ">" then "&gt;"
+        when "&" then "&amp;"
         else
-          char
+          char.ord > 127 ? "&##{char.ord};" : char
         end
       end.join
     end
