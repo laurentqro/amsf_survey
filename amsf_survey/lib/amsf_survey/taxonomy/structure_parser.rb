@@ -67,26 +67,31 @@ module AmsfSurvey
           parse_question(q_data)
         end
 
-        instructions = sub_data["instructions"]&.strip
-        instructions = nil if instructions&.empty?
-
         {
           number: sub_data["number"],
           title: sub_data["title"],
-          instructions: instructions,
+          instructions: clean_instructions(sub_data["instructions"]),
           questions: questions
         }
       end
 
       def parse_question(q_data)
-        instructions = q_data["instructions"]&.strip
-        instructions = nil if instructions&.empty?
-
         {
           number: q_data["question_number"],
           field_id: q_data["field_id"].to_s.downcase.to_sym,
-          instructions: instructions
+          instructions: clean_instructions(q_data["instructions"])
         }
+      end
+
+      def clean_instructions(value)
+        case value
+        when Hash
+          cleaned = value.transform_values { |v| v&.strip }
+          cleaned.values.all? { |v| v.nil? || v.empty? } ? nil : cleaned
+        when String
+          stripped = value.strip
+          stripped.empty? ? nil : stripped
+        end
       end
     end
   end

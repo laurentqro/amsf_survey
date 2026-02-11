@@ -101,8 +101,13 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
       expect(questionnaire.parts.length).to eq(3)
     end
 
-    it "has correct part names" do
+    it "has correct part names in French (default locale)" do
       names = questionnaire.parts.map(&:name)
+      expect(names).to eq(["Risque inhérent", "Contrôles", "Signataires"])
+    end
+
+    it "has correct part names in English" do
+      names = questionnaire.parts.map { |p| p.name(:en) }
       expect(names).to eq(["Inherent Risk", "Controls", "Signatories"])
     end
 
@@ -127,7 +132,7 @@ RSpec.describe "Real Estate Taxonomy Integration", :integration do
     end
 
     it "has sequential question numbers within Inherent Risk" do
-      inherent_risk = questionnaire.parts.find { |p| p.name == "Inherent Risk" }
+      inherent_risk = questionnaire.parts.find { |p| p.name(:en) == "Inherent Risk" }
       numbers = inherent_risk.questions.map(&:number)
       expect(numbers).to eq((1..215).to_a)
     end
