@@ -286,4 +286,57 @@ RSpec.describe AmsfSurvey::Field do
       expect(field.cast(nil)).to be_nil
     end
   end
+
+  describe "#resolve_code" do
+    let(:country_values) do
+      [
+        "France (FR, FRA, 250)",
+        "Allemagne (DE, DEU, 276)",
+        "Kosovo",
+        "Monaco (MC, MCO, 492)"
+      ]
+    end
+
+    let(:country_field) do
+      described_class.new(**minimal_attrs.merge(type: :enum, valid_values: country_values))
+    end
+
+    it "resolves an alpha-2 code to the full XBRL label" do
+      expect(country_field.resolve_code("FR")).to eq("France (FR, FRA, 250)")
+    end
+
+    it "is case-insensitive" do
+      expect(country_field.resolve_code("fr")).to eq("France (FR, FRA, 250)")
+      expect(country_field.resolve_code("De")).to eq("Allemagne (DE, DEU, 276)")
+    end
+
+    it "strips whitespace from input" do
+      expect(country_field.resolve_code("  MC  ")).to eq("Monaco (MC, MCO, 492)")
+    end
+
+    it "returns nil for a non-matching code" do
+      expect(country_field.resolve_code("XX")).to be_nil
+    end
+
+    it "returns nil for nil code" do
+      expect(country_field.resolve_code(nil)).to be_nil
+    end
+
+    it "returns nil for empty string" do
+      expect(country_field.resolve_code("")).to be_nil
+    end
+
+    it "returns nil for whitespace-only string" do
+      expect(country_field.resolve_code("   ")).to be_nil
+    end
+
+    it "skips entries without parenthesized codes (e.g. Kosovo)" do
+      expect(country_field.resolve_code("Kosovo")).to be_nil
+    end
+
+    it "returns nil when valid_values is nil" do
+      field = described_class.new(**minimal_attrs.merge(type: :enum, valid_values: nil))
+      expect(field.resolve_code("FR")).to be_nil
+    end
+  end
 end

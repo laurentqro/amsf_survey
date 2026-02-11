@@ -39,6 +39,9 @@ module AmsfSurvey
     # Cast a value to the appropriate type for this question
     def cast(value) = field.cast(value)
 
+    # Resolve a short code to its XBRL enum label
+    def resolve_code(code) = field.resolve_code(code)
+
     # Evaluate visibility based on gate dependencies
     def visible?(data)
       field.send(:visible?, data)

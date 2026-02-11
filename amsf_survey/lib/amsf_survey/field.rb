@@ -82,6 +82,19 @@ module AmsfSurvey
       TypeCaster.cast(value, type)
     end
 
+    # Resolves a short code (e.g. ISO alpha-2 "FR") to the matching XBRL
+    # enum label from valid_values (e.g. "France (FR, FRA, 250)").
+    # Returns nil when no match is found or valid_values is nil.
+    def resolve_code(code)
+      return nil if code.nil? || valid_values.nil?
+
+      normalized = code.to_s.strip.upcase
+      return nil if normalized.empty?
+
+      @code_lookup ||= build_code_lookup
+      @code_lookup[normalized]
+    end
+
     # Evaluates gate dependencies against internal submission data.
     # Used by Submission#visible_fields - not part of public API.
     #
@@ -96,5 +109,19 @@ module AmsfSurvey
     end
 
     private :visible?
+
+    private
+
+    # Builds a hash mapping alpha-2 codes to their full XBRL labels.
+    # Entries without parenthesized codes (e.g. "Kosovo") are skipped.
+    def build_code_lookup
+      return {} if valid_values.nil?
+
+      valid_values.each_with_object({}) do |label, lookup|
+        next unless label =~ /\(([A-Z]{2}),\s/
+
+        lookup[Regexp.last_match(1)] = label
+      end
+    end
   end
 end
