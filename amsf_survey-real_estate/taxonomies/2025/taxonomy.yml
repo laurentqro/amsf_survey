@@ -7,7 +7,7 @@ schema_url: http://amsf.mc/fr/taxonomy/strix/2025/strix.xsd
 dimension:
   # Regex pattern to identify abstract groups containing dimensional fields
   # Fields under matching groups require country-breakdown XBRL output
-  abstract_pattern: "Abstract_aAC$"
+  abstract_pattern: "Abstract_a(AC|LE)$"
 
   # Regex pattern for dimension member suffixes (ISO 3166-1 alpha-2 country codes)
   member_suffix_pattern: "[A-Z]{2}$"
