@@ -760,6 +760,31 @@ RSpec.describe AmsfSurvey::Generator do
       end
     end
 
+    context "empty string values" do
+      it "treats empty string monetary value as nil" do
+        submission = build_submission(tGATE: "Oui")
+
+        # Simulate empty string bypassing type_caster (e.g., from computed fields)
+        allow(submission).to receive(:data).and_return({
+          tGATE: "Oui",
+          t003: ""
+        })
+
+        xml = described_class.new(submission).generate
+        doc = Nokogiri::XML(xml)
+
+        ns = {
+          "strix" => questionnaire.taxonomy_namespace,
+          "xsi" => "http://www.w3.org/2001/XMLSchema-instance"
+        }
+        t003_fact = doc.at_xpath("//strix:t003", ns)
+
+        expect(t003_fact).not_to be_nil
+        expect(t003_fact["xsi:nil"]).to eq("true")
+        expect(t003_fact.text).to eq("")
+      end
+    end
+
     context "dimension metadata" do
       it "uses dimension_name from questionnaire when available" do
         custom_questionnaire = AmsfSurvey::Questionnaire.new(

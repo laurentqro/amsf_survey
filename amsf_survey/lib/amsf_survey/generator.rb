@@ -434,6 +434,9 @@ module AmsfSurvey
     # @param value [Object] the value for the fact
     # @param ctx_id [String] the context ID to reference
     def build_fact_element(doc, parent, strix_ns, question, value, ctx_id)
+      # Normalize empty strings to nil (defensive against values bypassing TypeCaster)
+      value = nil if value.is_a?(String) && value.strip.empty?
+
       fact = Nokogiri::XML::Node.new(question.xbrl_id.to_s, doc)
       fact.namespace = strix_ns
       fact["contextRef"] = ctx_id
